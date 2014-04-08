@@ -1,6 +1,7 @@
 package Interface;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -18,18 +19,20 @@ public class Doigt extends JPanel{
 	private JPanel panBoutonsListe = new JPanel(); // Panel des bouttons
 
 	/* Boutons */
-	private JButton modifDoigt = new JButton("Modifier");
-	private JButton suppDoigt = new JButton("Supprimer");
-	private JButton creerDoigt = new JButton("Creer");
+	private JButton modif = new JButton("Modifier");
+	private JButton supp = new JButton("Supprimer");
+	private JButton creer = new JButton("Creer");
 
 	/* Menu */
-	private JMenuBar barreMenus = new JMenuBar();
+	/*
+	 * private JMenuBar barreMenus = new JMenuBar();
 	private JMenu accueil = new JMenu("Accueil");
 	private JMenu doigts = new JMenu("Doigts");
 	private JMenu balises = new JMenu("Balises");
 	private JMenu equipes = new JMenu("Equipes");
 	private JMenu epreuves = new JMenu("Epreuves");
 	private JMenu classement = new JMenu("Classement");
+	*/
 
 	JLabel bjr = new JLabel("Ici vous pouvez gérer vous différents doigts");
 
@@ -53,13 +56,18 @@ public class Doigt extends JPanel{
 		barreMenus.add(epreuves);
 		barreMenus.add(classement);
 		*/
+		
+		modif.setPreferredSize(new Dimension(200, 30));
+		creer.setPreferredSize(new Dimension(200, 30));
+		supp.setPreferredSize(new Dimension(200, 30));
+		
 		JPanel panBoutCreer = new JPanel();
 		JPanel panBoutSupp = new JPanel();
 		JPanel panBoutModif = new JPanel();
 		
-		panBoutCreer.add(creerDoigt);
-		panBoutSupp.add(suppDoigt);
-		panBoutModif.add(modifDoigt);
+		panBoutCreer.add(creer);
+		panBoutSupp.add(supp);
+		panBoutModif.add(modif);
 		
 		panBoutonsListe.setLayout(new BoxLayout(panBoutonsListe,
 				BoxLayout.PAGE_AXIS));

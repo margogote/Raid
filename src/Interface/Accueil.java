@@ -105,8 +105,8 @@ public class Accueil{
 		EcouteurCreer ecoutCreer = new EcouteurCreer();
 		creerCompet.addActionListener(ecoutCreer);
 
-		// EcouteurQ ecoutQ = new EcouteurQ();
-		// quitter.addActionListener(ecoutQ);
+		EcouteurQ ecoutQ = new EcouteurQ();
+		quitter.addActionListener(ecoutQ);
 
 	}
 
@@ -149,6 +149,23 @@ public class Accueil{
 
 		}
 	}
+	
+
+	public class EcouteurQ implements ActionListener { // Action du supprimer
+
+		public void actionPerformed(ActionEvent arg0) {
+
+			int rep = 0;
+			rep = JOptionPane.showConfirmDialog(null,
+					"Voulez vous vraiment quitter?",
+					"Attention", JOptionPane.YES_NO_OPTION);
+
+			if (rep == 0) {
+				fen.dispose();
+			}
+
+		}
+	}
 
 	public class EcouteurCreer implements ActionListener { // Action du quitter
 
@@ -157,16 +174,5 @@ public class Accueil{
 		}
 	}
 
-	public String Quitter() { // Action du quitter
-		int rep = 0;
-		rep = JOptionPane.showConfirmDialog(null,
-				"Voulez vous vraiment quitter?", "Attention",
-				JOptionPane.YES_NO_OPTION);
-
-		if (rep == 0) {
-			fen.dispose(); // Quitter les fenetres
-		}
-		return ("JFrame.EXIT_ON_CLOSE");
-	}
 
 }
