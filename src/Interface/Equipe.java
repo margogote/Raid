@@ -1,5 +1,7 @@
 package Interface;
 
-public class Equipe {
+import javax.swing.JPanel;
+
+public class Equipe  extends JPanel{
 
 }

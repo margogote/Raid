@@ -10,9 +10,8 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 
-public class Doigt {
+public class Doigt extends JPanel{
 
-	JFrame fen = new JFrame();
 	/* Panes */
 	private JPanel panMega = new JPanel(); // Panel qui contient tous
 	private JPanel panDoigts = new JPanel(); // Panel du champ de recherche
@@ -37,7 +36,7 @@ public class Doigt {
 	public Doigt() {
 
 		/* Detail fenêtre */
-		fen.setTitle("Raidzultats"); 	// + nom de la compétition
+		/*fen.setTitle("Raidzultats"); 	// + nom de la compétition
 		fen.setSize(800, 600); 
 		fen.setLocationRelativeTo(null);
 		fen.setResizable(false);
@@ -45,7 +44,7 @@ public class Doigt {
 		// fen.setDefaultCloseOperation(Quitter());
 		fen.setLayout(new BorderLayout());
 		
-		/* Menu */
+		/* Menu 
 		fen.setJMenuBar(barreMenus);
 		barreMenus.add(accueil);
 		barreMenus.add(doigts);
@@ -53,7 +52,7 @@ public class Doigt {
 		barreMenus.add(equipes);
 		barreMenus.add(epreuves);
 		barreMenus.add(classement);
-		
+		*/
 		JPanel panBoutCreer = new JPanel();
 		JPanel panBoutSupp = new JPanel();
 		JPanel panBoutModif = new JPanel();
@@ -74,9 +73,9 @@ public class Doigt {
 		panDoigts.add(panBoutonsListe, BorderLayout.CENTER);
 
 		panMega.add(panDoigts);
-		fen.add(panMega);
+		this.add(panMega);
 		
-		fen.setVisible(true);
+		//fen.setVisible(true);
 	}
 
 }

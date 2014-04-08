@@ -1,6 +1,7 @@
 package Interface;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -12,8 +13,9 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-public class Accueil extends JFrame {
-	// JFrame fen = new JFrame();
+public class Accueil{
+	
+	JFrame fen = new JFrame();
 
 	/**
 	 * 
@@ -43,13 +45,19 @@ public class Accueil extends JFrame {
 
 	public Accueil() {
 
-		this.setTitle("Raidzultats"); // titre
-		this.setSize(800, 600); // taille de la fenetre
-		this.setLocationRelativeTo(null); // centre la fenetre
-		this.setResizable(false);
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setLayout(new BorderLayout()); // Pour les placements
+		fen.setTitle("Raidzultats"); // titre
+		fen.setSize(800, 600); // taille de la fenetre
+		fen.setLocationRelativeTo(null); // centre la fenetre
+		fen.setResizable(false);
+		fen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		fen.setLayout(new BorderLayout()); // Pour les placements
 
+		entrerCompet.setPreferredSize(new Dimension(200, 30));
+		modifCompet.setPreferredSize(new Dimension(200, 30));
+		suppCompet.setPreferredSize(new Dimension(200, 30));
+		creerCompet.setPreferredSize(new Dimension(200, 30));
+		quitter.setPreferredSize(new Dimension(200, 30));
+		
 		JPanel panCompet = new JPanel();
 		JPanel panBoutEntrer = new JPanel();
 		JPanel panBoutModif = new JPanel();
@@ -80,9 +88,9 @@ public class Accueil extends JFrame {
 		panAccueil.add(panBoutonsListe, BorderLayout.CENTER);
 
 		panMega.add(panAccueil);
-		this.add(panMega);
+		fen.add(panMega);
 
-		this.setVisible(true);
+		fen.setVisible(true);
 
 		/* Ecouteurs */
 		EcouteurEntrer ecoutEntrer = new EcouteurEntrer();
@@ -107,11 +115,11 @@ public class Accueil extends JFrame {
 		public void actionPerformed(ActionEvent arg0) {
 			// on prend le num de la compet, on le stock
 			// on lance la page suivante
-			
-			//this.dispose;
-			System.exit(0);
-			@SuppressWarnings("unused")
 			monAppli app = new monAppli();
+			fen.dispose();
+			//System.exit(0);
+			//@SuppressWarnings("unused")
+			
 		}
 
 	}
@@ -156,7 +164,7 @@ public class Accueil extends JFrame {
 				JOptionPane.YES_NO_OPTION);
 
 		if (rep == 0) {
-			this.dispose(); // Quitter les fenetres
+			fen.dispose(); // Quitter les fenetres
 		}
 		return ("JFrame.EXIT_ON_CLOSE");
 	}

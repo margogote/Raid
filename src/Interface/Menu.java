@@ -2,6 +2,8 @@ package Interface;
 
 import javax.swing.JPanel;
 
-public class Epreuve  extends JPanel{
+public class Menu extends JPanel{
 
+	
+	
 }

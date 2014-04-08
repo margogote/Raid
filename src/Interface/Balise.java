@@ -1,5 +1,7 @@
 package Interface;
 
-public class Balise {
+import javax.swing.JPanel;
+
+public class Balise  extends JPanel{
 
 }

@@ -1,5 +1,7 @@
 package Interface;
 
-public class MalusBonus {
+import javax.swing.JPanel;
+
+public class MalusBonus  extends JPanel{
 
 }

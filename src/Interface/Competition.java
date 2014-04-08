@@ -1,5 +1,7 @@
 package Interface;
 
-public class Competition {
+import javax.swing.JPanel;
+
+public class Competition  extends JPanel{
 
 }
