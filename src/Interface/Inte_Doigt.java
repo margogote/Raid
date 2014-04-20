@@ -2,6 +2,8 @@ package Interface;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -9,9 +11,12 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-public class Doigt extends JPanel{
+import Interface.Inte_Accueil.EcouteurSupp;
+
+public class Inte_Doigt extends JPanel{
 
 	/* Panes */
 	private JPanel panMega = new JPanel(); // Panel qui contient tous
@@ -21,12 +26,12 @@ public class Doigt extends JPanel{
 	/* Boutons */
 	private JButton modif = new JButton("Modifier");
 	private JButton supp = new JButton("Supprimer");
-	private JButton creer = new JButton("Creer");
+	private JButton creer = new JButton("Créer");
 
 	/* Menu */
 	/*
 	 * private JMenuBar barreMenus = new JMenuBar();
-	private JMenu accueil = new JMenu("Accueil");
+	private JMenu accueil = new JMenu("Inte_Accueil");
 	private JMenu doigts = new JMenu("Doigts");
 	private JMenu balises = new JMenu("Balises");
 	private JMenu equipes = new JMenu("Equipes");
@@ -36,7 +41,7 @@ public class Doigt extends JPanel{
 
 	JLabel bjr = new JLabel("Ici vous pouvez gérer vous différents doigts");
 
-	public Doigt() {
+	public Inte_Doigt() {
 
 		/* Detail fenêtre */
 		/*fen.setTitle("Raidzultats"); 	// + nom de la compétition
@@ -84,6 +89,28 @@ public class Doigt extends JPanel{
 		this.add(panMega);
 		
 		//fen.setVisible(true);
+		
+		EcouteurSupp ecoutSupp = new EcouteurSupp();
+		supp.addActionListener(ecoutSupp);
+		
 	}
 
+	public class EcouteurSupp implements ActionListener { // Action du supprimer
+
+		public void actionPerformed(ActionEvent arg0) {
+			// on prend le num de la compet , on le stock
+			// on demande confirmation, si oui on la supprime
+
+			int rep = 0;
+			rep = JOptionPane.showConfirmDialog(null,
+					"Voulez vous vraiment supprimer ce doigt?",
+					"Attention", JOptionPane.YES_NO_OPTION);
+
+			if (rep == 0) {
+				//Supprimer la comptetition de la BDD
+			}
+
+		}
+	}
+	
 }

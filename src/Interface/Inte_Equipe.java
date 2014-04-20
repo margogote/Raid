@@ -2,6 +2,6 @@ package Interface;
 
 import javax.swing.JPanel;
 
-public class Epreuve  extends JPanel{
+public class Inte_Equipe  extends JPanel{
 
 }

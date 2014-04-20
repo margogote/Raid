@@ -15,11 +15,11 @@ public class monAppli {
 	JFrame fen2 = new JFrame();
 	JTabbedPane tabbedPane = new JTabbedPane();
 	
-	Doigt doigt = new Doigt();
-	Balise balise = new Balise();
-	Competition competition = new Competition();
-	Epreuve epreuve = new Epreuve();
-	MalusBonus malusBonus =new MalusBonus();
+	Inte_Doigt inte_Doigt = new Inte_Doigt();
+	Inte_Balise inte_Balise = new Inte_Balise();
+	Inte_Competition inte_Competition = new Inte_Competition();
+	Inte_Epreuve inte_Epreuve = new Inte_Epreuve();
+	Inte_MalusBonus inte_MalusBonus =new Inte_MalusBonus();
 	Menu menu = new Menu();
 
 	/*private JPanel panMega = new JPanel(); // Panel qui contient tous
@@ -42,17 +42,18 @@ public class monAppli {
 	public monAppli() {
 
 		fen2.setTitle("Raidzultats"); // titre
+		//fen2.setTitle("Raidzultats - "+nomCompet);
 		fen2.setSize(800, 600); // taille de la fenetre
 		fen2.setLocationRelativeTo(null); // centre la fenetre
 		fen2.setResizable(false);
 		fen2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		fen2.setLayout(new BorderLayout()); // Pour les placements
 
-		tabbedPane.add("Doigts",doigt);
-		tabbedPane.add("Balises",balise);
-		tabbedPane.add("Epreuves",epreuve);
-		tabbedPane.add("Competitions",competition);
-		tabbedPane.add("Malus & Bonus",malusBonus);
+		tabbedPane.add("Doigts",inte_Doigt);
+		tabbedPane.add("Balises",inte_Balise);
+		tabbedPane.add("Epreuves",inte_Epreuve);
+		tabbedPane.add("Competitions",inte_Competition);
+		tabbedPane.add("Malus & Bonus",inte_MalusBonus);
 		tabbedPane.add("Menu", menu);
 		
 		fen2.add(tabbedPane);

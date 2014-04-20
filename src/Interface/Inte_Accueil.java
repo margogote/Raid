@@ -7,13 +7,14 @@ import java.awt.event.ActionListener;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-public class Accueil{
+public class Inte_Accueil{
 	
 	JFrame fen = new JFrame();
 
@@ -31,19 +32,19 @@ public class Accueil{
 	private JButton entrerCompet = new JButton("Entrer dans la compétition");
 	private JButton modifCompet = new JButton("Modifier la compétition");
 	private JButton suppCompet = new JButton("Supprimer la compétition");
-	private JButton creerCompet = new JButton("Creer une compétition");
+	private JButton creerCompet = new JButton("Créer une compétition");
 	private JButton quitter = new JButton("Quitter");
 
 	/* Liste des compet */
-	// SELECT `nomCompetition` FROM `competition`
+	// SELECT `nomCompetition` FROM `inte_Competition`
 	// mettre ces noms dans la chaîne
 	String[] competitions = { "compet1", "la 2é", "la 3é" };
-	private JList<Object> compets = new JList<Object>(competitions);
+	private JComboBox<Object> compets = new JComboBox<Object>(competitions);
 
 	JLabel bjr = new JLabel(
 			"Bienvenu(e) sur Raidzultats, l'application qui permet de gérer le classement d'un Raid");
 
-	public Accueil() {
+	public Inte_Accueil() {
 
 		fen.setTitle("Raidzultats"); // titre
 		fen.setSize(800, 600); // taille de la fenetre
@@ -123,12 +124,39 @@ public class Accueil{
 		}
 
 	}
+	
+
+	public class EcouteurCreer implements ActionListener { // Action du quitter
+
+		public void actionPerformed(ActionEvent arg0) {
+			// On lance le formulaire vide
+			
+			JOptionPane jop = new JOptionPane(), jop2 = new JOptionPane();
+			String nom = jop.showInputDialog(null, "Donner le nom de votre compétition !", "Nouvelle compétition ?", JOptionPane.QUESTION_MESSAGE);
+			if(nom == null)
+			{
+				jop2.showMessageDialog(null, "Compétition non créée", "Compétition non créée!", JOptionPane.INFORMATION_MESSAGE);
+			}
+			else {
+				jop2.showMessageDialog(null, "La compétition est " + nom, "Nouvelle compétition !", JOptionPane.INFORMATION_MESSAGE);
+			}
+		}
+	}
 
 	public class EcouteurModif implements ActionListener { // Action du quitter
 
 		public void actionPerformed(ActionEvent arg0) {
 			// on prend le num de la compet , on le stock
 			// on lance le formulaire pré-remplit
+			
+			JOptionPane jop = new JOptionPane(), jop2 = new JOptionPane();
+			String nom = jop.showInputDialog(null, "Donner le nouveau nom de votre competition !", "Modifier compétition ?", JOptionPane.QUESTION_MESSAGE);
+			if(nom == null){
+			jop2.showMessageDialog(null, "Pas de modification", "Compétition non modifiée!", JOptionPane.INFORMATION_MESSAGE);
+			}
+			else {
+			jop2.showMessageDialog(null, "La competition est maintenant" + nom, "Compétition modifiée!", JOptionPane.INFORMATION_MESSAGE);	
+			}
 		}
 	}
 
@@ -166,13 +194,4 @@ public class Accueil{
 
 		}
 	}
-
-	public class EcouteurCreer implements ActionListener { // Action du quitter
-
-		public void actionPerformed(ActionEvent arg0) {
-			// On lance le formulaire vide
-		}
-	}
-
-
 }

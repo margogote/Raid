@@ -10,7 +10,7 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import Interface.Accueil.EcouteurQ;
+import Interface.Inte_Accueil.EcouteurQ;
 
 public class Menu extends JPanel {
 
@@ -21,7 +21,7 @@ public class Menu extends JPanel {
 
 	/* Boutons */
 
-	private JButton retour = new JButton("Aller dans une autre compétition");
+	private JButton retour = new JButton("Changer de compétition");
 	private JButton quitter = new JButton("Quitter");
 
 	public Menu() {
@@ -45,7 +45,7 @@ public class Menu extends JPanel {
 		panBalise.add(panBoutonsListe, BorderLayout.CENTER);
 
 		// panMega.setLayout(new BorderLayout());
-		// panMega.add(panBalise, BorderLayout.CENTER);
+		panMega.add(panBalise /*, BorderLayout.CENTER*/);
 
 		this.setLayout(new BorderLayout());
 		this.add(panMega /* , BorderLayout.CENTER */);
@@ -65,7 +65,8 @@ public class Menu extends JPanel {
 					JOptionPane.YES_NO_OPTION);
 
 			if (rep == 0) {
-				// fen2.dispose();
+				//fen2.dispose();
+				System.exit(0);
 			}
 
 		}
