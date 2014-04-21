@@ -7,6 +7,7 @@ public class Equipe {
 	private String nomGroupe;
 	private String typeDifficulte;
 	private String typeEquipe;
+	
 	public int getIdEquipe() {
 		return idEquipe;
 	}

@@ -20,7 +20,7 @@ public class monAppli {
 	Inte_Competition inte_Competition = new Inte_Competition();
 	Inte_Epreuve inte_Epreuve = new Inte_Epreuve();
 	Inte_MalusBonus inte_MalusBonus =new Inte_MalusBonus();
-	Menu menu = new Menu();
+	Inte_Menu inte_Menu = new Inte_Menu(fen2);
 
 	/*private JPanel panMega = new JPanel(); // Panel qui contient tous
 	private JPanel panAccueil = new JPanel(); // Panel du champ de recherche
@@ -54,7 +54,7 @@ public class monAppli {
 		tabbedPane.add("Epreuves",inte_Epreuve);
 		tabbedPane.add("Competitions",inte_Competition);
 		tabbedPane.add("Malus & Bonus",inte_MalusBonus);
-		tabbedPane.add("Menu", menu);
+		tabbedPane.add("Menu", inte_Menu);
 		
 		fen2.add(tabbedPane);
 

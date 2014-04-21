@@ -7,6 +7,7 @@ public class MalusBonus {
 	private String typeMB;
 	private String tempsMB;
 	private boolean malus;
+	
 	public String getNomMalusBonus() {
 		return nomMalusBonus;
 	}
