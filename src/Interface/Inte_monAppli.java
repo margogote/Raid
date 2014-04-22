@@ -10,7 +10,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
-public class monAppli {
+public class Inte_monAppli {
 
 	JFrame fen2 = new JFrame();
 	JTabbedPane tabbedPane = new JTabbedPane();
@@ -39,9 +39,9 @@ public class monAppli {
 	JLabel bjr = new JLabel(
 			"Bienvenu(e) sur Raidzultats, l'application qui permet de gérer le classement d'un Raid");
 
-	public monAppli() {
+	public Inte_monAppli(int id) {
 
-		fen2.setTitle("Raidzultats"); // titre
+		fen2.setTitle("Raidzultats " +id); // titre
 		//fen2.setTitle("Raidzultats - "+nomCompet);
 		fen2.setSize(800, 600); // taille de la fenetre
 		fen2.setLocationRelativeTo(null); // centre la fenetre
