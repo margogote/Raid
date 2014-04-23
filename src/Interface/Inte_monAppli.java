@@ -39,9 +39,9 @@ public class Inte_monAppli {
 	JLabel bjr = new JLabel(
 			"Bienvenu(e) sur Raidzultats, l'application qui permet de gérer le classement d'un Raid");
 
-	public Inte_monAppli(int id) {
+	public Inte_monAppli(String id) {
 
-		fen2.setTitle("Raidzultats " +id); // titre
+		fen2.setTitle("Raidzultats - " +id); // titre
 		//fen2.setTitle("Raidzultats - "+nomCompet);
 		fen2.setSize(800, 600); // taille de la fenetre
 		fen2.setLocationRelativeTo(null); // centre la fenetre

@@ -4,6 +4,10 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
@@ -15,6 +19,8 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import BDD.Connect;
+
 public class Inte_Accueil {
 
 	JFrame fen = new JFrame();
@@ -24,31 +30,35 @@ public class Inte_Accueil {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	/* Panels */
+	/* --- Panels */
 	private JPanel panMega = new JPanel(); // Panel qui contient tous
 	private JPanel panAccueil = new JPanel(); // Panel du champ de recherche
 	private JPanel panBoutonsListe = new JPanel(); // Panel des bouttons
 
-	/* Boutons */
+	/* --- Boutons */
 	private JButton entrerCompet = new JButton("Entrer dans la compétition");
 	private JButton modifCompet = new JButton("Modifier la compétition");
 	private JButton suppCompet = new JButton("Supprimer la compétition");
 	private JButton creerCompet = new JButton("Créer une compétition");
 	private JButton quitter = new JButton("Quitter");
 
-	/* Liste des compet */
+	/* --- Liste des compet */
+	String url = "jdbc:mysql://localhost/raidzultat";
+	String user = "root";
+	String passwd = "";
 	// SELECT `nomCompetition` FROM `inte_Competition`
 	// mettre ces noms dans la chaîne
 
-	// private ArrayList<String> competiti = new ArrayList<String>();
-
 	private String[] competitions = { "compet1", "la 2é", "la 3é" };
 	private JComboBox<Object> compets = new JComboBox<Object>(competitions);
+	// private JComboBox<Object> compets;
 
 	JLabel bjr = new JLabel(
 			"Bienvenu(e) sur Raidzultats, l'application qui permet de gérer le classement d'un Raid");
 
 	public Inte_Accueil() {
+
+		updateCombo(compets);
 
 		fen.setTitle("Raidzultats"); // titre
 		fen.setSize(800, 600); // taille de la fenetre
@@ -82,8 +92,8 @@ public class Inte_Accueil {
 		// panBoutonsListe.setLayout(new BorderLayout());
 		panBoutonsListe.add(panCompet);
 		panBoutonsListe.add(panBoutEntrer);
-		panBoutonsListe.add(panBoutModif);
 		panBoutonsListe.add(panBoutCreer);
+		panBoutonsListe.add(panBoutModif);
 		panBoutonsListe.add(panBoutSupp);
 		panBoutonsListe.add(panBoutQ);
 
@@ -123,10 +133,10 @@ public class Inte_Accueil {
 			// on prend le num de la compet, on le stock
 			// on lance la page suivante
 			int id = getIndex(compets);
-			Inte_monAppli app = new Inte_monAppli(id);
+			String nomC = (String) compets.getSelectedItem();
+			// Inte_monAppli app = new Inte_monAppli(id);
+			Inte_monAppli app = new Inte_monAppli(nomC);
 			fen.dispose();
-			// System.exit(0);
-			// @SuppressWarnings("unused")
 
 		}
 	}
@@ -135,31 +145,49 @@ public class Inte_Accueil {
 
 		@SuppressWarnings("static-access")
 		public void actionPerformed(ActionEvent arg0) {
-			// On lance le formulaire vide
 
 			JOptionPane jop = new JOptionPane(), jop2 = new JOptionPane();
 			String nom = jop.showInputDialog(null,
 					"Donner le nom de votre compétition !",
 					"Nouvelle compétition ?", JOptionPane.QUESTION_MESSAGE);
+
 			if (nom == null) {
 				jop2.showMessageDialog(null, "Compétition non créée",
 						"Compétition non créée!",
 						JOptionPane.INFORMATION_MESSAGE);
 			} else {
-				/*if (nom == "") {
-					jop2.showMessageDialog(null, "Veuillez rentrer un nom",
-							"Compétition non créée!",
-							JOptionPane.INFORMATION_MESSAGE);
-				} else {*/
-					jop2.showMessageDialog(null, "La compétition est " + nom +".",
-							"Nouvelle compétition !",
-							JOptionPane.INFORMATION_MESSAGE);
-					
-					// INSERT INTO `Raidzultats`.`competition` (`idCompetition`
-					// ,`nomCompetition`)VALUES ('1', 'nom')
-					
-					updateCombo(compets);
-				//}
+				/*
+				 * if (nom == "") { jop2.showMessageDialog(null,
+				 * "Veuillez rentrer un nom", "Compétition non créée!",
+				 * JOptionPane.INFORMATION_MESSAGE); } else {
+				 */
+
+				try {
+					// ----- Attention, mettre auto incrément pour idCompet !!!!
+					String requeteSQL = "INSERT INTO `competition` (idCompetition, `nomCompetition`)VALUES (5, "
+							+ nom + ")";
+					Class.forName("com.mysql.jdbc.Driver");
+					System.out.println("Driver O.K.");
+
+					Connection conn = DriverManager.getConnection(url, user,
+							passwd);
+					System.out.println("Connexion effective !");
+					Statement stm = conn.createStatement();
+					int res = stm.executeUpdate(requeteSQL);
+
+					System.out.println("Nb enregistrement : " + res);
+
+					conn.close();
+
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+				jop2.showMessageDialog(null, "La compétition est " + nom + ".",
+						"Nouvelle compétition !",
+						JOptionPane.INFORMATION_MESSAGE);
+
+				updateCombo(compets);
 			}
 		}
 	}
@@ -170,24 +198,44 @@ public class Inte_Accueil {
 		public void actionPerformed(ActionEvent arg0) {
 			// on prend le num de la compet , on le stock
 			// on lance le formulaire pré-remplit
-			
-			int id; id = getIndex(compets); 
-			 
+
+			int id;
+			id = getIndex(compets);
+			String nomAv = (String) compets.getSelectedItem();
+
 			JOptionPane jop = new JOptionPane(), jop2 = new JOptionPane();
 			String nom = jop.showInputDialog(null,
 					"Donner le nouveau nom de votre competition !",
 					"Modifier compétition ?", JOptionPane.QUESTION_MESSAGE);
 			if (nom == null) {
 				jop2.showMessageDialog(null, "Pas de modification",
-						"Compétition "+ id +" non modifiée!",
+						"Compétition " + id + " non modifiée!",
 						JOptionPane.INFORMATION_MESSAGE);
 			} else {
-				jop2.showMessageDialog(null, "La competition est maintenant"
-						+ nom, "Compétition "+ id +" modifiée!",
+
+				try {
+					String requeteSQL = "UPDATE `raidzultat`.`competition` SET `nomCompetition` = "+nom+" WHERE `nomCompetition` = '"+nomAv+"'";
+					Class.forName("com.mysql.jdbc.Driver");
+					System.out.println("Driver O.K.");
+
+					Connection conn = DriverManager.getConnection(url, user,
+							passwd);
+					System.out.println("Connexion effective !");
+					Statement stm = conn.createStatement();
+					int res = stm.executeUpdate(requeteSQL);
+
+					System.out.println("Nb enregistrement : " + res);
+
+					conn.close();
+
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+				jop2.showMessageDialog(null, "La competition est maintenant : "
+						+ nom, "Compétition " + id + " modifiée!",
 						JOptionPane.INFORMATION_MESSAGE);
 
-				// UPDATE `Raidzultats`.`competition` SET `nomCompetition` =
-				// 'nom' WHERE `competition`.`idCompetition` =id;
 				updateCombo(compets);
 
 			}
@@ -196,29 +244,53 @@ public class Inte_Accueil {
 
 	public class EcouteurSupp implements ActionListener { // Action du supprimer
 
+		@SuppressWarnings("static-access")
 		public void actionPerformed(ActionEvent arg0) {
 			// on prend le num de la compet , on le stock
 			// on demande confirmation, si oui on la supprime
 
-			int id;
+			// int id;
+			String nom = (String) compets.getSelectedItem();
 			int rep = 0;
 			JOptionPane jop2 = new JOptionPane();
-			id = compets.getSelectedIndex() + 1;
-			
+			// id = compets.getSelectedIndex() + 1;
+
 			rep = JOptionPane.showConfirmDialog(null,
-					"Voulez vous vraiment supprimer cette compétition?",
+					"Voulez vous vraiment supprimer la compétition "+nom+" ?",
 					"Attention", JOptionPane.YES_NO_OPTION);
 
 			if (rep == 0) {
-				jop2.showMessageDialog(null, "La competition est maintenant supprimée", "Compétition "+ id +" Supprimée!",
+
+				try {
+					String requeteSQL = "DELETE FROM `raidzultat`.`competition` WHERE `competition`.`nomCompetition` = '"
+							+ nom+"'";
+					Class.forName("com.mysql.jdbc.Driver");
+					System.out.println("Driver O.K.");
+
+					Connection conn = DriverManager.getConnection(url, user,
+							passwd);
+					System.out.println("Connexion effective !");
+					Statement stm = conn.createStatement();
+					int res = stm.executeUpdate(requeteSQL);
+
+					System.out.println("Nb enregistrement : " + res);
+
+					conn.close();
+
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+				jop2.showMessageDialog(null,
+						"La competition est maintenant supprimée",
+						"Compétition " + nom + " Supprimée!",
 						JOptionPane.INFORMATION_MESSAGE);
-				
-				System.out.println("Compet " + id + " Supprimée");
-				// Supprimer la competition de la BDD
-				// DELETE FROM `competition` WHERE `idCompetition`=id
+
+				System.out.println("Compet " + nom + " Supprimée");
 				updateCombo(compets);
 			}
-
+			// DELETE FROM `raidzultat`.`competition` WHERE
+			// `competition`.`nomCompetition` = 'num6'
 		}
 	}
 
@@ -240,27 +312,41 @@ public class Inte_Accueil {
 
 	public void updateCombo(JComboBox<Object> combo) {
 
-		// SELECT `nomCompetition` FROM `inte_Competition`
-		// mettre ces noms dans la chaîne
-		// Trouver le nb de lignes de compets = nb
+		compets.removeAllItems();
+		String requeteSQL = "SELECT nomCompetition FROM competition";
 
-		// ArrayList<String> competiti = new ArrayList<String>();
-		// String[] competition = new string[nb];
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			System.out.println("Driver O.K.");
 
-		/*
-		 * String[] competition = {}; for(i==0, nb, i++ ){ competition.add(ligne
-		 * compet); }
-		 * 
-		 * JComboBox<Object> compets = new JComboBox<Object>(competition);
-		 */
+			Connection conn = DriverManager.getConnection(url, user, passwd);
+			System.out.println("Connexion effective !");
+			Statement stm = conn.createStatement();
+			ResultSet res = stm.executeQuery(requeteSQL);
+
+			while (res.next()) {
+				compets.addItem(res.getString(1));
+				System.out.println("Nom : " + res.getString(1));
+			}
+
+			conn.close();
+			res.close();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		// String requeteSQL =
+		// "SELECT nomCompetition, idCompetition FROM competition";
+
 		System.out.println("MAJ Combo");
 
 	}
 
-	public int getIndex(JComboBox<Object> combo){
+	public int getIndex(JComboBox<Object> combo) {
 		int id;
-		id = combo.getSelectedIndex()+1;
+		id = combo.getSelectedIndex() + 1;
 		return id;
 	}
-	
+
 }
