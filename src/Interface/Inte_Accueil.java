@@ -164,8 +164,8 @@ public class Inte_Accueil {
 
 				try {
 					// ----- Attention, mettre auto incrément pour idCompet !!!!
-					String requeteSQL = "INSERT INTO `competition` (idCompetition, `nomCompetition`)VALUES (5, "
-							+ nom + ")";
+					//String requeteSQL = "INSERT INTO `competition` (idCompetition, `nomCompetition`)VALUES (5, "+ nom + ")";
+					String requeteSQL = "INSERT INTO `competition` (`nomCompetition`)VALUES ( "+nom+")";
 					Class.forName("com.mysql.jdbc.Driver");
 					System.out.println("Driver O.K.");
 
