@@ -141,7 +141,7 @@ public class Inte_Accueil {
 		}
 	}
 
-	public class EcouteurCreer implements ActionListener { // Action du quitter
+	public class EcouteurCreer implements ActionListener { // Action du creer
 
 		@SuppressWarnings("static-access")
 		public void actionPerformed(ActionEvent arg0) {
@@ -151,21 +151,21 @@ public class Inte_Accueil {
 					"Donner le nom de votre compétition !",
 					"Nouvelle compétition ?", JOptionPane.QUESTION_MESSAGE);
 
-			if (nom == null) {
-				jop2.showMessageDialog(null, "Compétition non créée",
+			while (nom.equals("")) {
+				jop2.showMessageDialog(null, "Veuillez entrer un nom",
 						"Compétition non créée!",
 						JOptionPane.INFORMATION_MESSAGE);
-			} else {
-				/*
-				 * if (nom == "") { jop2.showMessageDialog(null,
-				 * "Veuillez rentrer un nom", "Compétition non créée!",
-				 * JOptionPane.INFORMATION_MESSAGE); } else {
-				 */
-
+				nom = jop.showInputDialog(null,
+						"Donner le nom de votre compétition !",
+						"Nouvelle compétition ?", JOptionPane.QUESTION_MESSAGE);
+			}
+			if (!nom.equals("")) {
 				try {
-					// ----- Attention, mettre auto incrément pour idCompet !!!!
-					//String requeteSQL = "INSERT INTO `competition` (idCompetition, `nomCompetition`)VALUES (5, "+ nom + ")";
-					String requeteSQL = "INSERT INTO `competition` (`nomCompetition`)VALUES ( "+nom+")";
+					// String requeteSQL =
+					// "INSERT INTO `competition` (idCompetition, `nomCompetition`)VALUES (5, "+
+					// nom + ")";
+					String requeteSQL = "INSERT INTO `competition` (`nomCompetition`)VALUES ( "
+							+ nom + ")";
 					Class.forName("com.mysql.jdbc.Driver");
 					System.out.println("Driver O.K.");
 
@@ -207,14 +207,19 @@ public class Inte_Accueil {
 			String nom = jop.showInputDialog(null,
 					"Donner le nouveau nom de votre competition !",
 					"Modifier compétition ?", JOptionPane.QUESTION_MESSAGE);
-			if (nom == null) {
-				jop2.showMessageDialog(null, "Pas de modification",
+
+			while (nom.equals("")) {
+				jop2.showMessageDialog(null, "Veuillez entrer un nom",
 						"Compétition " + id + " non modifiée!",
 						JOptionPane.INFORMATION_MESSAGE);
-			} else {
-
+				nom = jop.showInputDialog(null,
+						"Donner le nom de votre compétition !",
+						"Nouvelle compétition ?", JOptionPane.QUESTION_MESSAGE);
+			}
+			if (!nom.equals("")) {
 				try {
-					String requeteSQL = "UPDATE `raidzultat`.`competition` SET `nomCompetition` = "+nom+" WHERE `nomCompetition` = '"+nomAv+"'";
+					String requeteSQL = "UPDATE `raidzultat`.`competition` SET `nomCompetition` = "
+							+ nom + " WHERE `nomCompetition` = '" + nomAv + "'";
 					Class.forName("com.mysql.jdbc.Driver");
 					System.out.println("Driver O.K.");
 
@@ -256,14 +261,14 @@ public class Inte_Accueil {
 			// id = compets.getSelectedIndex() + 1;
 
 			rep = JOptionPane.showConfirmDialog(null,
-					"Voulez vous vraiment supprimer la compétition "+nom+" ?",
-					"Attention", JOptionPane.YES_NO_OPTION);
+					"Voulez vous vraiment supprimer la compétition " + nom
+							+ " ?", "Attention", JOptionPane.YES_NO_OPTION);
 
 			if (rep == 0) {
 
 				try {
 					String requeteSQL = "DELETE FROM `raidzultat`.`competition` WHERE `competition`.`nomCompetition` = '"
-							+ nom+"'";
+							+ nom + "'";
 					Class.forName("com.mysql.jdbc.Driver");
 					System.out.println("Driver O.K.");
 
