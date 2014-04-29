@@ -82,7 +82,7 @@ public class Inte_Doigt extends JPanel {
 		panMega.add(panDoigts);
 
 		TabModel tabModel = new TabModel(data, title);
-		// TabModel tabModel = new TabModel(ArrayData, title);
+
 		// Nous ajoutons notre tableau à notre contentPane dans un scroll
 		// Sinon les titres des colonnes ne s'afficheront pas !
 
@@ -93,8 +93,6 @@ public class Inte_Doigt extends JPanel {
 
 		getIndexSelectTab(data);
 
-		this.add(panMega);
-
 		EcouteurModif ecoutModif = new EcouteurModif();
 		modif.addActionListener(ecoutModif);
 
@@ -103,7 +101,8 @@ public class Inte_Doigt extends JPanel {
 
 		EcouteurCreer ecoutCreer = new EcouteurCreer();
 		creer.addActionListener(ecoutCreer);
-
+		
+		this.add(panMega);
 	}
 
 	public class EcouteurCreer implements ActionListener { // Action du creer
@@ -148,9 +147,9 @@ public class Inte_Doigt extends JPanel {
 					e.printStackTrace();
 				}
 				updateTable();
-				// tableau.repaint();
+				/*// tableau.repaint();
 				panMega.repaint();
-
+*/
 				jop2.showMessageDialog(null, "Le doigt est " + nb + ".",
 						"Nouvelle compétition !",
 						JOptionPane.INFORMATION_MESSAGE);
@@ -163,22 +162,22 @@ public class Inte_Doigt extends JPanel {
 		@SuppressWarnings("static-access")
 		public void actionPerformed(ActionEvent arg0) {
 			ArrayList<Object> tab = getIndexSelectTab(data);
-			Object id = tab.get(0);
 			JOptionPane jop = new JOptionPane(), jop2 = new JOptionPane();
 
-			if (tab.size() != 1) {
-				jop2.showMessageDialog(null, "Veuillez cocher une case",
-						"Attention, un à la fois!",
-						JOptionPane.INFORMATION_MESSAGE);
-			} else {
-
+			/*
+			 * if (tab.size() != 1) { jop2.showMessageDialog(null,
+			 * "Veuillez cocher une case", "Attention, un à la fois!",
+			 * JOptionPane.INFORMATION_MESSAGE); } else {
+			 */
+			for (int i = 0; i < tab.size(); i++) {
 				String nb = jop.showInputDialog(null,
-						"Donner le numéro de votre doigt !", "Nouveau doigt ?",
+						"Donner le nouveau numéro de votre doigt !",
+						"Transformation du doigt " + tab.get(i) + "?",
 						JOptionPane.QUESTION_MESSAGE);
 
 				while (nb.equals("")) {
 					jop2.showMessageDialog(null, "Veuillez entrer un numéro",
-							"Doigt " + id + " non modifié!",
+							"Doigt " + tab.get(i) + " non modifié!",
 							JOptionPane.INFORMATION_MESSAGE);
 					nb = jop.showInputDialog(null,
 							"Donner le numéro de votre doigt !",
@@ -189,7 +188,7 @@ public class Inte_Doigt extends JPanel {
 						// System.out.println(tab.get(0));
 						String requeteSQL = "UPDATE `doigt` SET  `idDoigt` = '"
 								+ nb + "' WHERE CONCAT(`doigt`.`idDoigt`) = '"
-								+ id + "'";
+								+ tab.get(i) + "'";
 						// System.out.println(requeteSQL);
 						Class.forName("com.mysql.jdbc.Driver");
 						System.out.println("Driver O.K.");
@@ -209,11 +208,10 @@ public class Inte_Doigt extends JPanel {
 					}
 
 					jop2.showMessageDialog(null, "Le doigt est maintenant : "
-							+ nb, "Doigt " + id + " modifié!",
+							+ nb, "Doigt " + tab.get(i) + " modifié!",
 							JOptionPane.INFORMATION_MESSAGE);
 				}
 				updateTable();
-
 			}
 		}
 	}
@@ -263,8 +261,8 @@ public class Inte_Doigt extends JPanel {
 							JOptionPane.INFORMATION_MESSAGE);
 
 					System.out.println("Doigt " + tab.get(i) + " Supprimé");
+					updateTable();
 				}
-				// updateCombo(compets);
 			}
 		}
 	}
@@ -298,7 +296,10 @@ public class Inte_Doigt extends JPanel {
 		}
 
 		data = ArrayToTab(ArrayData, title.length - 1);
-		TabModel tabModel = new TabModel(data, title);
+		// TabModel tabModel = new TabModel(data, title);
+		// panMega.removeAll();
+		// panMega.validate();
+		panMega.repaint();
 		System.out.println("MAJ Table");
 		return data;
 	}
@@ -337,4 +338,13 @@ public class Inte_Doigt extends JPanel {
 		 */
 		return ArrayDataSelect;
 	}
+
+	public void repaint() {
+		// repaint le component courant
+		super.repaint();
+		// repaint tous les components qu'il possède
+		for (int i = 0; i < this.countComponents(); i++)
+			this.getComponent(i).repaint();
+	}
+
 }
