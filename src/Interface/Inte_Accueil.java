@@ -42,12 +42,10 @@ public class Inte_Accueil {
 	private JButton creerCompet = new JButton("Créer une compétition");
 	private JButton quitter = new JButton("Quitter");
 
-	/* --- Liste des compet */
+	/* --- BDD Liste des compet */
 	String url = "jdbc:mysql://localhost/raidzultat";
 	String user = "root";
 	String passwd = "";
-	// SELECT `nomCompetition` FROM `inte_Competition`
-	// mettre ces noms dans la chaîne
 
 	private String[] competitions = { "compet1", "la 2é", "la 3é" };
 	private JComboBox<Object> compets = new JComboBox<Object>(competitions);
@@ -294,8 +292,6 @@ public class Inte_Accueil {
 				System.out.println("Compet " + nom + " Supprimée");
 				updateCombo(compets);
 			}
-			// DELETE FROM `raidzultat`.`competition` WHERE
-			// `competition`.`nomCompetition` = 'num6'
 		}
 	}
 
@@ -340,9 +336,6 @@ public class Inte_Accueil {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-		// String requeteSQL =
-		// "SELECT nomCompetition, idCompetition FROM competition";
 
 		System.out.println("MAJ Combo");
 
