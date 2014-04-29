@@ -43,12 +43,11 @@ public class Inte_Doigt extends JPanel {
 	String user = "root";
 	String passwd = "";
 
+	/* Tableau */
 	private JTable tableau;
 	private Object[][] data;
 	private String title[] = { "Check", "idDoigt" };
 	private ArrayList<Object> ArrayDataLig;
-
-	// private ArrayList<Object> ArrayDataSelect = new ArrayList<Object>();
 
 	JLabel bjr = new JLabel("Ici vous pouvez gérer vous différents doigts");
 
@@ -91,8 +90,6 @@ public class Inte_Doigt extends JPanel {
 
 		panMega.add(new JScrollPane(tableau));
 
-		getIndexSelectTab(data);
-
 		EcouteurModif ecoutModif = new EcouteurModif();
 		modif.addActionListener(ecoutModif);
 
@@ -116,8 +113,8 @@ public class Inte_Doigt extends JPanel {
 					JOptionPane.QUESTION_MESSAGE);
 
 			while (nb.equals("")) {
-				jop2.showMessageDialog(null, "Veuillez entrer un nombre",
-						"Doigt non créée!", JOptionPane.INFORMATION_MESSAGE);
+				jop2.showMessageDialog(null, "Veuillez entrer un numéro",
+						"Doigt non créé!", JOptionPane.INFORMATION_MESSAGE);
 				nb = jop.showInputDialog(null,
 						"Donner le numéro de votre doigt !", "Nouveau doigt ?",
 						JOptionPane.QUESTION_MESSAGE);
@@ -164,11 +161,6 @@ public class Inte_Doigt extends JPanel {
 			ArrayList<Object> tab = getIndexSelectTab(data);
 			JOptionPane jop = new JOptionPane(), jop2 = new JOptionPane();
 
-			/*
-			 * if (tab.size() != 1) { jop2.showMessageDialog(null,
-			 * "Veuillez cocher une case", "Attention, un à la fois!",
-			 * JOptionPane.INFORMATION_MESSAGE); } else {
-			 */
 			for (int i = 0; i < tab.size(); i++) {
 				String nb = jop.showInputDialog(null,
 						"Donner le nouveau numéro de votre doigt !",
@@ -338,7 +330,7 @@ public class Inte_Doigt extends JPanel {
 		 */
 		return ArrayDataSelect;
 	}
-
+/*
 	public void repaint() {
 		// repaint le component courant
 		super.repaint();
@@ -346,5 +338,5 @@ public class Inte_Doigt extends JPanel {
 		for (int i = 0; i < this.countComponents(); i++)
 			this.getComponent(i).repaint();
 	}
-
+*/
 }
