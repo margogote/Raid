@@ -143,7 +143,7 @@ public class Inte_Accueil {
 
 		@SuppressWarnings("static-access")
 		public void actionPerformed(ActionEvent arg0) {
-
+			//String nom="test";
 			JOptionPane jop = new JOptionPane(), jop2 = new JOptionPane();
 			String nom = jop.showInputDialog(null,
 					"Donner le nom de votre compétition !",
@@ -159,9 +159,6 @@ public class Inte_Accueil {
 			}
 			if (!nom.equals("")) {
 				try {
-					// String requeteSQL =
-					// "INSERT INTO `competition` (idCompetition, `nomCompetition`)VALUES (5, "+
-					// nom + ")";
 					String requeteSQL = "INSERT INTO `competition` (`nomCompetition`)VALUES ( "
 							+ nom + ")";
 					Class.forName("com.mysql.jdbc.Driver");
