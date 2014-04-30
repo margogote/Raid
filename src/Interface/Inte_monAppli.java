@@ -17,7 +17,8 @@ public class Inte_monAppli {
 	
 	Inte_Doigt inte_Doigt = new Inte_Doigt();
 	Inte_Balise inte_Balise = new Inte_Balise();
-	Inte_Competition inte_Competition = new Inte_Competition();
+	Inte_Equipe inte_Equipe = new Inte_Equipe();
+	Inte_Resultat inte_Resultat = new Inte_Resultat();
 	Inte_Epreuve inte_Epreuve = new Inte_Epreuve();
 	Inte_MalusBonus inte_MalusBonus =new Inte_MalusBonus();
 	Inte_Menu inte_Menu = new Inte_Menu(fen2);
@@ -51,9 +52,10 @@ public class Inte_monAppli {
 
 		tabbedPane.add("Doigts",inte_Doigt);
 		tabbedPane.add("Balises",inte_Balise);
-		tabbedPane.add("Epreuves",inte_Epreuve);
-		tabbedPane.add("Competitions",inte_Competition);
+		tabbedPane.add("Equipes",inte_Equipe);
 		tabbedPane.add("Malus & Bonus",inte_MalusBonus);
+		tabbedPane.add("Epreuves",inte_Epreuve);
+		tabbedPane.add("Résultats",inte_Resultat);
 		tabbedPane.add("Menu", inte_Menu);
 		
 		fen2.add(tabbedPane);
