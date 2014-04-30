@@ -28,13 +28,15 @@ import Models.TabModel;
 
 public class Inte_Doigt extends JPanel {
 
-	//private JFrame jFrameContenantLOnglet;
-	private JPanel thePanel;
-	
 	/* Panels */
+	private JPanel thePanel;
 	private JPanel panMega = new JPanel(); // Panel qui contient tous
 	private JPanel panDoigts = new JPanel(); // Panel du champ de recherche
 	private JPanel panBoutonsListe = new JPanel(); // Panel des bouttons
+
+	JPanel panBoutCreer = new JPanel();
+	JPanel panBoutSupp = new JPanel();
+	JPanel panBoutModif = new JPanel();
 
 	/* Boutons */
 	private JButton modif = new JButton("Modifier");
@@ -47,27 +49,37 @@ public class Inte_Doigt extends JPanel {
 	String passwd = "";
 
 	/* Tableau */
+	private TabModel tabModel;
 	private JTable tableau;
 	private Object[][] data;
 	private String title[] = { "Check", "idDoigt" };
-	// private ArrayList<Object> ArrayDataLig;
 
 	JLabel bjr = new JLabel("Ici vous pouvez gérer vous différents doigts");
 
-	public Inte_Doigt(/*JFrame jFrameContenantLOnglet*/) {
+	public Inte_Doigt(/* JFrame jFrameContenantLOnglet */) {
 
-		//this.jFrameContenantLOnglet = jFrameContenantLOnglet;
-		thePanel=this;
-		
+		thePanel = this;
+
 		data = updateTable();
+
+		EcouteurModif ecoutModif = new EcouteurModif();
+		modif.addActionListener(ecoutModif);
+
+		EcouteurSupp ecoutSupp = new EcouteurSupp();
+		supp.addActionListener(ecoutSupp);
+
+		EcouteurCreer ecoutCreer = new EcouteurCreer();
+		creer.addActionListener(ecoutCreer);
+	}
+
+	public void Interface() {
+
+		thePanel.removeAll();
+		panMega.removeAll();
 
 		modif.setPreferredSize(new Dimension(200, 30));
 		creer.setPreferredSize(new Dimension(200, 30));
 		supp.setPreferredSize(new Dimension(200, 30));
-
-		JPanel panBoutCreer = new JPanel();
-		JPanel panBoutSupp = new JPanel();
-		JPanel panBoutModif = new JPanel();
 
 		panBoutCreer.add(creer);
 		panBoutSupp.add(supp);
@@ -84,9 +96,7 @@ public class Inte_Doigt extends JPanel {
 		panDoigts.add(bjr, BorderLayout.NORTH);
 		panDoigts.add(panBoutonsListe, BorderLayout.WEST);
 
-		panMega.add(panDoigts);
-
-		TabModel tabModel = new TabModel(data, title);
+		/* TabModel */tabModel = new TabModel(data, title);
 
 		// Nous ajoutons notre tableau à notre contentPane dans un scroll
 		// Sinon les titres des colonnes ne s'afficheront pas !
@@ -94,34 +104,26 @@ public class Inte_Doigt extends JPanel {
 		tableau = new JTable(tabModel);
 		tableau.setRowHeight(30);
 
+		panMega.add(panDoigts);
 		panMega.add(new JScrollPane(tableau));
 
-		EcouteurModif ecoutModif = new EcouteurModif();
-		modif.addActionListener(ecoutModif);
-
-		EcouteurSupp ecoutSupp = new EcouteurSupp();
-		supp.addActionListener(ecoutSupp);
-
-		EcouteurCreer ecoutCreer = new EcouteurCreer();
-		creer.addActionListener(ecoutCreer);
-
-		this.add(panMega);
+		thePanel.add(panMega);
 	}
 
 	public class EcouteurCreer implements ActionListener { // Action du creer
 
-		@SuppressWarnings("static-access")
 		public void actionPerformed(ActionEvent arg0) {
 
-			JOptionPane jop = new JOptionPane(), jop2 = new JOptionPane();
-			String nb = jop.showInputDialog(null,
+			String nb = JOptionPane.showInputDialog(null,
 					"Donner le numéro de votre doigt !", "Nouveau doigt ?",
 					JOptionPane.QUESTION_MESSAGE);
+
 			if (nb != null) {
 				while (nb.equals("")) {
-					jop2.showMessageDialog(null, "Veuillez entrer un numéro",
-							"Doigt non créé!", JOptionPane.INFORMATION_MESSAGE);
-					nb = jop.showInputDialog(null,
+					JOptionPane.showMessageDialog(null,
+							"Veuillez entrer un numéro", "Doigt non créé!",
+							JOptionPane.INFORMATION_MESSAGE);
+					nb = JOptionPane.showInputDialog(null,
 							"Donner le numéro de votre doigt !",
 							"Nouveau doigt ?", JOptionPane.QUESTION_MESSAGE);
 				}
@@ -146,15 +148,14 @@ public class Inte_Doigt extends JPanel {
 
 						conn.close();
 
+						updateTable();
+
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
-					updateTable();
-					/*
-					 * // tableau.repaint(); panMega.repaint();
-					 */
-					jop2.showMessageDialog(null, "Le doigt est " + nb + ".",
-							"Nouvelle compétition !",
+
+					JOptionPane.showMessageDialog(null, "Le doigt est " + nb
+							+ ".", "Nouvelle compétition !",
 							JOptionPane.INFORMATION_MESSAGE);
 				}
 			}
@@ -165,7 +166,6 @@ public class Inte_Doigt extends JPanel {
 
 		public void actionPerformed(ActionEvent arg0) {
 			ArrayList<Object> tab = getIndexSelectTab(data);
-			// JOptionPane jop = new JOptionPane(), jop2 = new JOptionPane();
 
 			if (tab.size() == 0) {
 				JOptionPane.showMessageDialog(null, "Veuillez cochez une case",
@@ -212,6 +212,7 @@ public class Inte_Doigt extends JPanel {
 							System.out.println("Nb enregistrement : " + res);
 
 							conn.close();
+							updateTable();
 
 						} catch (Exception e) {
 							e.printStackTrace();
@@ -223,7 +224,6 @@ public class Inte_Doigt extends JPanel {
 								JOptionPane.INFORMATION_MESSAGE);
 					}
 				}
-				updateTable();
 			}
 		}
 	}
@@ -236,7 +236,6 @@ public class Inte_Doigt extends JPanel {
 
 			ArrayList<Object> tab = getIndexSelectTab(data);
 			int rep = 0;
-			// JOptionPane jop2 = new JOptionPane();
 
 			if (tab.size() == 0) {
 				JOptionPane.showMessageDialog(null, "Veuillez cochez une case",
@@ -267,6 +266,7 @@ public class Inte_Doigt extends JPanel {
 						System.out.println("Nb enregistrement : " + res);
 
 						conn.close();
+						updateTable();
 
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -278,13 +278,13 @@ public class Inte_Doigt extends JPanel {
 							JOptionPane.INFORMATION_MESSAGE);
 
 					System.out.println("Doigt " + tab.get(i) + " Supprimé");
-					updateTable();
 				}
 			}
 		}
 	}
 
 	public Object[][] updateTable() {
+
 		ArrayList<Object[]> ArrayData = new ArrayList<>();
 
 		String requeteSQL = "SELECT * FROM doigt";
@@ -313,19 +313,9 @@ public class Inte_Doigt extends JPanel {
 		}
 
 		data = ArrayToTab(ArrayData, title.length - 1);
-		// TabModel tabModel = new TabModel(data, title);
-		// panMega.removeAll();
-		// panMega.validate();
-		// panMega.repaint();
-		
-		//jFrameContenantLOnglet.repaint();
-		//jFrameContenantLOnglet.revalidate();
-		//jFrameContenantLOnglet.validate();
-		
-		thePanel.repaint();
-		thePanel.revalidate();
-		thePanel.validate();
-		
+
+		Interface();
+
 		System.out.println("MAJ Table");
 		return data;
 	}

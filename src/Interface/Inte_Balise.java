@@ -20,12 +20,17 @@ import javax.swing.JTable;
 
 import Models.TabModel;
 
-public class Inte_Balise  extends JPanel{
-	
+public class Inte_Balise extends JPanel {
+
 	/* Panels */
+	private JPanel thePanel;
 	private JPanel panMega = new JPanel(); // Panel qui contient tous
 	private JPanel panBalises = new JPanel(); // Panel du champ de recherche
 	private JPanel panBoutonsListe = new JPanel(); // Panel des bouttons
+
+	JPanel panBoutCreer = new JPanel();
+	JPanel panBoutSupp = new JPanel();
+	JPanel panBoutModif = new JPanel();
 
 	/* Boutons */
 	private JButton modif = new JButton("Modifier");
@@ -36,54 +41,21 @@ public class Inte_Balise  extends JPanel{
 	String url = "jdbc:mysql://localhost/raidzultat";
 	String user = "root";
 	String passwd = "";
-	
+
 	/* Tableau */
+	private TabModel tabModel;
 	private JTable tableau;
 	private Object[][] data;
 	private String title[] = { "Check", "idBalise" };
-	private ArrayList<Object> ArrayDataLig;
-	
+
 	JLabel bjr = new JLabel("Ici vous pouvez gérer vous différents balises");
-	
-	public Inte_Balise(){
-		
+
+	public Inte_Balise() {
+
+		thePanel = this;
+
 		data = updateTable();
-		
-		modif.setPreferredSize(new Dimension(200, 30));
-		creer.setPreferredSize(new Dimension(200, 30));
-		supp.setPreferredSize(new Dimension(200, 30));
-		
-		JPanel panBoutCreer = new JPanel();
-		JPanel panBoutSupp = new JPanel();
-		JPanel panBoutModif = new JPanel();
-		
-		panBoutCreer.add(creer);
-		panBoutSupp.add(supp);
-		panBoutModif.add(modif);
-		
-		panBoutonsListe.setLayout(new BoxLayout(panBoutonsListe,
-				BoxLayout.PAGE_AXIS));
-		panBoutonsListe.add(panBoutCreer);
-		panBoutonsListe.add(panBoutModif);
-		panBoutonsListe.add(panBoutSupp);
-		
-		panBalises.setLayout(new BoxLayout(panBalises, BoxLayout.PAGE_AXIS));
-		panBalises.setLayout(new BorderLayout());
-		panBalises.add(bjr, BorderLayout.NORTH);
-		panBalises.add(panBoutonsListe, BorderLayout.CENTER);
-		
-		panMega.add(panBalises);
 
-		TabModel tabModel = new TabModel(data, title);
-
-		// Nous ajoutons notre tableau à notre contentPane dans un scroll
-		// Sinon les titres des colonnes ne s'afficheront pas !
-
-		tableau = new JTable(tabModel);
-		tableau.setRowHeight(30);
-
-		panMega.add(new JScrollPane(tableau));
-		
 		EcouteurModif ecoutModif = new EcouteurModif();
 		modif.addActionListener(ecoutModif);
 
@@ -92,99 +64,71 @@ public class Inte_Balise  extends JPanel{
 
 		EcouteurCreer ecoutCreer = new EcouteurCreer();
 		creer.addActionListener(ecoutCreer);
-		
-		this.add(panMega);
-
-		
 	}
 
-	
+	public void Interface() {
+
+		thePanel.removeAll();
+		panMega.removeAll();
+
+		modif.setPreferredSize(new Dimension(200, 30));
+		creer.setPreferredSize(new Dimension(200, 30));
+		supp.setPreferredSize(new Dimension(200, 30));
+
+		panBoutCreer.add(creer);
+		panBoutSupp.add(supp);
+		panBoutModif.add(modif);
+
+		panBoutonsListe.setLayout(new BoxLayout(panBoutonsListe,
+				BoxLayout.PAGE_AXIS));
+		panBoutonsListe.add(panBoutCreer);
+		panBoutonsListe.add(panBoutModif);
+		panBoutonsListe.add(panBoutSupp);
+
+		panBalises.setLayout(new BoxLayout(panBalises, BoxLayout.PAGE_AXIS));
+		panBalises.setLayout(new BorderLayout());
+		panBalises.add(bjr, BorderLayout.NORTH);
+		panBalises.add(panBoutonsListe, BorderLayout.CENTER);
+
+		tabModel = new TabModel(data, title);
+
+		// Nous ajoutons notre tableau à notre contentPane dans un scroll
+		// Sinon les titres des colonnes ne s'afficheront pas !
+
+		tableau = new JTable(tabModel);
+		tableau.setRowHeight(30);
+
+		panMega.add(panBalises);
+		panMega.add(new JScrollPane(tableau));
+
+		this.add(panMega);
+	}
+
 	public class EcouteurCreer implements ActionListener { // Action du creer
 
-		@SuppressWarnings("static-access")
 		public void actionPerformed(ActionEvent arg0) {
 
-			//JOptionPane jop = new JOptionPane(), jop2 = new JOptionPane();
 			String nb = JOptionPane.showInputDialog(null,
 					"Donner le numéro de votre balise !", "Nouvelle balise ?",
 					JOptionPane.QUESTION_MESSAGE);
 
-			while (nb.equals("")) {
-				JOptionPane.showMessageDialog(null, "Veuillez entrer un nombre",
-						"Balise non créée!", JOptionPane.INFORMATION_MESSAGE);
-				nb = JOptionPane.showInputDialog(null,
-						"Donner le numéro de votre balise !", "Nouvelle balise ?",
-						JOptionPane.QUESTION_MESSAGE);
-			}
-
-			// ---- Contrôle utilisateur ----
-			// "Cette balise existe déjà, veuillez entrer un autre numéro"
-
-			if (!nb.equals("")) {
-				try {
-					String requeteSQL = "INSERT INTO `balise` (`idBalise`) VALUES ( "
-							+ nb + ")";
-					Class.forName("com.mysql.jdbc.Driver");
-					System.out.println("Driver O.K.");
-
-					Connection conn = DriverManager.getConnection(url, user,
-							passwd);
-					System.out.println("Connexion effective !");
-					Statement stm = conn.createStatement();
-					int res = stm.executeUpdate(requeteSQL);
-
-					System.out.println("Nb enregistrement : " + res);
-
-					conn.close();
-
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				updateTable();
-				/*// tableau.repaint();
-				panMega.repaint();
-*/
-				JOptionPane.showMessageDialog(null, "La balise est " + nb + ".",
-						"Nouvelle compétition !",
-						JOptionPane.INFORMATION_MESSAGE);
-			}
-		}
-	}
-
-	public class EcouteurModif implements ActionListener { // Action du quitter
-
-		@SuppressWarnings("static-access")
-		public void actionPerformed(ActionEvent arg0) {
-			ArrayList<Object> tab = getIndexSelectTab(data);
-			JOptionPane jop = new JOptionPane(), jop2 = new JOptionPane();
-			
-			if(tab.size()==0){
-				JOptionPane.showMessageDialog(null, "Veuillez cochez une case",
-						"Pas de balise à modifier!",
-						JOptionPane.INFORMATION_MESSAGE);
-			}
-
-			for (int i = 0; i < tab.size(); i++) {
-				String nb = jop.showInputDialog(null,
-						"Donner le nouveau numéro de votre balise !",
-						"Transformation de la balise " + tab.get(i) + "?",
-						JOptionPane.QUESTION_MESSAGE);
-
+			if (nb != null) {
 				while (nb.equals("")) {
-					jop2.showMessageDialog(null, "Veuillez entrer un numéro",
-							"Balise " + tab.get(i) + " non modifiée!",
+					JOptionPane.showMessageDialog(null,
+							"Veuillez entrer un nombre", "Balise non créée!",
 							JOptionPane.INFORMATION_MESSAGE);
-					nb = jop.showInputDialog(null,
+					nb = JOptionPane.showInputDialog(null,
 							"Donner le numéro de votre balise !",
 							"Nouvelle balise ?", JOptionPane.QUESTION_MESSAGE);
 				}
+
+				// ---- Contrôle utilisateur ----
+				// "Cette balise existe déjà, veuillez entrer un autre numéro"
+
 				if (!nb.equals("")) {
 					try {
-						// System.out.println(tab.get(0));
-						String requeteSQL = "UPDATE `balise` SET  `idBalise` = '"
-								+ nb + "' WHERE CONCAT(`balise`.`idBalise`) = '"
-								+ tab.get(i) + "'";
-						// System.out.println(requeteSQL);
+						String requeteSQL = "INSERT INTO `balise` (`idBalise`) VALUES ( "
+								+ nb + ")";
 						Class.forName("com.mysql.jdbc.Driver");
 						System.out.println("Driver O.K.");
 
@@ -198,40 +142,104 @@ public class Inte_Balise  extends JPanel{
 
 						conn.close();
 
+						updateTable();
+
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
 
-					jop2.showMessageDialog(null, "La balise est maintenant : "
-							+ nb, "Balise " + tab.get(i) + " modifiée!",
+					JOptionPane.showMessageDialog(null, "La balise est " + nb
+							+ ".", "Nouvelle compétition !",
 							JOptionPane.INFORMATION_MESSAGE);
 				}
-				updateTable();
+			}
+		}
+	}
+
+	public class EcouteurModif implements ActionListener { // Action du quitter
+
+		public void actionPerformed(ActionEvent arg0) {
+			ArrayList<Object> tab = getIndexSelectTab(data);
+
+			if (tab.size() == 0) {
+				JOptionPane.showMessageDialog(null, "Veuillez cochez une case",
+						"Pas de balise à modifier!",
+						JOptionPane.INFORMATION_MESSAGE);
+			}
+			for (int i = 0; i < tab.size(); i++) {
+				String nb = JOptionPane.showInputDialog(null,
+						"Donner le nouveau numéro de votre balise !",
+						"Transformation de la balise " + tab.get(i) + "?",
+						JOptionPane.QUESTION_MESSAGE);
+
+				if (nb != null) {
+					while (nb.equals("")) {
+						JOptionPane.showMessageDialog(null,
+								"Veuillez entrer un numéro",
+								"Balise " + tab.get(i) + " non modifiée!",
+								JOptionPane.INFORMATION_MESSAGE);
+						nb = JOptionPane.showInputDialog(null,
+								"Donner le numéro de votre balise !",
+								"Nouvelle balise ?",
+								JOptionPane.QUESTION_MESSAGE);
+					}
+					if (!nb.equals("")) {
+						try {
+							// System.out.println(tab.get(0));
+							String requeteSQL = "UPDATE `balise` SET  `idBalise` = '"
+									+ nb
+									+ "' WHERE CONCAT(`balise`.`idBalise`) = '"
+									+ tab.get(i) + "'";
+							// System.out.println(requeteSQL);
+							Class.forName("com.mysql.jdbc.Driver");
+							System.out.println("Driver O.K.");
+
+							Connection conn = DriverManager.getConnection(url,
+									user, passwd);
+							System.out.println("Connexion effective !");
+							Statement stm = conn.createStatement();
+							int res = stm.executeUpdate(requeteSQL);
+
+							System.out.println("Nb enregistrement : " + res);
+
+							conn.close();
+							updateTable();
+
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+
+						JOptionPane.showMessageDialog(null,
+								"La balise est maintenant : " + nb, "Balise "
+										+ tab.get(i) + " modifiée!",
+								JOptionPane.INFORMATION_MESSAGE);
+					}
+				}
 			}
 		}
 	}
 
 	public class EcouteurSupp implements ActionListener { // Action du supprimer
 
-		@SuppressWarnings("static-access")
 		public void actionPerformed(ActionEvent arg0) {
 			// on prend le num de la compet , on le stock
 			// on demande confirmation, si oui on la supprime
 
 			ArrayList<Object> tab = getIndexSelectTab(data);
 			int rep = 0;
-			//JOptionPane jop2 = new JOptionPane();
-			
-			if(tab.size()==0){
+
+			if (tab.size() == 0) {
 				JOptionPane.showMessageDialog(null, "Veuillez cochez une case",
 						"Pas de balise à supprimer!",
 						JOptionPane.INFORMATION_MESSAGE);
 			}
 
 			for (int i = 0; i < tab.size(); i++) {
-				rep = JOptionPane.showConfirmDialog(null,
-						"Voulez vous vraiment supprimer la balise " + tab.get(i)
-								+ " ?", "Attention", JOptionPane.YES_NO_OPTION);
+				rep = JOptionPane.showConfirmDialog(
+						null,
+						"Voulez vous vraiment supprimer la balise "
+								+ tab.get(i) + " ?", "Attention",
+						JOptionPane.YES_NO_OPTION);
 
 				if (rep == 0) {
 
@@ -251,26 +259,27 @@ public class Inte_Balise  extends JPanel{
 						System.out.println("Nb enregistrement : " + res);
 
 						conn.close();
-
+						updateTable();
+						
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
 
 					JOptionPane.showMessageDialog(null,
-							"La balise est maintenant supprimée",
-							"Balise " + tab.get(i) + " Supprimée!",
+							"La balise est maintenant supprimée", "Balise "
+									+ tab.get(i) + " Supprimée!",
 							JOptionPane.INFORMATION_MESSAGE);
 
 					System.out.println("Balise " + tab.get(i) + " Supprimée");
-					updateTable();
 				}
 			}
 		}
 	}
 
 	public Object[][] updateTable() {
+
 		ArrayList<Object[]> ArrayData = new ArrayList<>();
-		;
+
 		String requeteSQL = "SELECT * FROM balise";
 
 		try {
@@ -297,13 +306,9 @@ public class Inte_Balise  extends JPanel{
 		}
 
 		data = ArrayToTab(ArrayData, title.length - 1);
-		// TabModel tabModel = new TabModel(data, title);
-		// panMega.removeAll();
-		// panMega.validate();
-		//panMega.repaint();
-		
-		
-		
+
+		Interface();
+
 		System.out.println("MAJ Table");
 		return data;
 	}
