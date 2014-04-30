@@ -15,7 +15,7 @@ public class Inte_monAppli {
 	JFrame fen2 = new JFrame();
 	JTabbedPane tabbedPane = new JTabbedPane();
 	
-	Inte_Doigt inte_Doigt = new Inte_Doigt();
+	Inte_Doigt inte_Doigt = new Inte_Doigt(/*fen2*/);
 	Inte_Balise inte_Balise = new Inte_Balise();
 	Inte_Equipe inte_Equipe = new Inte_Equipe();
 	Inte_Resultat inte_Resultat = new Inte_Resultat();

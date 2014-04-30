@@ -107,7 +107,7 @@ public class Inte_Menu extends JPanel {
 		}
 	}
 
-	public class EcouteurAP implements ActionListener { // Action du retour
+	public class EcouteurAP implements ActionListener { // Action du Apropos
 
 		public void actionPerformed(ActionEvent arg0) {
 			JOptionPane

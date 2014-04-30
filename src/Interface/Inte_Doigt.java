@@ -28,6 +28,9 @@ import Models.TabModel;
 
 public class Inte_Doigt extends JPanel {
 
+	//private JFrame jFrameContenantLOnglet;
+	private JPanel thePanel;
+	
 	/* Panels */
 	private JPanel panMega = new JPanel(); // Panel qui contient tous
 	private JPanel panDoigts = new JPanel(); // Panel du champ de recherche
@@ -47,12 +50,15 @@ public class Inte_Doigt extends JPanel {
 	private JTable tableau;
 	private Object[][] data;
 	private String title[] = { "Check", "idDoigt" };
-	private ArrayList<Object> ArrayDataLig;
+	// private ArrayList<Object> ArrayDataLig;
 
 	JLabel bjr = new JLabel("Ici vous pouvez gérer vous différents doigts");
 
-	public Inte_Doigt() {
+	public Inte_Doigt(/*JFrame jFrameContenantLOnglet*/) {
 
+		//this.jFrameContenantLOnglet = jFrameContenantLOnglet;
+		thePanel=this;
+		
 		data = updateTable();
 
 		modif.setPreferredSize(new Dimension(200, 30));
@@ -98,7 +104,7 @@ public class Inte_Doigt extends JPanel {
 
 		EcouteurCreer ecoutCreer = new EcouteurCreer();
 		creer.addActionListener(ecoutCreer);
-		
+
 		this.add(panMega);
 	}
 
@@ -111,77 +117,22 @@ public class Inte_Doigt extends JPanel {
 			String nb = jop.showInputDialog(null,
 					"Donner le numéro de votre doigt !", "Nouveau doigt ?",
 					JOptionPane.QUESTION_MESSAGE);
-
-			while (nb.equals("")) {
-				jop2.showMessageDialog(null, "Veuillez entrer un numéro",
-						"Doigt non créé!", JOptionPane.INFORMATION_MESSAGE);
-				nb = jop.showInputDialog(null,
-						"Donner le numéro de votre doigt !", "Nouveau doigt ?",
-						JOptionPane.QUESTION_MESSAGE);
-			}
-
-			// ---- Contrôle utilisateur ----
-			// "Ce doigt existe déjà, veuillez entrer un autre numéro"
-
-			if (!nb.equals("")) {
-				try {
-					String requeteSQL = "INSERT INTO `doigt` (`idDoigt`) VALUES ( "
-							+ nb + ")";
-					Class.forName("com.mysql.jdbc.Driver");
-					System.out.println("Driver O.K.");
-
-					Connection conn = DriverManager.getConnection(url, user,
-							passwd);
-					System.out.println("Connexion effective !");
-					Statement stm = conn.createStatement();
-					int res = stm.executeUpdate(requeteSQL);
-
-					System.out.println("Nb enregistrement : " + res);
-
-					conn.close();
-
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				updateTable();
-				/*// tableau.repaint();
-				panMega.repaint();
-*/
-				jop2.showMessageDialog(null, "Le doigt est " + nb + ".",
-						"Nouvelle compétition !",
-						JOptionPane.INFORMATION_MESSAGE);
-			}
-		}
-	}
-
-	public class EcouteurModif implements ActionListener { // Action du quitter
-
-		@SuppressWarnings("static-access")
-		public void actionPerformed(ActionEvent arg0) {
-			ArrayList<Object> tab = getIndexSelectTab(data);
-			JOptionPane jop = new JOptionPane(), jop2 = new JOptionPane();
-
-			for (int i = 0; i < tab.size(); i++) {
-				String nb = jop.showInputDialog(null,
-						"Donner le nouveau numéro de votre doigt !",
-						"Transformation du doigt " + tab.get(i) + "?",
-						JOptionPane.QUESTION_MESSAGE);
-
+			if (nb != null) {
 				while (nb.equals("")) {
 					jop2.showMessageDialog(null, "Veuillez entrer un numéro",
-							"Doigt " + tab.get(i) + " non modifié!",
-							JOptionPane.INFORMATION_MESSAGE);
+							"Doigt non créé!", JOptionPane.INFORMATION_MESSAGE);
 					nb = jop.showInputDialog(null,
 							"Donner le numéro de votre doigt !",
 							"Nouveau doigt ?", JOptionPane.QUESTION_MESSAGE);
 				}
+
+				// ---- Contrôle utilisateur ----
+				// "Ce doigt existe déjà, veuillez entrer un autre numéro"
+
 				if (!nb.equals("")) {
 					try {
-						// System.out.println(tab.get(0));
-						String requeteSQL = "UPDATE `doigt` SET  `idDoigt` = '"
-								+ nb + "' WHERE CONCAT(`doigt`.`idDoigt`) = '"
-								+ tab.get(i) + "'";
-						// System.out.println(requeteSQL);
+						String requeteSQL = "INSERT INTO `doigt` (`idDoigt`) VALUES ( "
+								+ nb + ")";
 						Class.forName("com.mysql.jdbc.Driver");
 						System.out.println("Driver O.K.");
 
@@ -198,10 +149,79 @@ public class Inte_Doigt extends JPanel {
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
-
-					jop2.showMessageDialog(null, "Le doigt est maintenant : "
-							+ nb, "Doigt " + tab.get(i) + " modifié!",
+					updateTable();
+					/*
+					 * // tableau.repaint(); panMega.repaint();
+					 */
+					jop2.showMessageDialog(null, "Le doigt est " + nb + ".",
+							"Nouvelle compétition !",
 							JOptionPane.INFORMATION_MESSAGE);
+				}
+			}
+		}
+	}
+
+	public class EcouteurModif implements ActionListener { // Action du modif
+
+		public void actionPerformed(ActionEvent arg0) {
+			ArrayList<Object> tab = getIndexSelectTab(data);
+			// JOptionPane jop = new JOptionPane(), jop2 = new JOptionPane();
+
+			if (tab.size() == 0) {
+				JOptionPane.showMessageDialog(null, "Veuillez cochez une case",
+						"Pas de doigt à modifier!",
+						JOptionPane.INFORMATION_MESSAGE);
+			}
+			for (int i = 0; i < tab.size(); i++) {
+				String nb = JOptionPane.showInputDialog(null,
+						"Donner le nouveau numéro de votre doigt !",
+						"Transformation du doigt " + tab.get(i) + "?",
+						JOptionPane.QUESTION_MESSAGE);
+				System.out.println("Donner num doigt : " + nb);
+				if (nb != null) {
+					while (nb.equals("")) {
+						JOptionPane.showMessageDialog(null,
+								"Veuillez entrer un numéro",
+								"Doigt " + tab.get(i) + " non modifié!",
+								JOptionPane.INFORMATION_MESSAGE);
+						System.out.println("chaîne vide");
+						nb = JOptionPane
+								.showInputDialog(null,
+										"Donner le numéro de votre doigt !",
+										"Nouveau doigt ?",
+										JOptionPane.QUESTION_MESSAGE);
+					}
+
+					if (!nb.equals("")) {
+						try {
+							// System.out.println(tab.get(0));
+							String requeteSQL = "UPDATE `doigt` SET  `idDoigt` = '"
+									+ nb
+									+ "' WHERE CONCAT(`doigt`.`idDoigt`) = '"
+									+ tab.get(i) + "'";
+							// System.out.println(requeteSQL);
+							Class.forName("com.mysql.jdbc.Driver");
+							System.out.println("Driver O.K.");
+
+							Connection conn = DriverManager.getConnection(url,
+									user, passwd);
+							System.out.println("Connexion effective !");
+							Statement stm = conn.createStatement();
+							int res = stm.executeUpdate(requeteSQL);
+
+							System.out.println("Nb enregistrement : " + res);
+
+							conn.close();
+
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+
+						JOptionPane.showMessageDialog(null,
+								"Le doigt est maintenant : " + nb, "Doigt "
+										+ tab.get(i) + " modifié!",
+								JOptionPane.INFORMATION_MESSAGE);
+					}
 				}
 				updateTable();
 			}
@@ -210,14 +230,19 @@ public class Inte_Doigt extends JPanel {
 
 	public class EcouteurSupp implements ActionListener { // Action du supprimer
 
-		@SuppressWarnings("static-access")
 		public void actionPerformed(ActionEvent arg0) {
 			// on prend le num de la compet , on le stock
 			// on demande confirmation, si oui on la supprime
 
 			ArrayList<Object> tab = getIndexSelectTab(data);
 			int rep = 0;
-			JOptionPane jop2 = new JOptionPane();
+			// JOptionPane jop2 = new JOptionPane();
+
+			if (tab.size() == 0) {
+				JOptionPane.showMessageDialog(null, "Veuillez cochez une case",
+						"Pas de doigt à supprimer!",
+						JOptionPane.INFORMATION_MESSAGE);
+			}
 
 			for (int i = 0; i < tab.size(); i++) {
 				rep = JOptionPane.showConfirmDialog(null,
@@ -247,7 +272,7 @@ public class Inte_Doigt extends JPanel {
 						e.printStackTrace();
 					}
 
-					jop2.showMessageDialog(null,
+					JOptionPane.showMessageDialog(null,
 							"Le doigt est maintenant supprimé",
 							"Doigt " + tab.get(i) + " Supprimé!",
 							JOptionPane.INFORMATION_MESSAGE);
@@ -261,7 +286,7 @@ public class Inte_Doigt extends JPanel {
 
 	public Object[][] updateTable() {
 		ArrayList<Object[]> ArrayData = new ArrayList<>();
-		;
+
 		String requeteSQL = "SELECT * FROM doigt";
 
 		try {
@@ -291,7 +316,16 @@ public class Inte_Doigt extends JPanel {
 		// TabModel tabModel = new TabModel(data, title);
 		// panMega.removeAll();
 		// panMega.validate();
-		panMega.repaint();
+		// panMega.repaint();
+		
+		//jFrameContenantLOnglet.repaint();
+		//jFrameContenantLOnglet.revalidate();
+		//jFrameContenantLOnglet.validate();
+		
+		thePanel.repaint();
+		thePanel.revalidate();
+		thePanel.validate();
+		
 		System.out.println("MAJ Table");
 		return data;
 	}
@@ -330,13 +364,9 @@ public class Inte_Doigt extends JPanel {
 		 */
 		return ArrayDataSelect;
 	}
-/*
-	public void repaint() {
-		// repaint le component courant
-		super.repaint();
-		// repaint tous les components qu'il possède
-		for (int i = 0; i < this.countComponents(); i++)
-			this.getComponent(i).repaint();
-	}
-*/
+	/*
+	 * public void repaint() { // repaint le component courant super.repaint();
+	 * // repaint tous les components qu'il possède for (int i = 0; i <
+	 * this.countComponents(); i++) this.getComponent(i).repaint(); }
+	 */
 }

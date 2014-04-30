@@ -141,53 +141,54 @@ public class Inte_Accueil {
 
 	public class EcouteurCreer implements ActionListener { // Action du creer
 
-		@SuppressWarnings("static-access")
 		public void actionPerformed(ActionEvent arg0) {
-			//String nom="test";
-			JOptionPane jop = new JOptionPane(), jop2 = new JOptionPane();
-			String nom = jop.showInputDialog(null,
+			// String nom="test";
+			//JOptionPane jop = new JOptionPane(), jop2 = new JOptionPane();
+			String nom = JOptionPane.showInputDialog(null,
 					"Donner le nom de votre compétition !",
 					"Nouvelle compétition ?", JOptionPane.QUESTION_MESSAGE);
-
-			while (nom.equals("")) {
-				jop2.showMessageDialog(null, "Veuillez entrer un nom",
-						"Compétition non créée!",
-						JOptionPane.INFORMATION_MESSAGE);
-				nom = jop.showInputDialog(null,
-						"Donner le nom de votre compétition !",
-						"Nouvelle compétition ?", JOptionPane.QUESTION_MESSAGE);
-			}
-			if (!nom.equals("")) {
-				try {
-					String requeteSQL = "INSERT INTO `competition` (`nomCompetition`)VALUES ( "
-							+ nom + ")";
-					Class.forName("com.mysql.jdbc.Driver");
-					System.out.println("Driver O.K.");
-
-					Connection conn = DriverManager.getConnection(url, user,
-							passwd);
-					System.out.println("Connexion effective !");
-					Statement stm = conn.createStatement();
-					int res = stm.executeUpdate(requeteSQL);
-
-					System.out.println("Nb enregistrement : " + res);
-
-					conn.close();
-
-				} catch (Exception e) {
-					e.printStackTrace();
+			if (nom != null) {
+				while (nom.equals("")) {
+					JOptionPane.showMessageDialog(null, "Veuillez entrer un nom",
+							"Compétition non créée!",
+							JOptionPane.INFORMATION_MESSAGE);
+					nom = JOptionPane.showInputDialog(null,
+							"Donner le nom de votre compétition !",
+							"Nouvelle compétition ?",
+							JOptionPane.QUESTION_MESSAGE);
 				}
+				if (!nom.equals("")) {
+					try {
+						String requeteSQL = "INSERT INTO `competition` (`nomCompetition`)VALUES ( "
+								+ nom + ")";
+						Class.forName("com.mysql.jdbc.Driver");
+						System.out.println("Driver O.K.");
 
-				jop2.showMessageDialog(null, "La compétition est " + nom + ".",
-						"Nouvelle compétition !",
-						JOptionPane.INFORMATION_MESSAGE);
+						Connection conn = DriverManager.getConnection(url,
+								user, passwd);
+						System.out.println("Connexion effective !");
+						Statement stm = conn.createStatement();
+						int res = stm.executeUpdate(requeteSQL);
 
-				updateCombo(compets);
+						System.out.println("Nb enregistrement : " + res);
+
+						conn.close();
+
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+
+					JOptionPane.showMessageDialog(null, "La compétition est " + nom
+							+ ".", "Nouvelle compétition !",
+							JOptionPane.INFORMATION_MESSAGE);
+
+					updateCombo(compets);
+				}
 			}
 		}
 	}
 
-	public class EcouteurModif implements ActionListener { // Action du quitter
+	public class EcouteurModif implements ActionListener { // Action du modifier
 
 		@SuppressWarnings("static-access")
 		public void actionPerformed(ActionEvent arg0) {
@@ -198,53 +199,59 @@ public class Inte_Accueil {
 			id = getIndex(compets);
 			String nomAv = (String) compets.getSelectedItem();
 
-			JOptionPane jop = new JOptionPane(), jop2 = new JOptionPane();
-			String nom = jop.showInputDialog(null,
+			//JOptionPane jop = new JOptionPane(), jop2 = new JOptionPane();
+			String nom = JOptionPane.showInputDialog(null,
 					"Donner le nouveau nom de votre competition !",
 					"Modifier compétition ?", JOptionPane.QUESTION_MESSAGE);
 
-			while (nom.equals("")) {
-				jop2.showMessageDialog(null, "Veuillez entrer un nom",
-						"Compétition " + id + " non modifiée!",
-						JOptionPane.INFORMATION_MESSAGE);
-				nom = jop.showInputDialog(null,
-						"Donner le nom de votre compétition !",
-						"Nouvelle compétition ?", JOptionPane.QUESTION_MESSAGE);
-			}
-			if (!nom.equals("")) {
-				try {
-					String requeteSQL = "UPDATE `raidzultat`.`competition` SET `nomCompetition` = "
-							+ nom + " WHERE `nomCompetition` = '" + nomAv + "'";
-					Class.forName("com.mysql.jdbc.Driver");
-					System.out.println("Driver O.K.");
-
-					Connection conn = DriverManager.getConnection(url, user,
-							passwd);
-					System.out.println("Connexion effective !");
-					Statement stm = conn.createStatement();
-					int res = stm.executeUpdate(requeteSQL);
-
-					System.out.println("Nb enregistrement : " + res);
-
-					conn.close();
-
-				} catch (Exception e) {
-					e.printStackTrace();
+			if (nom != null) {
+				while (nom.equals("")) {
+					JOptionPane.showMessageDialog(null, "Veuillez entrer un nom",
+							"Compétition " + id + " non modifiée!",
+							JOptionPane.INFORMATION_MESSAGE);
+					nom = JOptionPane.showInputDialog(null,
+							"Donner le nom de votre compétition !",
+							"Nouvelle compétition ?",
+							JOptionPane.QUESTION_MESSAGE);
 				}
+				if (!nom.equals("")) {
+					try {
+						String requeteSQL = "UPDATE `raidzultat`.`competition` SET `nomCompetition` = "
+								+ nom
+								+ " WHERE `nomCompetition` = '"
+								+ nomAv
+								+ "'";
+						Class.forName("com.mysql.jdbc.Driver");
+						System.out.println("Driver O.K.");
 
-				jop2.showMessageDialog(null, "La competition est maintenant : "
-						+ nom, "Compétition " + id + " modifiée!",
-						JOptionPane.INFORMATION_MESSAGE);
+						Connection conn = DriverManager.getConnection(url,
+								user, passwd);
+						System.out.println("Connexion effective !");
+						Statement stm = conn.createStatement();
+						int res = stm.executeUpdate(requeteSQL);
 
-				updateCombo(compets);
+						System.out.println("Nb enregistrement : " + res);
 
+						conn.close();
+
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+
+					JOptionPane.showMessageDialog(null,
+							"La competition est maintenant : " + nom,
+							"Compétition " + id + " modifiée!",
+							JOptionPane.INFORMATION_MESSAGE);
+
+					updateCombo(compets);
+
+				}
 			}
 		}
 	}
 
 	public class EcouteurSupp implements ActionListener { // Action du supprimer
 
-		@SuppressWarnings("static-access")
 		public void actionPerformed(ActionEvent arg0) {
 			// on prend le num de la compet , on le stock
 			// on demande confirmation, si oui on la supprime
@@ -252,7 +259,7 @@ public class Inte_Accueil {
 			// int id;
 			String nom = (String) compets.getSelectedItem();
 			int rep = 0;
-			JOptionPane jop2 = new JOptionPane();
+			//JOptionPane jop2 = new JOptionPane();
 			// id = compets.getSelectedIndex() + 1;
 
 			rep = JOptionPane.showConfirmDialog(null,
@@ -281,7 +288,7 @@ public class Inte_Accueil {
 					e.printStackTrace();
 				}
 
-				jop2.showMessageDialog(null,
+				JOptionPane.showMessageDialog(null,
 						"La competition est maintenant supprimée",
 						"Compétition " + nom + " Supprimée!",
 						JOptionPane.INFORMATION_MESSAGE);
@@ -292,7 +299,7 @@ public class Inte_Accueil {
 		}
 	}
 
-	public class EcouteurQ implements ActionListener { // Action du supprimer
+	public class EcouteurQ implements ActionListener { // Action du quitter
 
 		public void actionPerformed(ActionEvent arg0) {
 

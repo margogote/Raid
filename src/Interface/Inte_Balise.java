@@ -63,10 +63,10 @@ public class Inte_Balise  extends JPanel{
 		
 		panBoutonsListe.setLayout(new BoxLayout(panBoutonsListe,
 				BoxLayout.PAGE_AXIS));
+		panBoutonsListe.add(panBoutCreer);
 		panBoutonsListe.add(panBoutModif);
 		panBoutonsListe.add(panBoutSupp);
-		panBoutonsListe.add(panBoutCreer);
-
+		
 		panBalises.setLayout(new BoxLayout(panBalises, BoxLayout.PAGE_AXIS));
 		panBalises.setLayout(new BorderLayout());
 		panBalises.add(bjr, BorderLayout.NORTH);
@@ -104,15 +104,15 @@ public class Inte_Balise  extends JPanel{
 		@SuppressWarnings("static-access")
 		public void actionPerformed(ActionEvent arg0) {
 
-			JOptionPane jop = new JOptionPane(), jop2 = new JOptionPane();
-			String nb = jop.showInputDialog(null,
+			//JOptionPane jop = new JOptionPane(), jop2 = new JOptionPane();
+			String nb = JOptionPane.showInputDialog(null,
 					"Donner le numéro de votre balise !", "Nouvelle balise ?",
 					JOptionPane.QUESTION_MESSAGE);
 
 			while (nb.equals("")) {
-				jop2.showMessageDialog(null, "Veuillez entrer un nombre",
+				JOptionPane.showMessageDialog(null, "Veuillez entrer un nombre",
 						"Balise non créée!", JOptionPane.INFORMATION_MESSAGE);
-				nb = jop.showInputDialog(null,
+				nb = JOptionPane.showInputDialog(null,
 						"Donner le numéro de votre balise !", "Nouvelle balise ?",
 						JOptionPane.QUESTION_MESSAGE);
 			}
@@ -144,7 +144,7 @@ public class Inte_Balise  extends JPanel{
 				/*// tableau.repaint();
 				panMega.repaint();
 */
-				jop2.showMessageDialog(null, "La balise est " + nb + ".",
+				JOptionPane.showMessageDialog(null, "La balise est " + nb + ".",
 						"Nouvelle compétition !",
 						JOptionPane.INFORMATION_MESSAGE);
 			}
@@ -157,6 +157,12 @@ public class Inte_Balise  extends JPanel{
 		public void actionPerformed(ActionEvent arg0) {
 			ArrayList<Object> tab = getIndexSelectTab(data);
 			JOptionPane jop = new JOptionPane(), jop2 = new JOptionPane();
+			
+			if(tab.size()==0){
+				JOptionPane.showMessageDialog(null, "Veuillez cochez une case",
+						"Pas de balise à modifier!",
+						JOptionPane.INFORMATION_MESSAGE);
+			}
 
 			for (int i = 0; i < tab.size(); i++) {
 				String nb = jop.showInputDialog(null,
@@ -214,7 +220,13 @@ public class Inte_Balise  extends JPanel{
 
 			ArrayList<Object> tab = getIndexSelectTab(data);
 			int rep = 0;
-			JOptionPane jop2 = new JOptionPane();
+			//JOptionPane jop2 = new JOptionPane();
+			
+			if(tab.size()==0){
+				JOptionPane.showMessageDialog(null, "Veuillez cochez une case",
+						"Pas de balise à supprimer!",
+						JOptionPane.INFORMATION_MESSAGE);
+			}
 
 			for (int i = 0; i < tab.size(); i++) {
 				rep = JOptionPane.showConfirmDialog(null,
@@ -244,7 +256,7 @@ public class Inte_Balise  extends JPanel{
 						e.printStackTrace();
 					}
 
-					jop2.showMessageDialog(null,
+					JOptionPane.showMessageDialog(null,
 							"La balise est maintenant supprimée",
 							"Balise " + tab.get(i) + " Supprimée!",
 							JOptionPane.INFORMATION_MESSAGE);
@@ -288,7 +300,10 @@ public class Inte_Balise  extends JPanel{
 		// TabModel tabModel = new TabModel(data, title);
 		// panMega.removeAll();
 		// panMega.validate();
-		panMega.repaint();
+		//panMega.repaint();
+		
+		
+		
 		System.out.println("MAJ Table");
 		return data;
 	}
