@@ -47,8 +47,8 @@ public class Inte_Accueil {
 	String user = "root";
 	String passwd = "";
 
-	private String[] competitions = { "compet1", "la 2é", "la 3é" };
-	private JComboBox<Object> compets = new JComboBox<Object>(competitions);
+	// private String[] competitions = { "compet1", "la 2é", "la 3é" };
+	private JComboBox<Object> compets = new JComboBox<Object>();
 	// private JComboBox<Object> compets;
 
 	JLabel bjr = new JLabel(
@@ -131,9 +131,12 @@ public class Inte_Accueil {
 			// on prend le num de la compet, on le stock
 			// on lance la page suivante
 			int id = getIndex(compets);
+			
 			String nomC = (String) compets.getSelectedItem();
+			
+			int idC = getSelectID(compets);
 			// Inte_monAppli app = new Inte_monAppli(id);
-			Inte_monAppli app = new Inte_monAppli(nomC);
+			Inte_monAppli app = new Inte_monAppli(nomC, idC);
 			fen.dispose();
 
 		}
@@ -143,14 +146,14 @@ public class Inte_Accueil {
 
 		public void actionPerformed(ActionEvent arg0) {
 			// String nom="test";
-			//JOptionPane jop = new JOptionPane(), jop2 = new JOptionPane();
+			// JOptionPane jop = new JOptionPane(), jop2 = new JOptionPane();
 			String nom = JOptionPane.showInputDialog(null,
 					"Donner le nom de votre compétition !",
 					"Nouvelle compétition ?", JOptionPane.QUESTION_MESSAGE);
 			if (nom != null) {
 				while (nom.equals("")) {
-					JOptionPane.showMessageDialog(null, "Veuillez entrer un nom",
-							"Compétition non créée!",
+					JOptionPane.showMessageDialog(null,
+							"Veuillez entrer un nom", "Compétition non créée!",
 							JOptionPane.INFORMATION_MESSAGE);
 					nom = JOptionPane.showInputDialog(null,
 							"Donner le nom de votre compétition !",
@@ -159,8 +162,8 @@ public class Inte_Accueil {
 				}
 				if (!nom.equals("")) {
 					try {
-						String requeteSQL = "INSERT INTO `competition` (`nomCompetition`)VALUES ( "
-								+ nom + ")";
+						String requeteSQL = "INSERT INTO `competition` (`nomCompetition`)VALUES ( '"
+								+ nom + "')";
 						Class.forName("com.mysql.jdbc.Driver");
 						System.out.println("Driver O.K.");
 
@@ -178,8 +181,8 @@ public class Inte_Accueil {
 						e.printStackTrace();
 					}
 
-					JOptionPane.showMessageDialog(null, "La compétition est " + nom
-							+ ".", "Nouvelle compétition !",
+					JOptionPane.showMessageDialog(null, "La compétition est "
+							+ nom + ".", "Nouvelle compétition !",
 							JOptionPane.INFORMATION_MESSAGE);
 
 					updateCombo(compets);
@@ -190,7 +193,6 @@ public class Inte_Accueil {
 
 	public class EcouteurModif implements ActionListener { // Action du modifier
 
-		@SuppressWarnings("static-access")
 		public void actionPerformed(ActionEvent arg0) {
 			// on prend le num de la compet , on le stock
 			// on lance le formulaire pré-remplit
@@ -199,15 +201,16 @@ public class Inte_Accueil {
 			id = getIndex(compets);
 			String nomAv = (String) compets.getSelectedItem();
 
-			//JOptionPane jop = new JOptionPane(), jop2 = new JOptionPane();
+			// JOptionPane jop = new JOptionPane(), jop2 = new JOptionPane();
 			String nom = JOptionPane.showInputDialog(null,
 					"Donner le nouveau nom de votre competition !",
 					"Modifier compétition ?", JOptionPane.QUESTION_MESSAGE);
 
 			if (nom != null) {
 				while (nom.equals("")) {
-					JOptionPane.showMessageDialog(null, "Veuillez entrer un nom",
-							"Compétition " + id + " non modifiée!",
+					JOptionPane.showMessageDialog(null,
+							"Veuillez entrer un nom", "Compétition " + id
+									+ " non modifiée!",
 							JOptionPane.INFORMATION_MESSAGE);
 					nom = JOptionPane.showInputDialog(null,
 							"Donner le nom de votre compétition !",
@@ -216,9 +219,9 @@ public class Inte_Accueil {
 				}
 				if (!nom.equals("")) {
 					try {
-						String requeteSQL = "UPDATE `raidzultat`.`competition` SET `nomCompetition` = "
+						String requeteSQL = "UPDATE `raidzultat`.`competition` SET `nomCompetition` = '"
 								+ nom
-								+ " WHERE `nomCompetition` = '"
+								+ "' WHERE `nomCompetition` = '"
 								+ nomAv
 								+ "'";
 						Class.forName("com.mysql.jdbc.Driver");
@@ -259,7 +262,7 @@ public class Inte_Accueil {
 			// int id;
 			String nom = (String) compets.getSelectedItem();
 			int rep = 0;
-			//JOptionPane jop2 = new JOptionPane();
+			// JOptionPane jop2 = new JOptionPane();
 			// id = compets.getSelectedIndex() + 1;
 
 			rep = JOptionPane.showConfirmDialog(null,
@@ -349,6 +352,33 @@ public class Inte_Accueil {
 		int id;
 		id = combo.getSelectedIndex() + 1;
 		return id;
+	}
+
+	public int getSelectID(JComboBox<Object> combo) {
+		String nom = (String) combo.getSelectedItem();
+		int iDSelect=-1;
+		try {
+			String requeteSQL = "SELECT idCompetition FROM competition WHERE `nomCompetition` = '"
+					+ nom + "'";
+			Class.forName("com.mysql.jdbc.Driver");
+			System.out.println("Driver O.K.");
+
+			Connection conn = DriverManager.getConnection(url, user, passwd);
+			System.out.println("Connexion effective !");
+			Statement stm = conn.createStatement();
+			ResultSet res = stm.executeQuery(requeteSQL);
+			
+			while (res.next()) {
+				iDSelect = res.getInt(1);
+				System.out.println("Id Compet select : " + iDSelect);
+			}
+			
+			conn.close();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return iDSelect;
 	}
 
 }
