@@ -305,7 +305,7 @@ public class Inte_Balise extends JPanel {
 			e.printStackTrace();
 		}
 
-		data = ArrayToTab(ArrayData, title.length - 1);
+		data = ArrayToTab(ArrayData);
 
 		Interface();
 
@@ -313,10 +313,10 @@ public class Inte_Balise extends JPanel {
 		return data;
 	}
 
-	public Object[][] ArrayToTab(ArrayList<Object[]> array, int lengthCol) {
+	public Object[][] ArrayToTab(ArrayList<Object[]> array) {
 
 		int lengthLig = array.size();
-		// int lengthCol = ArrayData.get(1).length();
+		int lengthCol = array.get(1).length;
 		Object[][] tab = new Object[lengthLig][lengthCol];
 		for (int i = 0; i < lengthLig; i++) {
 			tab[i] = array.get(i);

@@ -19,6 +19,8 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
+
 import BDD.Connect;
 
 public class Inte_Accueil {
@@ -340,7 +342,13 @@ public class Inte_Accueil {
 			conn.close();
 			res.close();
 
-		} catch (Exception e) {
+		} catch(CommunicationsException com){
+			JOptionPane.showMessageDialog(null,
+					"Pas de connection avec la Base de Données", "Attention",
+					JOptionPane.INFORMATION_MESSAGE);
+			
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 

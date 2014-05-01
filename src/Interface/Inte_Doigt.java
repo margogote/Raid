@@ -21,6 +21,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
+import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
+
 import Interface.Inte_Accueil.EcouteurCreer;
 import Interface.Inte_Accueil.EcouteurModif;
 import Interface.Inte_Accueil.EcouteurSupp;
@@ -308,11 +310,16 @@ public class Inte_Doigt extends JPanel {
 			conn.close();
 			res.close();
 
-		} catch (Exception e) {
+		} catch(CommunicationsException com){
+			JOptionPane.showMessageDialog(null,
+					"Pas de connection avec la Base de Données", "Attention",
+					JOptionPane.INFORMATION_MESSAGE);
+			
+		}catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		data = ArrayToTab(ArrayData, title.length - 1);
+		data = ArrayToTab(ArrayData/*, title.length - 1*/);
 
 		Interface();
 
@@ -320,10 +327,10 @@ public class Inte_Doigt extends JPanel {
 		return data;
 	}
 
-	public Object[][] ArrayToTab(ArrayList<Object[]> array, int lengthCol) {
+	public Object[][] ArrayToTab(ArrayList<Object[]> array) {
 
 		int lengthLig = array.size();
-		// int lengthCol = ArrayData.get(1).length();
+		int lengthCol = array.get(1).length;
 		Object[][] tab = new Object[lengthLig][lengthCol];
 		for (int i = 0; i < lengthLig; i++) {
 			tab[i] = array.get(i);
@@ -348,10 +355,7 @@ public class Inte_Doigt extends JPanel {
 		}
 		Object[] tab = new Object[ArrayDataSelect.size()];
 		System.out.println(ArrayDataSelect);
-		/*
-		 * for (int i = 0; i < ArrayDataSelect.size(); i++) { tab[i] =
-		 * ArrayDataSelect.get(i); } //System.out.println(tab); return tab;
-		 */
+
 		return ArrayDataSelect;
 	}
 	/*
