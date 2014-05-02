@@ -22,7 +22,7 @@ import Models.TabModel;
 
 import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
 
-public class Inte_Equipe  extends JPanel{
+public class Inte_Equipe extends JPanel {
 
 	/* Panels */
 	private JPanel thePanel;
@@ -48,7 +48,8 @@ public class Inte_Equipe  extends JPanel{
 	private TabModel tabModel;
 	private JTable tableau;
 	private Object[][] data;
-	private String title[] = { "Check", "idEquipe", "Nom d'équipe", "Nom du groupe", "Difficulté", "Type d'équipe" };
+	private String title[] = { "Check", "idEquipe", "Nom d'équipe",
+			"Nom du groupe", "Difficulté", "Type d'équipe" };
 
 	JLabel bjr = new JLabel("Ici vous pouvez gérer vous différentes équipes");
 
@@ -73,9 +74,10 @@ public class Inte_Equipe  extends JPanel{
 		thePanel.removeAll();
 		panMega.removeAll();
 
-		modif.setPreferredSize(new Dimension(200, 30));
-		creer.setPreferredSize(new Dimension(200, 30));
-		supp.setPreferredSize(new Dimension(200, 30));
+		modif.setPreferredSize(new Dimension(100, 30));
+		creer.setPreferredSize(new Dimension(100, 30));
+		supp.setPreferredSize(new Dimension(100, 30));
+		// panBoutonsListe.setPreferredSize (new Dimension(200, 150));
 
 		panBoutCreer.add(creer);
 		panBoutSupp.add(supp);
@@ -89,7 +91,7 @@ public class Inte_Equipe  extends JPanel{
 
 		panTitre.setLayout(new BoxLayout(panTitre, BoxLayout.PAGE_AXIS));
 		panTitre.setLayout(new BorderLayout());
-		//panTitre.add(bjr, BorderLayout.NORTH);
+		// panTitre.add(bjr, BorderLayout.NORTH);
 		panTitre.add(panBoutonsListe, BorderLayout.WEST);
 
 		tabModel = new TabModel(data, title);
@@ -99,7 +101,7 @@ public class Inte_Equipe  extends JPanel{
 
 		tableau = new JTable(tabModel);
 		tableau.setRowHeight(30);
-		
+
 		panMega.setLayout(new BorderLayout());
 		panMega.add(bjr, BorderLayout.NORTH);
 		panMega.add(panTitre, BorderLayout.WEST);
@@ -112,51 +114,43 @@ public class Inte_Equipe  extends JPanel{
 
 		public void actionPerformed(ActionEvent arg0) {
 
-			String nb = JOptionPane.showInputDialog(null,
-					"Donner le numéro de votre doigt !", "Nouveau doigt ?",
-					JOptionPane.QUESTION_MESSAGE);
+			Inte_Equipe_CréaModif formulaire = new Inte_Equipe_CréaModif();
 
-			if (nb != null) {
-				while (nb.equals("")) {
-					JOptionPane.showMessageDialog(null,
-							"Veuillez entrer un numéro", "Doigt non créé!",
-							JOptionPane.INFORMATION_MESSAGE);
-					nb = JOptionPane.showInputDialog(null,
-							"Donner le numéro de votre doigt !",
-							"Nouveau doigt ?", JOptionPane.QUESTION_MESSAGE);
-				}
-
-				// ---- Contrôle utilisateur ----
-				// "Ce doigt existe déjà, veuillez entrer un autre numéro"
-
-				if (!nb.equals("")) {
-					try {
-						String requeteSQL = "INSERT INTO `doigt` (`idDoigt`) VALUES ( "
-								+ nb + ")";
-						Class.forName("com.mysql.jdbc.Driver");
-						System.out.println("Driver O.K.");
-
-						Connection conn = DriverManager.getConnection(url,
-								user, passwd);
-						System.out.println("Connexion effective !");
-						Statement stm = conn.createStatement();
-						int res = stm.executeUpdate(requeteSQL);
-
-						System.out.println("Nb enregistrement : " + res);
-
-						conn.close();
-
-						updateTable();
-
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-
-					JOptionPane.showMessageDialog(null, "Le doigt est " + nb
-							+ ".", "Nouvelle compétition !",
-							JOptionPane.INFORMATION_MESSAGE);
-				}
-			}
+			/*
+			 * String nb = JOptionPane.showInputDialog(null,
+			 * "Donner le numéro de votre doigt !", "Nouveau doigt ?",
+			 * JOptionPane.QUESTION_MESSAGE);
+			 * 
+			 * if (nb != null) { while (nb.equals("")) {
+			 * JOptionPane.showMessageDialog(null, "Veuillez entrer un numéro",
+			 * "Doigt non créé!", JOptionPane.INFORMATION_MESSAGE); nb =
+			 * JOptionPane.showInputDialog(null,
+			 * "Donner le numéro de votre doigt !", "Nouveau doigt ?",
+			 * JOptionPane.QUESTION_MESSAGE); }
+			 * 
+			 * // ---- Contrôle utilisateur ---- //
+			 * "Ce doigt existe déjà, veuillez entrer un autre numéro"
+			 * 
+			 * if (!nb.equals("")) { try { String requeteSQL =
+			 * "INSERT INTO `doigt` (`idDoigt`) VALUES ( " + nb + ")";
+			 * Class.forName("com.mysql.jdbc.Driver");
+			 * System.out.println("Driver O.K.");
+			 * 
+			 * Connection conn = DriverManager.getConnection(url, user, passwd);
+			 * System.out.println("Connexion effective !"); Statement stm =
+			 * conn.createStatement(); int res = stm.executeUpdate(requeteSQL);
+			 * 
+			 * System.out.println("Nb enregistrement : " + res);
+			 * 
+			 * conn.close();
+			 * 
+			 * updateTable();
+			 * 
+			 * } catch (Exception e) { e.printStackTrace(); }
+			 * 
+			 * JOptionPane.showMessageDialog(null, "Le doigt est " + nb + ".",
+			 * "Nouvelle compétition !", JOptionPane.INFORMATION_MESSAGE); } }
+			 */
 		}
 	}
 
@@ -191,30 +185,10 @@ public class Inte_Equipe  extends JPanel{
 					}
 
 					if (!nb.equals("")) {
-						try {
-							// System.out.println(tab.get(0));
-							String requeteSQL = "UPDATE `doigt` SET  `idDoigt` = '"
-									+ nb
-									+ "' WHERE CONCAT(`doigt`.`idDoigt`) = '"
-									+ tab.get(i) + "'";
-							// System.out.println(requeteSQL);
-							Class.forName("com.mysql.jdbc.Driver");
-							System.out.println("Driver O.K.");
-
-							Connection conn = DriverManager.getConnection(url,
-									user, passwd);
-							System.out.println("Connexion effective !");
-							Statement stm = conn.createStatement();
-							int res = stm.executeUpdate(requeteSQL);
-
-							System.out.println("Nb enregistrement : " + res);
-
-							conn.close();
-							updateTable();
-
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
+						String requeteSQL = "UPDATE `doigt` SET  `idDoigt` = '"
+								+ nb + "' WHERE CONCAT(`doigt`.`idDoigt`) = '"
+								+ tab.get(i) + "'";
+						BDDupdate(requeteSQL);
 
 						JOptionPane.showMessageDialog(null,
 								"Le doigt est maintenant : " + nb, "Doigt "
@@ -247,32 +221,13 @@ public class Inte_Equipe  extends JPanel{
 								+ " ?", "Attention", JOptionPane.YES_NO_OPTION);
 
 				if (rep == 0) {
-
-					try {
-
-						String requeteSQL = "DELETE FROM `raidzultat`.`equipe` WHERE CONCAT(`equipe`.`idEquipe`) = '"
-								+ tab.get(i) + "'";
-						Class.forName("com.mysql.jdbc.Driver");
-						System.out.println("Driver O.K.");
-
-						Connection conn = DriverManager.getConnection(url,
-								user, passwd);
-						System.out.println("Connexion effective !");
-						Statement stm = conn.createStatement();
-						int res = stm.executeUpdate(requeteSQL);
-
-						System.out.println("Nb enregistrement : " + res);
-
-						conn.close();
-						updateTable();
-
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+					String requeteSQL = "DELETE FROM `raidzultat`.`equipe` WHERE CONCAT(`equipe`.`idEquipe`) = '"
+							+ tab.get(i) + "'";
+					BDDupdate(requeteSQL);
 
 					JOptionPane.showMessageDialog(null,
-							"L'équipe est maintenant supprimée",
-							"Equipe " + tab.get(i) + " Supprimée!",
+							"L'équipe est maintenant supprimée", "Equipe "
+									+ tab.get(i) + " Supprimée!",
 							JOptionPane.INFORMATION_MESSAGE);
 
 					System.out.println("Equipe " + tab.get(i) + " Supprimée");
@@ -295,23 +250,27 @@ public class Inte_Equipe  extends JPanel{
 			System.out.println("Connexion effective !");
 			Statement stm = conn.createStatement();
 			ResultSet res = stm.executeQuery(requeteSQL);
-			//int i = 0;
+			// int i = 0;
 			while (res.next()) {
 				ArrayData.add(new Object[] { new Boolean(false),
-						res.getString(1),res.getString(2),res.getString(3),res.getString(4),res.getString(5) });
-				System.out.println("Id : " + res.getInt(1) + " nom : " +res.getString(2)+" Grp : "+res.getString(3)+" Diff : "+res.getString(4)+" Type : "+res.getString(5));
-				//i++;
+						res.getString(1), res.getString(2), res.getString(3),
+						res.getString(4), res.getString(5) });
+				System.out.println("Id : " + res.getInt(1) + " nom : "
+						+ res.getString(2) + " Grp : " + res.getString(3)
+						+ " Diff : " + res.getString(4) + " Type : "
+						+ res.getString(5));
+				// i++;
 			}
 
 			conn.close();
 			res.close();
 
-		} catch(CommunicationsException com){
+		} catch (CommunicationsException com) {
 			JOptionPane.showMessageDialog(null,
 					"Pas de connection avec la Base de Données", "Attention",
 					JOptionPane.INFORMATION_MESSAGE);
-			
-		}catch (Exception e) {
+
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
@@ -327,7 +286,7 @@ public class Inte_Equipe  extends JPanel{
 	public Object[][] ArrayToTab(ArrayList<Object[]> array) {
 
 		int lengthLig = array.size();
-		int lengthCol = array.get(1).length-1;
+		int lengthCol = array.get(1).length - 1;
 		Object[][] tab = new Object[lengthLig][lengthCol];
 		for (int i = 0; i < lengthLig; i++) {
 			tab[i] = array.get(i);
@@ -355,5 +314,45 @@ public class Inte_Equipe  extends JPanel{
 
 		return ArrayDataSelect;
 	}
-	
+
+	public void BDDupdate(String requeteSQL) {
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			System.out.println("Driver O.K.");
+
+			Connection conn = DriverManager.getConnection(url, user, passwd);
+			System.out.println("Connexion effective !");
+			Statement stm = conn.createStatement();
+			int res = stm.executeUpdate(requeteSQL);
+
+			System.out.println("Nb enregistrement : " + res);
+
+			conn.close();
+			updateTable();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void BDDquery(String requeteSQL) {
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			System.out.println("Driver O.K.");
+
+			Connection conn = DriverManager.getConnection(url, user, passwd);
+			System.out.println("Connexion effective !");
+			Statement stm = conn.createStatement();
+			int res = stm.executeUpdate(requeteSQL);
+
+			System.out.println("Nb enregistrement : " + res);
+
+			conn.close();
+
+			updateTable();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }

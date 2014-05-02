@@ -133,9 +133,9 @@ public class Inte_Accueil {
 			// on prend le num de la compet, on le stock
 			// on lance la page suivante
 			int id = getIndex(compets);
-			
+
 			String nomC = (String) compets.getSelectedItem();
-			
+
 			int idC = getSelectID(compets);
 			// Inte_monAppli app = new Inte_monAppli(id);
 			Inte_monAppli app = new Inte_monAppli(nomC, idC);
@@ -163,25 +163,9 @@ public class Inte_Accueil {
 							JOptionPane.QUESTION_MESSAGE);
 				}
 				if (!nom.equals("")) {
-					try {
-						String requeteSQL = "INSERT INTO `competition` (`nomCompetition`)VALUES ( '"
-								+ nom + "')";
-						Class.forName("com.mysql.jdbc.Driver");
-						System.out.println("Driver O.K.");
-
-						Connection conn = DriverManager.getConnection(url,
-								user, passwd);
-						System.out.println("Connexion effective !");
-						Statement stm = conn.createStatement();
-						int res = stm.executeUpdate(requeteSQL);
-
-						System.out.println("Nb enregistrement : " + res);
-
-						conn.close();
-
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+					String requeteSQL = "INSERT INTO `competition` (`nomCompetition`)VALUES ( '"
+							+ nom + "')";
+					BDDquery(requeteSQL);
 
 					JOptionPane.showMessageDialog(null, "La compétition est "
 							+ nom + ".", "Nouvelle compétition !",
@@ -220,28 +204,12 @@ public class Inte_Accueil {
 							JOptionPane.QUESTION_MESSAGE);
 				}
 				if (!nom.equals("")) {
-					try {
-						String requeteSQL = "UPDATE `raidzultat`.`competition` SET `nomCompetition` = '"
-								+ nom
-								+ "' WHERE `nomCompetition` = '"
-								+ nomAv
-								+ "'";
-						Class.forName("com.mysql.jdbc.Driver");
-						System.out.println("Driver O.K.");
-
-						Connection conn = DriverManager.getConnection(url,
-								user, passwd);
-						System.out.println("Connexion effective !");
-						Statement stm = conn.createStatement();
-						int res = stm.executeUpdate(requeteSQL);
-
-						System.out.println("Nb enregistrement : " + res);
-
-						conn.close();
-
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+					String requeteSQL = "UPDATE `raidzultat`.`competition` SET `nomCompetition` = '"
+							+ nom
+							+ "' WHERE `nomCompetition` = '"
+							+ nomAv
+							+ "'";
+					BDDupdate(requeteSQL);
 
 					JOptionPane.showMessageDialog(null,
 							"La competition est maintenant : " + nom,
@@ -272,26 +240,9 @@ public class Inte_Accueil {
 							+ " ?", "Attention", JOptionPane.YES_NO_OPTION);
 
 			if (rep == 0) {
-
-				try {
-					String requeteSQL = "DELETE FROM `raidzultat`.`competition` WHERE `competition`.`nomCompetition` = '"
-							+ nom + "'";
-					Class.forName("com.mysql.jdbc.Driver");
-					System.out.println("Driver O.K.");
-
-					Connection conn = DriverManager.getConnection(url, user,
-							passwd);
-					System.out.println("Connexion effective !");
-					Statement stm = conn.createStatement();
-					int res = stm.executeUpdate(requeteSQL);
-
-					System.out.println("Nb enregistrement : " + res);
-
-					conn.close();
-
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				String requeteSQL = "DELETE FROM `raidzultat`.`competition` WHERE `competition`.`nomCompetition` = '"
+						+ nom + "'";
+				BDDupdate(requeteSQL);
 
 				JOptionPane.showMessageDialog(null,
 						"La competition est maintenant supprimée",
@@ -342,13 +293,12 @@ public class Inte_Accueil {
 			conn.close();
 			res.close();
 
-		} catch(CommunicationsException com){
+		} catch (CommunicationsException com) {
 			JOptionPane.showMessageDialog(null,
 					"Pas de connection avec la Base de Données", "Attention",
 					JOptionPane.INFORMATION_MESSAGE);
-			
-		}
-		catch (Exception e) {
+
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
@@ -364,7 +314,7 @@ public class Inte_Accueil {
 
 	public int getSelectID(JComboBox<Object> combo) {
 		String nom = (String) combo.getSelectedItem();
-		int iDSelect=-1;
+		int iDSelect = -1;
 		try {
 			String requeteSQL = "SELECT idCompetition FROM competition WHERE `nomCompetition` = '"
 					+ nom + "'";
@@ -375,12 +325,12 @@ public class Inte_Accueil {
 			System.out.println("Connexion effective !");
 			Statement stm = conn.createStatement();
 			ResultSet res = stm.executeQuery(requeteSQL);
-			
+
 			while (res.next()) {
 				iDSelect = res.getInt(1);
 				System.out.println("Id Compet select : " + iDSelect);
 			}
-			
+
 			conn.close();
 
 		} catch (Exception e) {
@@ -388,5 +338,46 @@ public class Inte_Accueil {
 		}
 		return iDSelect;
 	}
+	
+	public void BDDupdate(String requeteSQL){
+		try {
+			
+			Class.forName("com.mysql.jdbc.Driver");
+			System.out.println("Driver O.K.");
 
+			Connection conn = DriverManager.getConnection(url, user,
+					passwd);
+			System.out.println("Connexion effective !");
+			Statement stm = conn.createStatement();
+			int res = stm.executeUpdate(requeteSQL);
+
+			System.out.println("Nb enregistrement : " + res);
+
+			conn.close();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void BDDquery(String requeteSQL){
+		try {
+			
+			Class.forName("com.mysql.jdbc.Driver");
+			System.out.println("Driver O.K.");
+
+			Connection conn = DriverManager.getConnection(url,
+					user, passwd);
+			System.out.println("Connexion effective !");
+			Statement stm = conn.createStatement();
+			int res = stm.executeUpdate(requeteSQL);
+
+			System.out.println("Nb enregistrement : " + res);
+
+			conn.close();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }

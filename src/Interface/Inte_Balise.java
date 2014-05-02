@@ -71,9 +71,9 @@ public class Inte_Balise extends JPanel {
 		thePanel.removeAll();
 		panMega.removeAll();
 
-		modif.setPreferredSize(new Dimension(200, 30));
-		creer.setPreferredSize(new Dimension(200, 30));
-		supp.setPreferredSize(new Dimension(200, 30));
+		modif.setPreferredSize(new Dimension(100, 30));
+		creer.setPreferredSize(new Dimension(100, 30));
+		supp.setPreferredSize(new Dimension(100, 30));
 
 		panBoutCreer.add(creer);
 		panBoutSupp.add(supp);
@@ -108,6 +108,7 @@ public class Inte_Balise extends JPanel {
 
 		public void actionPerformed(ActionEvent arg0) {
 
+			int flagExiste = 0;
 			String nb = JOptionPane.showInputDialog(null,
 					"Donner le numéro de votre balise !", "Nouvelle balise ?",
 					JOptionPane.QUESTION_MESSAGE);
@@ -122,35 +123,26 @@ public class Inte_Balise extends JPanel {
 							"Nouvelle balise ?", JOptionPane.QUESTION_MESSAGE);
 				}
 
-				// ---- Contrôle utilisateur ----
-				// "Cette balise existe déjà, veuillez entrer un autre numéro"
-
 				if (!nb.equals("")) {
-					try {
+					for (int i = 0; i < data.length; i++) {
+						if (nb.equals(data[i][1])) {
+							flagExiste = 1;
+						}
+					}
+					if (flagExiste == 1) {
+						JOptionPane.showMessageDialog(null,
+								"Cette balise existe déjà", "Balise non créée!",
+								JOptionPane.INFORMATION_MESSAGE);
+					} else {
+						
 						String requeteSQL = "INSERT INTO `balise` (`idBalise`) VALUES ( "
 								+ nb + ")";
-						Class.forName("com.mysql.jdbc.Driver");
-						System.out.println("Driver O.K.");
+						BDDquery(requeteSQL);
 
-						Connection conn = DriverManager.getConnection(url,
-								user, passwd);
-						System.out.println("Connexion effective !");
-						Statement stm = conn.createStatement();
-						int res = stm.executeUpdate(requeteSQL);
-
-						System.out.println("Nb enregistrement : " + res);
-
-						conn.close();
-
-						updateTable();
-
-					} catch (Exception e) {
-						e.printStackTrace();
+						JOptionPane.showMessageDialog(null, "La balise est "
+								+ nb + ".", "Nouvelle compétition !",
+								JOptionPane.INFORMATION_MESSAGE);
 					}
-
-					JOptionPane.showMessageDialog(null, "La balise est " + nb
-							+ ".", "Nouvelle compétition !",
-							JOptionPane.INFORMATION_MESSAGE);
 				}
 			}
 		}
@@ -160,6 +152,7 @@ public class Inte_Balise extends JPanel {
 
 		public void actionPerformed(ActionEvent arg0) {
 			ArrayList<Object> tab = getIndexSelectTab(data);
+			int flagExiste = 0;
 
 			if (tab.size() == 0) {
 				JOptionPane.showMessageDialog(null, "Veuillez cochez une case",
@@ -184,35 +177,27 @@ public class Inte_Balise extends JPanel {
 								JOptionPane.QUESTION_MESSAGE);
 					}
 					if (!nb.equals("")) {
-						try {
-							// System.out.println(tab.get(0));
+						for (int j = 0; j < data.length; j++) {
+							if (nb.equals(data[j][1])) {
+								flagExiste = 1;
+							}
+						}
+						if (flagExiste == 1) {
+							JOptionPane.showMessageDialog(null,
+									"Cette balise existe déjà", "Balise non modifiée!",
+									JOptionPane.INFORMATION_MESSAGE);
+						} else {
 							String requeteSQL = "UPDATE `balise` SET  `idBalise` = '"
 									+ nb
 									+ "' WHERE CONCAT(`balise`.`idBalise`) = '"
 									+ tab.get(i) + "'";
-							// System.out.println(requeteSQL);
-							Class.forName("com.mysql.jdbc.Driver");
-							System.out.println("Driver O.K.");
+							BDDupdate(requeteSQL);
 
-							Connection conn = DriverManager.getConnection(url,
-									user, passwd);
-							System.out.println("Connexion effective !");
-							Statement stm = conn.createStatement();
-							int res = stm.executeUpdate(requeteSQL);
-
-							System.out.println("Nb enregistrement : " + res);
-
-							conn.close();
-							updateTable();
-
-						} catch (Exception e) {
-							e.printStackTrace();
+							JOptionPane.showMessageDialog(null,
+									"La balise est maintenant : " + nb,
+									"Balise " + tab.get(i) + " modifiée!",
+									JOptionPane.INFORMATION_MESSAGE);
 						}
-
-						JOptionPane.showMessageDialog(null,
-								"La balise est maintenant : " + nb, "Balise "
-										+ tab.get(i) + " modifiée!",
-								JOptionPane.INFORMATION_MESSAGE);
 					}
 				}
 			}
@@ -242,28 +227,9 @@ public class Inte_Balise extends JPanel {
 						JOptionPane.YES_NO_OPTION);
 
 				if (rep == 0) {
-
-					try {
-
-						String requeteSQL = "DELETE FROM `raidzultat`.`balise` WHERE CONCAT(`balise`.`idBalise`) = '"
-								+ tab.get(i) + "'";
-						Class.forName("com.mysql.jdbc.Driver");
-						System.out.println("Driver O.K.");
-
-						Connection conn = DriverManager.getConnection(url,
-								user, passwd);
-						System.out.println("Connexion effective !");
-						Statement stm = conn.createStatement();
-						int res = stm.executeUpdate(requeteSQL);
-
-						System.out.println("Nb enregistrement : " + res);
-
-						conn.close();
-						updateTable();
-						
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+					String requeteSQL = "DELETE FROM `raidzultat`.`balise` WHERE CONCAT(`balise`.`idBalise`) = '"
+							+ tab.get(i) + "'";
+					BDDupdate(requeteSQL);
 
 					JOptionPane.showMessageDialog(null,
 							"La balise est maintenant supprimée", "Balise "
@@ -290,12 +256,12 @@ public class Inte_Balise extends JPanel {
 			System.out.println("Connexion effective !");
 			Statement stm = conn.createStatement();
 			ResultSet res = stm.executeQuery(requeteSQL);
-			int i = 0;
+			
 			while (res.next()) {
 				ArrayData.add(new Object[] { new Boolean(false),
 						res.getString(1) });
 				System.out.println("Nom : " + res.getString(1));
-				i++;
+				
 			}
 
 			conn.close();
@@ -346,5 +312,48 @@ public class Inte_Balise extends JPanel {
 		 * ArrayDataSelect.get(i); } //System.out.println(tab); return tab;
 		 */
 		return ArrayDataSelect;
+	}
+
+	public void BDDupdate(String requeteSQL){
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			System.out.println("Driver O.K.");
+
+			Connection conn = DriverManager.getConnection(url,
+					user, passwd);
+			System.out.println("Connexion effective !");
+			Statement stm = conn.createStatement();
+			int res = stm.executeUpdate(requeteSQL);
+
+			System.out.println("Nb enregistrement : " + res);
+
+			conn.close();
+			updateTable();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void BDDquery(String requeteSQL){
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			System.out.println("Driver O.K.");
+
+			Connection conn = DriverManager.getConnection(url,
+					user, passwd);
+			System.out.println("Connexion effective !");
+			Statement stm = conn.createStatement();
+			int res = stm.executeUpdate(requeteSQL);
+
+			System.out.println("Nb enregistrement : " + res);
+
+			conn.close();
+
+			updateTable();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }
