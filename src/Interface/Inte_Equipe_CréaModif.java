@@ -59,7 +59,7 @@ public class Inte_Equipe_CréaModif extends JFrame {
 	private JButton oK = new JButton("Valider");
 	private JButton annuler = new JButton("Annuler");
 
-	Inte_Equipe_CréaModif() {
+	Inte_Equipe_CréaModif(int idC) {
 		thePanel = this;
 		
 		thePanel.setTitle("Raidzultats"); // titre 

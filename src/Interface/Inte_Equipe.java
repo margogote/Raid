@@ -52,10 +52,13 @@ public class Inte_Equipe extends JPanel {
 			"Nom du groupe", "Difficulté", "Type d'équipe" };
 
 	JLabel bjr = new JLabel("Ici vous pouvez gérer vous différentes équipes");
+	
+	int idc;
 
-	public Inte_Equipe() {
+	public Inte_Equipe(int idC) {
 
 		thePanel = this;
+		idc=idC;
 
 		data = updateTable();
 
@@ -114,7 +117,7 @@ public class Inte_Equipe extends JPanel {
 
 		public void actionPerformed(ActionEvent arg0) {
 
-			Inte_Equipe_CréaModif formulaire = new Inte_Equipe_CréaModif();
+			Inte_Equipe_CréaModif formulaire = new Inte_Equipe_CréaModif( idc);
 
 			/*
 			 * String nb = JOptionPane.showInputDialog(null,
@@ -222,7 +225,7 @@ public class Inte_Equipe extends JPanel {
 
 				if (rep == 0) {
 					String requeteSQL = "DELETE FROM `raidzultat`.`equipe` WHERE CONCAT(`equipe`.`idEquipe`) = '"
-							+ tab.get(i) + "'";
+							+ tab.get(i) + "' && `idCompetition` = '"+idc + "'";
 					BDDupdate(requeteSQL);
 
 					JOptionPane.showMessageDialog(null,
@@ -240,7 +243,7 @@ public class Inte_Equipe extends JPanel {
 
 		ArrayList<Object[]> ArrayData = new ArrayList<>();
 
-		String requeteSQL = "SELECT * FROM equipe";
+		String requeteSQL = "SELECT * FROM equipe WHERE `idCompetition` = '"+idc+"'";
 
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -286,7 +289,10 @@ public class Inte_Equipe extends JPanel {
 	public Object[][] ArrayToTab(ArrayList<Object[]> array) {
 
 		int lengthLig = array.size();
-		int lengthCol = array.get(1).length - 1;
+		int lengthCol;
+		if(lengthLig>0){
+		lengthCol = array.get(0).length;
+		}else{lengthCol=0;}
 		Object[][] tab = new Object[lengthLig][lengthCol];
 		for (int i = 0; i < lengthLig; i++) {
 			tab[i] = array.get(i);

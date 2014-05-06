@@ -14,14 +14,6 @@ public class Inte_monAppli {
 
 	JFrame fen2 = new JFrame();
 	JTabbedPane tabbedPane = new JTabbedPane();
-	
-	Inte_Doigt inte_Doigt = new Inte_Doigt(/*fen2*/);
-	Inte_Balise inte_Balise = new Inte_Balise();
-	Inte_Equipe inte_Equipe = new Inte_Equipe();
-	Inte_Resultat inte_Resultat = new Inte_Resultat();
-	Inte_Epreuve inte_Epreuve = new Inte_Epreuve();
-	Inte_MalusBonus inte_MalusBonus =new Inte_MalusBonus();
-	Inte_Menu inte_Menu = new Inte_Menu(fen2);
 
 	/*private JPanel panMega = new JPanel(); // Panel qui contient tous
 	private JPanel panAccueil = new JPanel(); // Panel du champ de recherche
@@ -41,6 +33,16 @@ public class Inte_monAppli {
 			"Bienvenu(e) sur Raidzultats, l'application qui permet de gérer le classement d'un Raid");
 
 	public Inte_monAppli(String nomC, int idC) {
+		
+		
+		Inte_Doigt inte_Doigt = new Inte_Doigt(idC);
+		Inte_Balise inte_Balise = new Inte_Balise(idC);
+		Inte_Equipe inte_Equipe = new Inte_Equipe(idC);
+		Inte_Resultat inte_Resultat = new Inte_Resultat(idC);
+		Inte_Epreuve inte_Epreuve = new Inte_Epreuve(idC);
+		Inte_MalusBonus inte_MalusBonus =new Inte_MalusBonus(idC);
+		Inte_Menu inte_Menu = new Inte_Menu(fen2);
+
 
 		fen2.setTitle("Raidzultats - " +nomC); // titre
 		//fen2.setTitle("Raidzultats - "+nomCompet);

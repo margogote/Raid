@@ -49,10 +49,13 @@ public class Inte_Balise extends JPanel {
 	private String title[] = { "Check", "idBalise" };
 
 	JLabel bjr = new JLabel("Ici vous pouvez gérer vous différents balises");
+	
+	private int idc;
 
-	public Inte_Balise() {
+	public Inte_Balise(int idC) {
 
 		thePanel = this;
+		idc=idC;
 
 		data = updateTable();
 
@@ -135,8 +138,8 @@ public class Inte_Balise extends JPanel {
 								JOptionPane.INFORMATION_MESSAGE);
 					} else {
 						
-						String requeteSQL = "INSERT INTO `balise` (`idBalise`) VALUES ( "
-								+ nb + ")";
+						String requeteSQL = "INSERT INTO `balise` (`idBalise`,`idCompetition`) VALUES ( "
+								+ nb +","+ idc+ ")";
 						BDDquery(requeteSQL);
 
 						JOptionPane.showMessageDialog(null, "La balise est "
@@ -190,7 +193,7 @@ public class Inte_Balise extends JPanel {
 							String requeteSQL = "UPDATE `balise` SET  `idBalise` = '"
 									+ nb
 									+ "' WHERE CONCAT(`balise`.`idBalise`) = '"
-									+ tab.get(i) + "'";
+									+ tab.get(i) + "' && `idCompetition` = '"+idc + "'";
 							BDDupdate(requeteSQL);
 
 							JOptionPane.showMessageDialog(null,
@@ -228,7 +231,7 @@ public class Inte_Balise extends JPanel {
 
 				if (rep == 0) {
 					String requeteSQL = "DELETE FROM `raidzultat`.`balise` WHERE CONCAT(`balise`.`idBalise`) = '"
-							+ tab.get(i) + "'";
+							+ tab.get(i) + "' && `idCompetition` = '"+idc + "'";
 					BDDupdate(requeteSQL);
 
 					JOptionPane.showMessageDialog(null,
@@ -246,7 +249,7 @@ public class Inte_Balise extends JPanel {
 
 		ArrayList<Object[]> ArrayData = new ArrayList<>();
 
-		String requeteSQL = "SELECT * FROM balise";
+		String requeteSQL = "SELECT * FROM balise WHERE `idCompetition` = '"+idc+"'";
 
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -282,7 +285,10 @@ public class Inte_Balise extends JPanel {
 	public Object[][] ArrayToTab(ArrayList<Object[]> array) {
 
 		int lengthLig = array.size();
-		int lengthCol = array.get(1).length;
+		int lengthCol;
+		if(lengthLig>0){
+		lengthCol = array.get(0).length;
+		}else{lengthCol=0;}
 		Object[][] tab = new Object[lengthLig][lengthCol];
 		for (int i = 0; i < lengthLig; i++) {
 			tab[i] = array.get(i);

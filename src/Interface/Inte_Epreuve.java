@@ -49,7 +49,7 @@ public class Inte_Epreuve extends JPanel {
 
 	JLabel bjr = new JLabel("Ici vous pouvez gérer vous différentes équipes");
 
-	public Inte_Epreuve() {
+	public Inte_Epreuve(int idC) {
 
 		thePanel = this;
 
