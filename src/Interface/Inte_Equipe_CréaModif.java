@@ -5,6 +5,10 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -15,33 +19,41 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
+
 import Interface.Inte_Menu.EcouteurQ;
 
 public class Inte_Equipe_CréaModif extends JFrame {
+
+	/* BDD */
+	String url = "jdbc:mysql://localhost/raidzultat";
+	String user = "root";
+	String passwd = "";
+	
 	JFrame thePanel = new JFrame();
 
 	JLabel bjr = new JLabel(
 			"Ici vous pouvez créer/modifier vous différentes équipes");
 
 	JLabel nomL = new JLabel("Nom");
-	JTextField nomT = new JTextField();
+	JTextField nomT = new JTextField("");
 
 	JLabel doigtL = new JLabel("Doigt");
 	private JComboBox<Object> doigtC = new JComboBox<Object>();
 
 	JLabel dossartL = new JLabel("Dossart");
-	JTextField dossartT = new JTextField();
+	JTextField dossartT = new JTextField("");
 
 	JLabel difficL = new JLabel("Difficulté");
-	private String[] difficulte = { "", "Aventure", "Expert" };
+	private String[] difficulte = { "CHOISIR", "Aventure", "Expert" };
 	private JComboBox<Object> difficC = new JComboBox<Object>(difficulte);
 
 	JLabel grpL = new JLabel("Groupe");
-	private String[] grpS = { "", "HEI", "Entreprise1", "Entreprise2" };
+	private String[] grpS = { "CHOISIR", "HEI", "Entreprise1", "Entreprise2" };
 	private JComboBox<Object> grpC = new JComboBox<Object>(grpS);
 
 	JLabel catL = new JLabel("Catégorie");
-	private String[] categorie = { "", "Masculin", "Feminin", "Mixte" };
+	private String[] categorie = { "CHOISIR", "Masculin", "Feminin", "Mixte" };
 	private JComboBox<Object> catC = new JComboBox<Object>(categorie);
 
 	private JButton oK = new JButton("Valider");
@@ -67,6 +79,7 @@ public class Inte_Equipe_CréaModif extends JFrame {
 
 		JPanel doigtP = new JPanel();
 		doigtP.add(doigtL);
+		updateDoigt();
 
 		JPanel dossartP = new JPanel();
 		dossartP.add(dossartL);
@@ -131,7 +144,18 @@ public class Inte_Equipe_CréaModif extends JFrame {
 	public class EcouteurOK implements ActionListener { // Action du quitter
 
 		public void actionPerformed(ActionEvent arg0) {
-
+			String nom = nomT.getText();
+			String doigt = (String)doigtC.getSelectedItem();
+			String dossart = dossartT.getText();
+			String difficulte = (String)difficC.getSelectedItem();
+			String groupe =(String)grpC.getSelectedItem();
+			String categorie = (String)catC.getSelectedItem();
+			
+			if(nom.equals("") || doigt.equals("CHOISIR") || dossart.equals("") || difficulte.equals("CHOISIR") || groupe.equals("CHOISIR") || categorie.equals("CHOISIR")){
+				JOptionPane.showMessageDialog(null,
+						"Veuillez remplir tous les champs", "Equipe non créée!",
+						JOptionPane.INFORMATION_MESSAGE);
+			}
 			
 		}
 	}
@@ -143,5 +167,82 @@ public class Inte_Equipe_CréaModif extends JFrame {
 				thePanel.dispose();
 		}
 	}
+	
+	public void updateDoigt(){
+		String requeteSQL = "SELECT `idDoigt` FROM `doigt` WHERE `idDoigt` NOT IN ( SELECT `idDoigt` FROM `posséder`)";
+		
+		doigtC.removeAllItems();
+		doigtC.addItem("CHOISIR");
 
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			System.out.println("Driver O.K.");
+
+			Connection conn = DriverManager.getConnection(url, user, passwd);
+			System.out.println("Connexion effective !");
+			Statement stm = conn.createStatement();
+			ResultSet res = stm.executeQuery(requeteSQL);
+
+			while (res.next()) {
+				doigtC.addItem(res.getString(1));
+				System.out.println("Nom : " + res.getString(1));
+			}
+
+			conn.close();
+			res.close();
+
+		} catch (CommunicationsException com) {
+			JOptionPane.showMessageDialog(null,
+					"Pas de connection avec la Base de Données", "Attention",
+					JOptionPane.INFORMATION_MESSAGE);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		System.out.println("MAJ Combo");
+	}
+
+	public void BDDupdate(String requeteSQL){
+		try {
+			
+			Class.forName("com.mysql.jdbc.Driver");
+			System.out.println("Driver O.K.");
+
+			Connection conn = DriverManager.getConnection(url, user,
+					passwd);
+			System.out.println("Connexion effective !");
+			Statement stm = conn.createStatement();
+			int res = stm.executeUpdate(requeteSQL);
+
+			System.out.println("Nb enregistrement : " + res);
+
+			conn.close();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void BDDquery(String requeteSQL){
+		try {
+			
+			Class.forName("com.mysql.jdbc.Driver");
+			System.out.println("Driver O.K.");
+
+			Connection conn = DriverManager.getConnection(url,
+					user, passwd);
+			System.out.println("Connexion effective !");
+			Statement stm = conn.createStatement();
+			int res = stm.executeUpdate(requeteSQL);
+
+			System.out.println("Nb enregistrement : " + res);
+
+			conn.close();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 }
