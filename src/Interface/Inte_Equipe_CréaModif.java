@@ -29,7 +29,7 @@ public class Inte_Equipe_CréaModif extends JFrame {
 	String url = "jdbc:mysql://localhost/raidzultat";
 	String user = "root";
 	String passwd = "";
-	
+
 	JFrame thePanel = new JFrame();
 
 	JLabel bjr = new JLabel(
@@ -59,12 +59,15 @@ public class Inte_Equipe_CréaModif extends JFrame {
 	private JButton oK = new JButton("Valider");
 	private JButton annuler = new JButton("Annuler");
 
+	private int idc;
+
 	Inte_Equipe_CréaModif(int idC) {
 		thePanel = this;
-		
-		thePanel.setTitle("Raidzultats"); // titre 
-		thePanel.setSize(800,600); 
-		// taille de la fenetre 
+		idc = idC;
+
+		thePanel.setTitle("Raidzultats"); // titre
+		thePanel.setSize(800, 600);
+		// taille de la fenetre
 		thePanel.setLocationRelativeTo(null);
 		// centre la fenetre thePanel.setResizable(false);
 		thePanel.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -101,8 +104,8 @@ public class Inte_Equipe_CréaModif extends JFrame {
 
 		JPanel megaP = new JPanel();
 		megaP.setPreferredSize(new Dimension(100, 100));
-		megaP.setLayout(new GridLayout(6,2));
-		//megaP.setLayout(new BoxLayout(megaP, BoxLayout.PAGE_AXIS));
+		megaP.setLayout(new GridLayout(6, 2));
+		// megaP.setLayout(new BoxLayout(megaP, BoxLayout.PAGE_AXIS));
 		megaP.add(nomL);
 		megaP.add(nomT);
 		megaP.add(doigtL);
@@ -115,62 +118,106 @@ public class Inte_Equipe_CréaModif extends JFrame {
 		megaP.add(grpC);
 		megaP.add(catL);
 		megaP.add(catC);
-		
-		/*megaP.add(nomP);
-		megaP.add(doigtP);
-		megaP.add(dossartP);
-		megaP.add(diffP);
-		megaP.add(grpP);
-		megaP.add(catP);*/
-		
+
+		/*
+		 * megaP.add(nomP); megaP.add(doigtP); megaP.add(dossartP);
+		 * megaP.add(diffP); megaP.add(grpP); megaP.add(catP);
+		 */
+
 		JPanel gigaP = new JPanel();
 		gigaP.setLayout(new BoxLayout(gigaP, BoxLayout.PAGE_AXIS));
 		gigaP.add(bjr);
 		gigaP.add(megaP);
 		gigaP.add(btnP);
-		
+
 		thePanel.add(gigaP);
-		
+
 		thePanel.setVisible(true);
-		
+
 		EcouteurOK ecoutOK = new EcouteurOK();
 		oK.addActionListener(ecoutOK);
-		
+
 		EcouteurQ ecoutQ = new EcouteurQ();
 		annuler.addActionListener(ecoutQ);
-		
+
 	}
 
 	public class EcouteurOK implements ActionListener { // Action du quitter
 
 		public void actionPerformed(ActionEvent arg0) {
 			String nom = nomT.getText();
-			String doigt = (String)doigtC.getSelectedItem();
+			String doigt = (String) doigtC.getSelectedItem();
 			String dossart = dossartT.getText();
-			String difficulte = (String)difficC.getSelectedItem();
-			String groupe =(String)grpC.getSelectedItem();
-			String categorie = (String)catC.getSelectedItem();
-			
-			if(nom.equals("") || doigt.equals("CHOISIR") || dossart.equals("") || difficulte.equals("CHOISIR") || groupe.equals("CHOISIR") || categorie.equals("CHOISIR")){
+			String difficulte = (String) difficC.getSelectedItem();
+			String groupe = (String) grpC.getSelectedItem();
+			String categorie = (String) catC.getSelectedItem();
+			int idE=-1;
+
+			if (nom.equals("") || doigt.equals("CHOISIR") || dossart.equals("")
+					|| difficulte.equals("CHOISIR") || groupe.equals("CHOISIR")
+					|| categorie.equals("CHOISIR")) {
 				JOptionPane.showMessageDialog(null,
-						"Veuillez remplir tous les champs", "Equipe non créée!",
-						JOptionPane.INFORMATION_MESSAGE);
+						"Veuillez remplir tous les champs",
+						"Equipe non créée!", JOptionPane.INFORMATION_MESSAGE);
+			} else {
+				String requeteSQL = "INSERT INTO `raidzultat`.`equipe` (`idEquipe`, `nomEquipe`, `nomGroupe`, `typeDifficulte`, `typeEquipe`, `idCompetition`) VALUES (NULL, '"
+						+ nom
+						+ "', '"
+						+ groupe
+						+ "', '"
+						+ difficulte
+						+ "', '"
+						+ categorie + "', '" + idc + "')";
+				BDDquery(requeteSQL);
+				
+				try {
+					String requeteSQL2="SELECT `idEquipe` FROM `equipe` WHERE `nomEquipe`= '"+nom+"' && `idCompetition`='"+idc+"'";
+					Class.forName("com.mysql.jdbc.Driver");
+					System.out.println("Driver O.K.");
+
+					Connection conn = DriverManager.getConnection(url, user, passwd);
+					System.out.println("Connexion effective !");
+					Statement stm = conn.createStatement();
+					ResultSet res = stm.executeQuery(requeteSQL2);
+
+					while (res.next()) {
+						idE = res.getInt(1);
+						System.out.println("Num Equipe : " + res.getInt(1));
+					}
+
+					conn.close();
+					res.close();
+
+				} catch (CommunicationsException com) {
+					JOptionPane.showMessageDialog(null,
+							"Pas de connection avec la Base de Données", "Attention",
+							JOptionPane.INFORMATION_MESSAGE);
+
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				
+				String requeteSQL3 = "INSERT INTO `raidzultat`.`posséder` (`idDoigt`, `idEquipe`, `dateHeureAttribution`) VALUES ('"+doigt+"', '"+ idE +"', NULL)";
+				BDDquery(requeteSQL3);
+				
+				thePanel.dispose();
 			}
-			
+
 		}
 	}
-	
+
 	public class EcouteurQ implements ActionListener { // Action du quitter
 
 		public void actionPerformed(ActionEvent arg0) {
 
-				thePanel.dispose();
+			thePanel.dispose();
 		}
 	}
-	
-	public void updateDoigt(){
-		String requeteSQL = "SELECT `idDoigt` FROM `doigt` WHERE `idDoigt` NOT IN ( SELECT `idDoigt` FROM `posséder`)";
-		
+
+	public void updateDoigt() {
+		String requeteSQL = "SELECT `idDoigt` FROM `doigt` WHERE `idDoigt` NOT IN ( SELECT `idDoigt` FROM `posséder`) && `idCompetition` = '"
+				+ idc + "'";
+
 		doigtC.removeAllItems();
 		doigtC.addItem("CHOISIR");
 
@@ -203,14 +250,13 @@ public class Inte_Equipe_CréaModif extends JFrame {
 		System.out.println("MAJ Combo");
 	}
 
-	public void BDDupdate(String requeteSQL){
+	public void BDDupdate(String requeteSQL) {
 		try {
-			
+
 			Class.forName("com.mysql.jdbc.Driver");
 			System.out.println("Driver O.K.");
 
-			Connection conn = DriverManager.getConnection(url, user,
-					passwd);
+			Connection conn = DriverManager.getConnection(url, user, passwd);
 			System.out.println("Connexion effective !");
 			Statement stm = conn.createStatement();
 			int res = stm.executeUpdate(requeteSQL);
@@ -223,15 +269,14 @@ public class Inte_Equipe_CréaModif extends JFrame {
 			e.printStackTrace();
 		}
 	}
-	
-	public void BDDquery(String requeteSQL){
+
+	public void BDDquery(String requeteSQL) {
 		try {
-			
+
 			Class.forName("com.mysql.jdbc.Driver");
 			System.out.println("Driver O.K.");
 
-			Connection conn = DriverManager.getConnection(url,
-					user, passwd);
+			Connection conn = DriverManager.getConnection(url, user, passwd);
 			System.out.println("Connexion effective !");
 			Statement stm = conn.createStatement();
 			int res = stm.executeUpdate(requeteSQL);
@@ -244,5 +289,5 @@ public class Inte_Equipe_CréaModif extends JFrame {
 			e.printStackTrace();
 		}
 	}
-	
+
 }
