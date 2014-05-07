@@ -49,16 +49,16 @@ public class Inte_Equipe extends JPanel {
 	private JTable tableau;
 	private Object[][] data;
 	private String title[] = { "Check", "idEquipe", "Nom d'équipe",
-			"Nom du groupe", "Difficulté", "Type d'équipe" };
+			"Nom du groupe", "Difficulté", "Type d'équipe", "Doigt" };
 
 	JLabel bjr = new JLabel("Ici vous pouvez gérer vous différentes équipes");
-	
+
 	int idc;
 
 	public Inte_Equipe(int idC) {
 
 		thePanel = this;
-		idc=idC;
+		idc = idC;
 
 		data = updateTable();
 
@@ -91,6 +91,7 @@ public class Inte_Equipe extends JPanel {
 		panBoutonsListe.add(panBoutCreer);
 		panBoutonsListe.add(panBoutModif);
 		panBoutonsListe.add(panBoutSupp);
+		
 
 		panTitre.setLayout(new BoxLayout(panTitre, BoxLayout.PAGE_AXIS));
 		panTitre.setLayout(new BorderLayout());
@@ -117,43 +118,9 @@ public class Inte_Equipe extends JPanel {
 
 		public void actionPerformed(ActionEvent arg0) {
 
-			Inte_Equipe_CréaModif formulaire = new Inte_Equipe_CréaModif( idc);
-
-			/*
-			 * String nb = JOptionPane.showInputDialog(null,
-			 * "Donner le numéro de votre doigt !", "Nouveau doigt ?",
-			 * JOptionPane.QUESTION_MESSAGE);
-			 * 
-			 * if (nb != null) { while (nb.equals("")) {
-			 * JOptionPane.showMessageDialog(null, "Veuillez entrer un numéro",
-			 * "Doigt non créé!", JOptionPane.INFORMATION_MESSAGE); nb =
-			 * JOptionPane.showInputDialog(null,
-			 * "Donner le numéro de votre doigt !", "Nouveau doigt ?",
-			 * JOptionPane.QUESTION_MESSAGE); }
-			 * 
-			 * // ---- Contrôle utilisateur ---- //
-			 * "Ce doigt existe déjà, veuillez entrer un autre numéro"
-			 * 
-			 * if (!nb.equals("")) { try { String requeteSQL =
-			 * "INSERT INTO `doigt` (`idDoigt`) VALUES ( " + nb + ")";
-			 * Class.forName("com.mysql.jdbc.Driver");
-			 * System.out.println("Driver O.K.");
-			 * 
-			 * Connection conn = DriverManager.getConnection(url, user, passwd);
-			 * System.out.println("Connexion effective !"); Statement stm =
-			 * conn.createStatement(); int res = stm.executeUpdate(requeteSQL);
-			 * 
-			 * System.out.println("Nb enregistrement : " + res);
-			 * 
-			 * conn.close();
-			 * 
-			 * updateTable();
-			 * 
-			 * } catch (Exception e) { e.printStackTrace(); }
-			 * 
-			 * JOptionPane.showMessageDialog(null, "Le doigt est " + nb + ".",
-			 * "Nouvelle compétition !", JOptionPane.INFORMATION_MESSAGE); } }
-			 */
+			Inte_Equipe_CreaModif formulaire = new Inte_Equipe_CreaModif(idc,panMega);
+			
+			//updateTable(); 
 		}
 	}
 
@@ -225,7 +192,10 @@ public class Inte_Equipe extends JPanel {
 
 				if (rep == 0) {
 					String requeteSQL = "DELETE FROM `raidzultat`.`equipe` WHERE CONCAT(`equipe`.`idEquipe`) = '"
-							+ tab.get(i) + "' && `idCompetition` = '"+idc + "'";
+							+ tab.get(i)
+							+ "' && `idCompetition` = '"
+							+ idc
+							+ "'";
 					BDDupdate(requeteSQL);
 
 					JOptionPane.showMessageDialog(null,
@@ -243,7 +213,8 @@ public class Inte_Equipe extends JPanel {
 
 		ArrayList<Object[]> ArrayData = new ArrayList<>();
 
-		String requeteSQL = "SELECT * FROM equipe WHERE `idCompetition` = '"+idc+"'";
+		//String requeteSQL = "SELECT * FROM equipe WHERE `idCompetition` = '"+idc+"'";
+		String requeteSQL = "SELECT equipe.`idEquipe`, equipe.`nomEquipe`, equipe.`nomGroupe`, equipe.`typeDifficulte`, equipe.`typeEquipe`, posséder.`idDoigt` FROM equipe INNER JOIN posséder ON equipe.`idEquipe`=posséder.`idEquipe` WHERE equipe.`idCompetition` = '"+idc+"' && posséder.`idCompetition` = '"+idc+"'";
 
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -253,16 +224,14 @@ public class Inte_Equipe extends JPanel {
 			System.out.println("Connexion effective !");
 			Statement stm = conn.createStatement();
 			ResultSet res = stm.executeQuery(requeteSQL);
-			// int i = 0;
 			while (res.next()) {
 				ArrayData.add(new Object[] { new Boolean(false),
 						res.getString(1), res.getString(2), res.getString(3),
-						res.getString(4), res.getString(5) });
+						res.getString(4), res.getString(5), res.getString(6) });
 				System.out.println("Id : " + res.getInt(1) + " nom : "
 						+ res.getString(2) + " Grp : " + res.getString(3)
 						+ " Diff : " + res.getString(4) + " Type : "
-						+ res.getString(5));
-				// i++;
+						+ res.getString(5) + " Doigt : "+res.getString(6));
 			}
 
 			conn.close();
@@ -290,13 +259,14 @@ public class Inte_Equipe extends JPanel {
 
 		int lengthLig = array.size();
 		int lengthCol;
-		if(lengthLig>0){
-		lengthCol = array.get(0).length;
-		}else{lengthCol=0;}
+		if (lengthLig > 0) {
+			lengthCol = array.get(0).length;
+		} else {
+			lengthCol = 0;
+		}
 		Object[][] tab = new Object[lengthLig][lengthCol];
 		for (int i = 0; i < lengthLig; i++) {
 			tab[i] = array.get(i);
-			// System.out.println(tab[i]);
 		}
 		return tab;
 	}

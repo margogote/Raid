@@ -5,6 +5,8 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowStateListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -23,7 +25,7 @@ import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
 
 import Interface.Inte_Menu.EcouteurQ;
 
-public class Inte_Equipe_CréaModif extends JFrame {
+public class Inte_Equipe_CreaModif extends JFrame {
 
 	/* BDD */
 	String url = "jdbc:mysql://localhost/raidzultat";
@@ -60,10 +62,12 @@ public class Inte_Equipe_CréaModif extends JFrame {
 	private JButton annuler = new JButton("Annuler");
 
 	private int idc;
+	private JPanel panel;
 
-	Inte_Equipe_CréaModif(int idC) {
+	Inte_Equipe_CreaModif(int idC, JPanel pan) {
 		thePanel = this;
 		idc = idC;
+		panel=pan;
 
 		thePanel.setTitle("Raidzultats"); // titre
 		thePanel.setSize(800, 600);
@@ -151,7 +155,7 @@ public class Inte_Equipe_CréaModif extends JFrame {
 			String difficulte = (String) difficC.getSelectedItem();
 			String groupe = (String) grpC.getSelectedItem();
 			String categorie = (String) catC.getSelectedItem();
-			int idE=-1;
+			int idE = -1;
 
 			if (nom.equals("") || doigt.equals("CHOISIR") || dossart.equals("")
 					|| difficulte.equals("CHOISIR") || groupe.equals("CHOISIR")
@@ -169,13 +173,15 @@ public class Inte_Equipe_CréaModif extends JFrame {
 						+ "', '"
 						+ categorie + "', '" + idc + "')";
 				BDDquery(requeteSQL);
-				
+
 				try {
-					String requeteSQL2="SELECT `idEquipe` FROM `equipe` WHERE `nomEquipe`= '"+nom+"' && `idCompetition`='"+idc+"'";
+					String requeteSQL2 = "SELECT `idEquipe` FROM `equipe` WHERE `nomEquipe`= '"
+							+ nom + "' && `idCompetition`='" + idc + "'";
 					Class.forName("com.mysql.jdbc.Driver");
 					System.out.println("Driver O.K.");
 
-					Connection conn = DriverManager.getConnection(url, user, passwd);
+					Connection conn = DriverManager.getConnection(url, user,
+							passwd);
 					System.out.println("Connexion effective !");
 					Statement stm = conn.createStatement();
 					ResultSet res = stm.executeQuery(requeteSQL2);
@@ -190,16 +196,21 @@ public class Inte_Equipe_CréaModif extends JFrame {
 
 				} catch (CommunicationsException com) {
 					JOptionPane.showMessageDialog(null,
-							"Pas de connection avec la Base de Données", "Attention",
-							JOptionPane.INFORMATION_MESSAGE);
+							"Pas de connection avec la Base de Données",
+							"Attention", JOptionPane.INFORMATION_MESSAGE);
 
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				
-				String requeteSQL3 = "INSERT INTO `raidzultat`.`posséder` (`idDoigt`, `idEquipe`, `dateHeureAttribution`) VALUES ('"+doigt+"', '"+ idE +"', NULL)";
+
+				String requeteSQL3 = "INSERT INTO `raidzultat`.`posséder` (`idDoigt`, `idEquipe`, `dateHeureAttribution`,`idCompetition`) VALUES ('"
+						+ doigt + "', '" + idE + "', NULL,'" + idc + "')";
 				BDDquery(requeteSQL3);
-				
+
+				//Inte_Equipe equ = new Inte_Equipe(idc);
+				//equ.updateTable();
+				panel.revalidate();
+				panel.repaint();
 				thePanel.dispose();
 			}
 
@@ -215,8 +226,8 @@ public class Inte_Equipe_CréaModif extends JFrame {
 	}
 
 	public void updateDoigt() {
-		String requeteSQL = "SELECT `idDoigt` FROM `doigt` WHERE `idDoigt` NOT IN ( SELECT `idDoigt` FROM `posséder`) && `idCompetition` = '"
-				+ idc + "'";
+		String requeteSQL = "SELECT `idDoigt` FROM `doigt` WHERE `idDoigt` NOT IN ( SELECT `idDoigt` FROM `posséder` WHERE `idCompetition` = '"
+				+ idc + "') && `idCompetition` = '" + idc + "'";
 
 		doigtC.removeAllItems();
 		doigtC.addItem("CHOISIR");
