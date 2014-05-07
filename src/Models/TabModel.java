@@ -41,8 +41,8 @@ public class TabModel extends AbstractTableModel{
 		   //Définit la valeur à l'emplacement spécifié
 		   public void setValueAt(Object value, int row, int col) {
 		      //On interdit la modification sur certaines colonnes !
-		      if(!this.getColumnName(col).equals("Age")
-		         && !this.getColumnName(col).equals("Suppression"))
+		      /*if(!this.getColumnName(col).equals("Age")
+		         && !this.getColumnName(col).equals("Suppression"))*/
 		         this.data[row][col] = value;
 		   }
 		          

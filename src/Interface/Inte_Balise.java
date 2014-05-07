@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -25,7 +26,7 @@ public class Inte_Balise extends JPanel {
 	/* Panels */
 	private JPanel thePanel;
 	private JPanel panMega = new JPanel(); // Panel qui contient tous
-	private JPanel panBalises = new JPanel(); // Panel du champ de recherche
+	private JPanel panTitre = new JPanel(); // Panel du champ de recherche
 	private JPanel panBoutonsListe = new JPanel(); // Panel des bouttons
 
 	JPanel panBoutCreer = new JPanel();
@@ -77,7 +78,7 @@ public class Inte_Balise extends JPanel {
 		modif.setPreferredSize(new Dimension(100, 30));
 		creer.setPreferredSize(new Dimension(100, 30));
 		supp.setPreferredSize(new Dimension(100, 30));
-
+		
 		panBoutCreer.add(creer);
 		panBoutSupp.add(supp);
 		panBoutModif.add(modif);
@@ -88,22 +89,21 @@ public class Inte_Balise extends JPanel {
 		panBoutonsListe.add(panBoutModif);
 		panBoutonsListe.add(panBoutSupp);
 
-		panBalises.setLayout(new BoxLayout(panBalises, BoxLayout.PAGE_AXIS));
-		panBalises.setLayout(new BorderLayout());
-		panBalises.add(bjr, BorderLayout.NORTH);
-		panBalises.add(panBoutonsListe, BorderLayout.CENTER);
-
-		tabModel = new TabModel(data, title);
-
 		// Nous ajoutons notre tableau à notre contentPane dans un scroll
 		// Sinon les titres des colonnes ne s'afficheront pas !
-
+		tabModel = new TabModel(data, title);
 		tableau = new JTable(tabModel);
 		tableau.setRowHeight(30);
+		JScrollPane jScroll = new JScrollPane(tableau);
+		jScroll.setPreferredSize(new Dimension(600, 400));
+		
+		panTitre.setBorder(BorderFactory.createTitledBorder("Ici vous pouvez gérer vous différents balises"));
+		panTitre.setPreferredSize(new Dimension(750, 450));
+		panTitre.add(panBoutonsListe);
+		panTitre.add(jScroll);
 
-		panMega.add(panBalises);
-		panMega.add(new JScrollPane(tableau));
-
+		panMega.add(panTitre);
+		
 		this.add(panMega);
 	}
 

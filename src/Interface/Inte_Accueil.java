@@ -156,22 +156,24 @@ public class Inte_Accueil {
 				while (nom.equals("")) {
 					JOptionPane.showMessageDialog(null,
 							"Veuillez entrer un nom", "Compétition non créée!",
-							JOptionPane.INFORMATION_MESSAGE);
+							JOptionPane.ERROR_MESSAGE);
 					nom = JOptionPane.showInputDialog(null,
 							"Donner le nom de votre compétition !",
 							"Nouvelle compétition ?",
 							JOptionPane.QUESTION_MESSAGE);
 				}
-				if (!nom.equals("")) {
-					String requeteSQL = "INSERT INTO `competition` (`nomCompetition`)VALUES ( '"
-							+ nom + "')";
-					BDDquery(requeteSQL);
+					if (!nom.equals("")) {
+						String requeteSQL = "INSERT INTO `competition` (`nomCompetition`)VALUES ( '"
+								+ nom + "')";
+						BDDquery(requeteSQL);
 
-					JOptionPane.showMessageDialog(null, "La compétition est "
-							+ nom + ".", "Nouvelle compétition !",
-							JOptionPane.INFORMATION_MESSAGE);
+						JOptionPane.showMessageDialog(null,
+								"La compétition est " + nom + ".",
+								"Nouvelle compétition !",
+								JOptionPane.INFORMATION_MESSAGE);
 
-					updateCombo(compets);
+						updateCombo(compets);
+					
 				}
 			}
 		}
@@ -197,7 +199,7 @@ public class Inte_Accueil {
 					JOptionPane.showMessageDialog(null,
 							"Veuillez entrer un nom", "Compétition " + id
 									+ " non modifiée!",
-							JOptionPane.INFORMATION_MESSAGE);
+							JOptionPane.ERROR_MESSAGE);
 					nom = JOptionPane.showInputDialog(null,
 							"Donner le nom de votre compétition !",
 							"Nouvelle compétition ?",
@@ -338,15 +340,14 @@ public class Inte_Accueil {
 		}
 		return iDSelect;
 	}
-	
-	public void BDDupdate(String requeteSQL){
+
+	public void BDDupdate(String requeteSQL) {
 		try {
-			
+
 			Class.forName("com.mysql.jdbc.Driver");
 			System.out.println("Driver O.K.");
 
-			Connection conn = DriverManager.getConnection(url, user,
-					passwd);
+			Connection conn = DriverManager.getConnection(url, user, passwd);
 			System.out.println("Connexion effective !");
 			Statement stm = conn.createStatement();
 			int res = stm.executeUpdate(requeteSQL);
@@ -359,15 +360,14 @@ public class Inte_Accueil {
 			e.printStackTrace();
 		}
 	}
-	
-	public void BDDquery(String requeteSQL){
+
+	public void BDDquery(String requeteSQL) {
 		try {
-			
+
 			Class.forName("com.mysql.jdbc.Driver");
 			System.out.println("Driver O.K.");
 
-			Connection conn = DriverManager.getConnection(url,
-					user, passwd);
+			Connection conn = DriverManager.getConnection(url, user, passwd);
 			System.out.println("Connexion effective !");
 			Statement stm = conn.createStatement();
 			int res = stm.executeUpdate(requeteSQL);

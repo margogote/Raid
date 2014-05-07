@@ -8,8 +8,10 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -30,16 +32,25 @@ public class Inte_Epreuve extends JPanel {
 	private JPanel panMega = new JPanel(); // Panel qui contient tous
 	private JPanel panTitre = new JPanel(); // Panel du champ de recherche
 	private JPanel panBoutonsListe = new JPanel(); // Panel des bouttons
+	private JPanel panBjr = new JPanel();
+	private JPanel panEpL = new JPanel();
 
 	JPanel panBoutCreer = new JPanel();
 	JPanel panBoutSupp = new JPanel();
 	JPanel panBoutModif = new JPanel();
+	JPanel panBoutAqui = new JPanel();
+	JPanel panCombo = new JPanel();
+	JPanel panEpre = new JPanel();
+	JPanel panZoneAquis = new JPanel();
 
 	/* Boutons */
 	private JButton modif = new JButton("Modifier");
 	private JButton supp = new JButton("Supprimer");
 	private JButton creer = new JButton("Créer");
+	private JButton aquis = new JButton("Aquisition");
 
+	private JComboBox<String> comboEpreuv = new JComboBox<>();
+	
 	/* BDD */
 	String url = "jdbc:mysql://localhost/raidzultat";
 	String user = "root";
@@ -52,7 +63,9 @@ public class Inte_Epreuve extends JPanel {
 	private String title[] = { "Check", "idEpreuve", "Nom de l'epreuve",
 			"Type", "Difficulté", "Heure début", "Durée" };
 
-	JLabel bjr = new JLabel("Ici vous pouvez gérer vous différentes épreuves");
+	JLabel bjrL = new JLabel("Ici vous pouvez gérer vous différentes épreuves");
+	JLabel aquiL = new JLabel("Ici vous pouvez gérer vous aquisitions par épreuve");
+	JLabel epreuveL = new JLabel("Epreuve");
 
 	private int idc;
 
@@ -60,7 +73,6 @@ public class Inte_Epreuve extends JPanel {
 
 		thePanel = this;
 		idc = idC;
-
 		
 		data = updateTable();
 		/* 
@@ -73,14 +85,17 @@ public class Inte_Epreuve extends JPanel {
 		 * EcouteurCreer ecoutCreer = new EcouteurCreer();
 		 * creer.addActionListener(ecoutCreer);
 		 */
+		
 		thePanel.removeAll();
 		panMega.removeAll();
 
 		modif.setPreferredSize(new Dimension(100, 30));
 		creer.setPreferredSize(new Dimension(100, 30));
 		supp.setPreferredSize(new Dimension(100, 30));
-		// panBoutonsListe.setPreferredSize (new Dimension(200, 150));
+		aquis.setPreferredSize(new Dimension(100, 30));
 
+		//panBjr.add(bjrL);
+		
 		panBoutCreer.add(creer);
 		panBoutSupp.add(supp);
 		panBoutModif.add(modif);
@@ -91,23 +106,33 @@ public class Inte_Epreuve extends JPanel {
 		panBoutonsListe.add(panBoutModif);
 		panBoutonsListe.add(panBoutSupp);
 
-		panTitre.setLayout(new BoxLayout(panTitre, BoxLayout.PAGE_AXIS));
-		panTitre.setLayout(new BorderLayout());
-		// panTitre.add(bjr, BorderLayout.NORTH);
-		panTitre.add(panBoutonsListe, BorderLayout.WEST);
-
-		tabModel = new TabModel(data, title);
-
 		// Nous ajoutons notre tableau à notre contentPane dans un scroll
 		// Sinon les titres des colonnes ne s'afficheront pas !
-
+		tabModel = new TabModel(data, title);
 		tableau = new JTable(tabModel);
 		tableau.setRowHeight(30);
+		JScrollPane jScroll = new JScrollPane(tableau);
+		jScroll.setPreferredSize(new Dimension(600, 400));
+		
+		panTitre.setBorder(BorderFactory.createTitledBorder("Ici vous pouvez gérer vos différentes épreuves"));
+		panTitre.setPreferredSize(new Dimension(750, 450));
+		panTitre.add(panBoutonsListe);
+		panTitre.add(jScroll);
+		
+		
+		panEpL.add(epreuveL);
+		panEpre.add(epreuveL);
+		panCombo.add(comboEpreuv);
+		panBoutAqui.add(aquis);
+		
+		panZoneAquis.setBorder(BorderFactory.createTitledBorder("Ici vous pouvez gérer vous aquisitions par épreuve"));
+		panZoneAquis.add(panEpre);
+		panZoneAquis.add(panCombo);
+		panZoneAquis.add(panBoutAqui);
 
-		panMega.setLayout(new BorderLayout());
-		panMega.add(bjr, BorderLayout.NORTH);
-		panMega.add(panTitre, BorderLayout.WEST);
-		panMega.add(new JScrollPane(tableau), BorderLayout.CENTER);
+		panMega.setLayout(new BoxLayout(panMega, BoxLayout.PAGE_AXIS));
+		panMega.add(panTitre);
+		panMega.add(panZoneAquis);
 
 		thePanel.add(panMega);
 

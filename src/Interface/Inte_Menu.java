@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -51,14 +52,19 @@ public class Inte_Menu extends JPanel {
 		panBoutonsListe.add(panBoutAP);
 
 		panBalise.setLayout(new BoxLayout(panBalise, BoxLayout.PAGE_AXIS));
-		panBalise.setLayout(new BorderLayout());
-		panBalise.add(panBoutonsListe, BorderLayout.CENTER);
+		//panBalise.setLayout(new BorderLayout());
+		//panBalise.add(panBoutonsListe/*, BorderLayout.CENTER*/);
 
-		// panMega.setLayout(new BorderLayout());
-		panMega.add(panBalise /* , BorderLayout.CENTER */);
+		//panMega.setLayout(new BorderLayout());
+		//panBalise.add(panBoutonsListe , BorderLayout.CENTER );
 
-		this.setLayout(new BorderLayout());
-		this.add(panMega /* , BorderLayout.CENTER */);
+		panBalise.setLayout(new BoxLayout(panBalise, BoxLayout.Y_AXIS));
+		panBalise.add(Box.createVerticalGlue());
+		panBalise.add(panBoutonsListe);
+		panBalise.add(Box.createVerticalGlue());
+		
+		//this.setLayout(new BorderLayout());
+		this.add(panBalise /* , BorderLayout.CENTER */);
 
 		EcouteurQ ecoutQ = new EcouteurQ();
 		quitter.addActionListener(ecoutQ);

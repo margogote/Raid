@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -29,6 +30,7 @@ public class Inte_Equipe extends JPanel {
 	private JPanel panMega = new JPanel(); // Panel qui contient tous
 	private JPanel panTitre = new JPanel(); // Panel du champ de recherche
 	private JPanel panBoutonsListe = new JPanel(); // Panel des bouttons
+	private JPanel panBjr = new JPanel();
 
 	JPanel panBoutCreer = new JPanel();
 	JPanel panBoutSupp = new JPanel();
@@ -51,7 +53,7 @@ public class Inte_Equipe extends JPanel {
 	private String title[] = { "Check", "idEquipe", "Nom d'équipe",
 			"Nom du groupe", "Difficulté", "Type d'équipe", "Doigt" };
 
-	JLabel bjr = new JLabel("Ici vous pouvez gérer vous différentes équipes");
+	JLabel bjrL = new JLabel("Ici vous pouvez gérer vous différentes équipes");
 
 	int idc;
 
@@ -80,8 +82,9 @@ public class Inte_Equipe extends JPanel {
 		modif.setPreferredSize(new Dimension(100, 30));
 		creer.setPreferredSize(new Dimension(100, 30));
 		supp.setPreferredSize(new Dimension(100, 30));
-		// panBoutonsListe.setPreferredSize (new Dimension(200, 150));
 
+		panBjr.add(bjrL);
+		
 		panBoutCreer.add(creer);
 		panBoutSupp.add(supp);
 		panBoutModif.add(modif);
@@ -91,25 +94,28 @@ public class Inte_Equipe extends JPanel {
 		panBoutonsListe.add(panBoutCreer);
 		panBoutonsListe.add(panBoutModif);
 		panBoutonsListe.add(panBoutSupp);
-		
-
-		panTitre.setLayout(new BoxLayout(panTitre, BoxLayout.PAGE_AXIS));
-		panTitre.setLayout(new BorderLayout());
-		// panTitre.add(bjr, BorderLayout.NORTH);
-		panTitre.add(panBoutonsListe, BorderLayout.WEST);
-
-		tabModel = new TabModel(data, title);
 
 		// Nous ajoutons notre tableau à notre contentPane dans un scroll
 		// Sinon les titres des colonnes ne s'afficheront pas !
-
+		tabModel = new TabModel(data, title);
 		tableau = new JTable(tabModel);
 		tableau.setRowHeight(30);
+		JScrollPane jScroll = new JScrollPane(tableau);
+		jScroll.setPreferredSize(new Dimension(600, 400));
+		
+		panTitre.setBorder(BorderFactory.createTitledBorder("Ici vous pouvez gérer vos différentes équipes"));
+		panTitre.setPreferredSize(new Dimension(750, 450));
+		panTitre.add(panBoutonsListe);
+		panTitre.add(jScroll);
 
+		panMega.add(panTitre);
+		
+		/*
 		panMega.setLayout(new BorderLayout());
 		panMega.add(bjr, BorderLayout.NORTH);
 		panMega.add(panTitre, BorderLayout.WEST);
 		panMega.add(new JScrollPane(tableau), BorderLayout.CENTER);
+		*/
 
 		thePanel.add(panMega);
 	}

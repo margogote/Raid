@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -33,7 +34,7 @@ public class Inte_Doigt extends JPanel {
 	/* Panels */
 	private JPanel thePanel;
 	private JPanel panMega = new JPanel(); // Panel qui contient tous
-	private JPanel panDoigts = new JPanel(); // Panel du champ de recherche
+	private JPanel panTitre = new JPanel(); // Panel du champ de recherche
 	private JPanel panBoutonsListe = new JPanel(); // Panel des bouttons
 
 	JPanel panBoutCreer = new JPanel();
@@ -95,21 +96,20 @@ public class Inte_Doigt extends JPanel {
 		panBoutonsListe.add(panBoutModif);
 		panBoutonsListe.add(panBoutSupp);
 
-		panDoigts.setLayout(new BoxLayout(panDoigts, BoxLayout.PAGE_AXIS));
-		panDoigts.setLayout(new BorderLayout());
-		panDoigts.add(bjr, BorderLayout.NORTH);
-		panDoigts.add(panBoutonsListe, BorderLayout.WEST);
-
-		/* TabModel */tabModel = new TabModel(data, title);
-
 		// Nous ajoutons notre tableau à notre contentPane dans un scroll
 		// Sinon les titres des colonnes ne s'afficheront pas !
-
+		tabModel = new TabModel(data, title);
 		tableau = new JTable(tabModel);
 		tableau.setRowHeight(30);
+		JScrollPane jScroll = new JScrollPane(tableau);
+		jScroll.setPreferredSize(new Dimension(600, 400));
+		
+		panTitre.setBorder(BorderFactory.createTitledBorder("Ici vous pouvez gérer vous différents balises"));
+		panTitre.setPreferredSize(new Dimension(750, 450));
+		panTitre.add(panBoutonsListe);
+		panTitre.add(jScroll);
 
-		panMega.add(panDoigts);
-		panMega.add(new JScrollPane(tableau));
+		panMega.add(panTitre);
 
 		thePanel.add(panMega);
 	}
