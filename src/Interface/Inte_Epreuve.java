@@ -2,6 +2,8 @@ package Interface;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -72,16 +74,6 @@ public class Inte_Epreuve extends JPanel {
 		idc = idC;
 		
 		data = updateTable();
-		/* 
-		 * EcouteurModif ecoutModif = new EcouteurModif();
-		 * modif.addActionListener(ecoutModif);
-		 * 
-		 * EcouteurSupp ecoutSupp = new EcouteurSupp();
-		 * supp.addActionListener(ecoutSupp);
-		 * 
-		 * EcouteurCreer ecoutCreer = new EcouteurCreer();
-		 * creer.addActionListener(ecoutCreer);
-		 */
 		
 		thePanel.removeAll();
 		panMega.removeAll();
@@ -90,8 +82,6 @@ public class Inte_Epreuve extends JPanel {
 		creer.setPreferredSize(new Dimension(100, 30));
 		supp.setPreferredSize(new Dimension(100, 30));
 		aquis.setPreferredSize(new Dimension(100, 30));
-
-		//panBjr.add(bjrL);
 		
 		panBoutCreer.add(creer);
 		panBoutSupp.add(supp);
@@ -132,7 +122,26 @@ public class Inte_Epreuve extends JPanel {
 		panMega.add(panZoneAquis);
 
 		thePanel.add(panMega);
+		/*
+		EcouteurModif ecoutModif = new EcouteurModif();
+		modif.addActionListener(ecoutModif);
 
+		EcouteurSupp ecoutSupp = new EcouteurSupp();
+		supp.addActionListener(ecoutSupp);
+*/
+		EcouteurCreer ecoutCreer = new EcouteurCreer();
+		creer.addActionListener(ecoutCreer);
+
+	}
+	
+	public class EcouteurCreer implements ActionListener { // Action du creer
+
+		public void actionPerformed(ActionEvent arg0) {
+
+			Inte_Epreuve_CreaModif formulaire = new Inte_Epreuve_CreaModif(idc,panMega);
+			
+			//updateTable(); 
+		}
 	}
 
 	public Object[][] updateTable() {
@@ -238,4 +247,6 @@ public class Inte_Epreuve extends JPanel {
 			e.printStackTrace();
 		}
 	}
+	
+	
 }

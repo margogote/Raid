@@ -32,6 +32,7 @@ public class Inte_Resultat extends JPanel {
 	/* Labels */
 	private JLabel diffL = new JLabel("Difficulté");
 	private JLabel grpL = new JLabel("Groupe");
+	
 	private JLabel jourL = new JLabel("Date...");
 
 	/* Boutons */
@@ -89,7 +90,7 @@ public class Inte_Resultat extends JPanel {
 
 		checkPanel.setBorder(BorderFactory
 				.createTitledBorder("Type de classement"));
-		checkPanel.setLayout(new BoxLayout(checkPanel, BoxLayout.PAGE_AXIS));
+		//checkPanel.setLayout(new BoxLayout(checkPanel, BoxLayout.PAGE_AXIS));
 		checkPanel.setPreferredSize(new Dimension(300, 100));
 		checkPanel.setLayout(new GridLayout(3, 2));
 		checkPanel.add(epreuveR);
@@ -105,7 +106,7 @@ public class Inte_Resultat extends JPanel {
 		grpPC.add(grpC);
 
 		filtreP.setBorder(BorderFactory.createTitledBorder("Filtres"));
-		filtreP.setLayout(new BoxLayout(filtreP, BoxLayout.PAGE_AXIS));
+		//filtreP.setLayout(new BoxLayout(filtreP, BoxLayout.PAGE_AXIS));
 		filtreP.setPreferredSize(new Dimension(300, 100));
 		filtreP.setLayout(new GridLayout(2, 2));
 		filtreP.add(diffL);
@@ -142,6 +143,7 @@ public class Inte_Resultat extends JPanel {
 		JScrollPane jScroll = new JScrollPane(tableau);
 		jScroll.setPreferredSize(new Dimension(600, 360));
 
+		
 		panTitre.setBorder(BorderFactory
 				.createTitledBorder("Ici vous pouvez voir les classement"));
 		//panTitre.setPreferredSize(new Dimension(750, 350));

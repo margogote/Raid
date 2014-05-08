@@ -12,6 +12,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -70,7 +71,7 @@ public class Inte_Equipe_CreaModif extends JFrame {
 		panel=pan;
 
 		thePanel.setTitle("Raidzultats"); // titre
-		thePanel.setSize(800, 600);
+		thePanel.setSize(500, 350);
 		// taille de la fenetre
 		thePanel.setLocationRelativeTo(null);
 		// centre la fenetre thePanel.setResizable(false);
@@ -107,9 +108,8 @@ public class Inte_Equipe_CreaModif extends JFrame {
 		btnP.add(annuler);
 
 		JPanel megaP = new JPanel();
-		megaP.setPreferredSize(new Dimension(100, 100));
+		megaP.setPreferredSize(new Dimension(450, 225));
 		megaP.setLayout(new GridLayout(6, 2));
-		// megaP.setLayout(new BoxLayout(megaP, BoxLayout.PAGE_AXIS));
 		megaP.add(nomL);
 		megaP.add(nomT);
 		megaP.add(doigtL);
@@ -123,18 +123,17 @@ public class Inte_Equipe_CreaModif extends JFrame {
 		megaP.add(catL);
 		megaP.add(catC);
 
-		/*
-		 * megaP.add(nomP); megaP.add(doigtP); megaP.add(dossartP);
-		 * megaP.add(diffP); megaP.add(grpP); megaP.add(catP);
-		 */
-
 		JPanel gigaP = new JPanel();
+		gigaP.setBorder(BorderFactory
+				.createTitledBorder("Ici vous pouvez créer/modifier vous différentes équipes"));
 		gigaP.setLayout(new BoxLayout(gigaP, BoxLayout.PAGE_AXIS));
-		gigaP.add(bjr);
 		gigaP.add(megaP);
 		gigaP.add(btnP);
+		
+		JPanel panPan = new JPanel();
+		panPan.add(gigaP);
 
-		thePanel.add(gigaP);
+		thePanel.add(panPan);
 
 		thePanel.setVisible(true);
 
