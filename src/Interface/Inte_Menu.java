@@ -20,7 +20,6 @@ public class Inte_Menu extends JPanel {
 
 	/* Panels */
 	private JPanel panMega = new JPanel(); // Panel qui contient tous
-	private JPanel panBalise = new JPanel(); // Panel du champ de recherche
 	private JPanel panBoutonsListe = new JPanel(); // Panel des bouttons
 
 	/* Boutons */
@@ -47,24 +46,23 @@ public class Inte_Menu extends JPanel {
 
 		panBoutonsListe.setLayout(new BoxLayout(panBoutonsListe,
 				BoxLayout.PAGE_AXIS));
+		//panBoutonsListe.setPreferredSize(new Dimension(200,150));
 		panBoutonsListe.add(panBoutRetour);
 		panBoutonsListe.add(panBoutQuit);
 		panBoutonsListe.add(panBoutAP);
 
-		panBalise.setLayout(new BoxLayout(panBalise, BoxLayout.PAGE_AXIS));
-		//panBalise.setLayout(new BorderLayout());
-		//panBalise.add(panBoutonsListe/*, BorderLayout.CENTER*/);
+		//panBalise.setLayout(new BoxLayout(panBalise, BoxLayout.PAGE_AXIS));
 
 		//panMega.setLayout(new BorderLayout());
 		//panBalise.add(panBoutonsListe , BorderLayout.CENTER );
 
-		panBalise.setLayout(new BoxLayout(panBalise, BoxLayout.Y_AXIS));
-		panBalise.add(Box.createVerticalGlue());
-		panBalise.add(panBoutonsListe);
-		panBalise.add(Box.createVerticalGlue());
+		//panBalise.setLayout(new BoxLayout(panBalise, BoxLayout.Y_AXIS));
 		
+		//this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		//this.setLayout(new BorderLayout());
-		this.add(panBalise /* , BorderLayout.CENTER */);
+		//this.add(Box.createVerticalGlue(), BorderLayout.NORTH);
+		this.add(panBoutonsListe /*, BorderLayout.CENTER */);
+		//this.add(Box.createVerticalGlue(), BorderLayout.SOUTH);
 
 		EcouteurQ ecoutQ = new EcouteurQ();
 		quitter.addActionListener(ecoutQ);

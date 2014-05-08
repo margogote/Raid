@@ -30,7 +30,6 @@ public class Inte_Equipe extends JPanel {
 	private JPanel panMega = new JPanel(); // Panel qui contient tous
 	private JPanel panTitre = new JPanel(); // Panel du champ de recherche
 	private JPanel panBoutonsListe = new JPanel(); // Panel des bouttons
-	private JPanel panBjr = new JPanel();
 
 	JPanel panBoutCreer = new JPanel();
 	JPanel panBoutSupp = new JPanel();
@@ -52,8 +51,6 @@ public class Inte_Equipe extends JPanel {
 	private Object[][] data;
 	private String title[] = { "Check", "idEquipe", "Nom d'équipe",
 			"Nom du groupe", "Difficulté", "Type d'équipe", "Doigt" };
-
-	JLabel bjrL = new JLabel("Ici vous pouvez gérer vous différentes équipes");
 
 	int idc;
 
@@ -82,8 +79,6 @@ public class Inte_Equipe extends JPanel {
 		modif.setPreferredSize(new Dimension(100, 30));
 		creer.setPreferredSize(new Dimension(100, 30));
 		supp.setPreferredSize(new Dimension(100, 30));
-
-		panBjr.add(bjrL);
 		
 		panBoutCreer.add(creer);
 		panBoutSupp.add(supp);
@@ -291,7 +286,7 @@ public class Inte_Equipe extends JPanel {
 			}
 
 		}
-		Object[] tab = new Object[ArrayDataSelect.size()];
+		//Object[] tab = new Object[ArrayDataSelect.size()];
 		System.out.println(ArrayDataSelect);
 
 		return ArrayDataSelect;

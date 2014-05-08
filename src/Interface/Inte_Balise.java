@@ -48,8 +48,6 @@ public class Inte_Balise extends JPanel {
 	private JTable tableau;
 	private Object[][] data;
 	private String title[] = { "Check", "idBalise" };
-
-	JLabel bjr = new JLabel("Ici vous pouvez gérer vous différents balises");
 	
 	private int idc;
 

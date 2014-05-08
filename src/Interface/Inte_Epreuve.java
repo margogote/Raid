@@ -32,16 +32,15 @@ public class Inte_Epreuve extends JPanel {
 	private JPanel panMega = new JPanel(); // Panel qui contient tous
 	private JPanel panTitre = new JPanel(); // Panel du champ de recherche
 	private JPanel panBoutonsListe = new JPanel(); // Panel des bouttons
-	private JPanel panBjr = new JPanel();
 	private JPanel panEpL = new JPanel();
 
-	JPanel panBoutCreer = new JPanel();
-	JPanel panBoutSupp = new JPanel();
-	JPanel panBoutModif = new JPanel();
-	JPanel panBoutAqui = new JPanel();
-	JPanel panCombo = new JPanel();
-	JPanel panEpre = new JPanel();
-	JPanel panZoneAquis = new JPanel();
+	private JPanel panBoutCreer = new JPanel();
+	private JPanel panBoutSupp = new JPanel();
+	private JPanel panBoutModif = new JPanel();
+	private JPanel panBoutAqui = new JPanel();
+	private JPanel panCombo = new JPanel();
+	private JPanel panEpre = new JPanel();
+	private JPanel panZoneAquis = new JPanel();
 
 	/* Boutons */
 	private JButton modif = new JButton("Modifier");
@@ -63,9 +62,7 @@ public class Inte_Epreuve extends JPanel {
 	private String title[] = { "Check", "idEpreuve", "Nom de l'epreuve",
 			"Type", "Difficulté", "Heure début", "Durée" };
 
-	JLabel bjrL = new JLabel("Ici vous pouvez gérer vous différentes épreuves");
-	JLabel aquiL = new JLabel("Ici vous pouvez gérer vous aquisitions par épreuve");
-	JLabel epreuveL = new JLabel("Epreuve");
+	private JLabel epreuveL = new JLabel("Epreuve");
 
 	private int idc;
 

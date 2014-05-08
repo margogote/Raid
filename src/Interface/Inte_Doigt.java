@@ -1,6 +1,5 @@
 package Interface;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,10 +12,6 @@ import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -24,9 +19,6 @@ import javax.swing.JTable;
 
 import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
 
-import Interface.Inte_Accueil.EcouteurCreer;
-import Interface.Inte_Accueil.EcouteurModif;
-import Interface.Inte_Accueil.EcouteurSupp;
 import Models.TabModel;
 
 public class Inte_Doigt extends JPanel {
@@ -37,9 +29,9 @@ public class Inte_Doigt extends JPanel {
 	private JPanel panTitre = new JPanel(); // Panel du champ de recherche
 	private JPanel panBoutonsListe = new JPanel(); // Panel des bouttons
 
-	JPanel panBoutCreer = new JPanel();
-	JPanel panBoutSupp = new JPanel();
-	JPanel panBoutModif = new JPanel();
+	private JPanel panBoutCreer = new JPanel();
+	private JPanel panBoutSupp = new JPanel();
+	private JPanel panBoutModif = new JPanel();
 
 	/* Boutons */
 	private JButton modif = new JButton("Modifier");
@@ -57,7 +49,6 @@ public class Inte_Doigt extends JPanel {
 	private Object[][] data;
 	private String title[] = { "Check", "idDoigt" };
 
-	JLabel bjr = new JLabel("Ici vous pouvez gérer vous différents doigts");
 	int idc;
 
 	public Inte_Doigt(int idC) {
@@ -270,12 +261,10 @@ public class Inte_Doigt extends JPanel {
 			System.out.println("Connexion effective !");
 			Statement stm = conn.createStatement();
 			ResultSet res = stm.executeQuery(requeteSQL);
-			int i = 0;
 			while (res.next()) {
 				ArrayData.add(new Object[] { new Boolean(false),
 						res.getString(1) });
 				System.out.println("Nom : " + res.getString(1));
-				i++;
 			}
 
 			conn.close();
@@ -329,7 +318,6 @@ public class Inte_Doigt extends JPanel {
 			}
 
 		}
-		Object[] tab = new Object[ArrayDataSelect.size()];
 		System.out.println(ArrayDataSelect);
 
 		return ArrayDataSelect;
