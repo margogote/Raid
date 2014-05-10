@@ -2,6 +2,9 @@ package Interface;
 
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -14,6 +17,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
+import BDD.DataSourceProvider;
 import Models.TabModel;
 
 public class Inte_Resultat extends JPanel {
@@ -25,14 +29,19 @@ public class Inte_Resultat extends JPanel {
 	private JRadioButton generalR = new JRadioButton("Général");
 
 	/* Combo */
+	private String[] grpS = { "CHOISIR", "Etudiant", "Salarié" };
+	private String[] diffS = { "CHOISIR", "Aventure", "Expert" };
+	private String[] catS = { "CHOISIR", "Masculin", "Feminin", "Mixte" };
+	
 	private JComboBox<String> epreuveC = new JComboBox<String>();
-	private JComboBox<String> diffC = new JComboBox<String>();
-	private JComboBox<String> grpC = new JComboBox<String>();
+	private JComboBox<String> diffC = new JComboBox<String>(diffS);
+	private JComboBox<String> grpC = new JComboBox<String>(grpS);
+	private JComboBox<String> catC = new JComboBox<String>(catS);
 
 	/* Labels */
 	private JLabel diffL = new JLabel("Difficulté");
 	private JLabel grpL = new JLabel("Groupe");
-	
+	private JLabel catL = new JLabel("Catégorie");
 	private JLabel jourL = new JLabel("Date...");
 
 	/* Boutons */
@@ -48,21 +57,10 @@ public class Inte_Resultat extends JPanel {
 			"Type", "Difficulté", "Heure début", "Durée" };
 
 	/* JPanel */
-	private JPanel epreuvePR = new JPanel();
-	private JPanel epreuvePC = new JPanel();
-	private JPanel epreuveP = new JPanel();
-	private JPanel jourPR = new JPanel();
-	private JPanel jourPD = new JPanel();
-	private JPanel jourP = new JPanel();
+
 	private JPanel generalP = new JPanel();
 	private JPanel checkPanel = new JPanel();
 
-	private JPanel diffPL = new JPanel();
-	private JPanel diffPC = new JPanel();
-	private JPanel diffP = new JPanel();
-	private JPanel grpPL = new JPanel();
-	private JPanel grpPC = new JPanel();
-	private JPanel grpP = new JPanel();
 	private JPanel filtreP = new JPanel();
 
 	private JPanel classementPB = new JPanel();
@@ -75,16 +73,14 @@ public class Inte_Resultat extends JPanel {
 	private JPanel panTitre = new JPanel();
 	private JPanel panMega = new JPanel();
 	
+	int idc;
+	
 	public Inte_Resultat(int idC) {
+		idc=idC;
+		
 		bG.add(epreuveR);
 		bG.add(jourR);
 		bG.add(generalR);
-
-		epreuvePR.add(epreuveR);
-		epreuvePC.add(epreuveC);
-
-		jourPR.add(jourR);
-		jourPD.add(jourL);
 
 		generalP.add(generalR);
 
@@ -98,21 +94,19 @@ public class Inte_Resultat extends JPanel {
 		checkPanel.add(jourR);
 		checkPanel.add(jourL);
 		checkPanel.add(generalR);
-
-		diffPL.add(diffL);
-		diffPC.add(diffC);
-
-		grpPL.add(grpL);
-		grpPC.add(grpC);
+		
+		updateCombo(epreuveC);
 
 		filtreP.setBorder(BorderFactory.createTitledBorder("Filtres"));
 		//filtreP.setLayout(new BoxLayout(filtreP, BoxLayout.PAGE_AXIS));
 		filtreP.setPreferredSize(new Dimension(300, 100));
-		filtreP.setLayout(new GridLayout(2, 2));
+		filtreP.setLayout(new GridLayout(3, 2));
 		filtreP.add(diffL);
 		filtreP.add(diffC);
 		filtreP.add(grpL);
 		filtreP.add(grpC);
+		filtreP.add(catL);
+		filtreP.add(catC);
 
 		classement.setPreferredSize(new Dimension(120, 50));
 		classementPB.add(classement);
@@ -136,7 +130,6 @@ public class Inte_Resultat extends JPanel {
 
 		// Nous ajoutons notre tableau à notre contentPane dans un scroll
 		// Sinon les titres des colonnes ne s'afficheront pas !
-	//	data = {{"","","","","","",""}};
 		tabModel = new TabModel(data, title);
 		tableau = new JTable(tabModel);
 		tableau.setRowHeight(30);
@@ -156,6 +149,35 @@ public class Inte_Resultat extends JPanel {
 		
 		this.add(panMega);
 
+	}
+	
+	public void updateCombo(JComboBox<String> combo) {
+		combo.removeAllItems();
+		String requeteSQL = "SELECT nomEpreuve FROM epreuve WHERE idCompetition = '"+idc+"'";
+
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			System.out.println("Driver O.K.");
+
+			Connection conn = DataSourceProvider.getDataSource()
+					.getConnection();
+			System.out.println("Connexion effective !");
+			Statement stm = conn.createStatement();
+			ResultSet res = stm.executeQuery(requeteSQL);
+
+			while (res.next()) {
+				combo.addItem(res.getString(1));
+				System.out.println("Nom : " + res.getString(1));
+			}
+
+			conn.close();
+			res.close();
+
+		}  catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		System.out.println("MAJ Combo");
 	}
 
 }

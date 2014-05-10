@@ -24,19 +24,12 @@ import javax.swing.JTextField;
 
 import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
 
+import BDD.DataSourceProvider;
 import Interface.Inte_Menu.EcouteurQ;
 
 public class Inte_Equipe_CreaModif extends JFrame {
 
-	/* BDD */
-	String url = "jdbc:mysql://localhost/raidzultat";
-	String user = "root";
-	String passwd = "";
-
 	JFrame thePanel = new JFrame();
-
-	JLabel bjr = new JLabel(
-			"Ici vous pouvez créer/modifier vous différentes équipes");
 
 	JLabel nomL = new JLabel("Nom");
 	JTextField nomT = new JTextField("");
@@ -44,15 +37,15 @@ public class Inte_Equipe_CreaModif extends JFrame {
 	JLabel doigtL = new JLabel("Doigt");
 	private JComboBox<Object> doigtC = new JComboBox<Object>();
 
-	JLabel dossartL = new JLabel("Dossart");
-	JTextField dossartT = new JTextField("");
+	JLabel dossardL = new JLabel("dossard");
+	JTextField dossardT = new JTextField("");
 
 	JLabel difficL = new JLabel("Difficulté");
 	private String[] difficulte = { "CHOISIR", "Aventure", "Expert" };
 	private JComboBox<Object> difficC = new JComboBox<Object>(difficulte);
 
 	JLabel grpL = new JLabel("Groupe");
-	private String[] grpS = { "CHOISIR", "HEI", "Entreprise1", "Entreprise2" };
+	private String[] grpS = { "CHOISIR", "Etudiant", "Salarié" };
 	private JComboBox<Object> grpC = new JComboBox<Object>(grpS);
 
 	JLabel catL = new JLabel("Catégorie");
@@ -63,20 +56,54 @@ public class Inte_Equipe_CreaModif extends JFrame {
 	private JButton annuler = new JButton("Annuler");
 
 	private int idc;
-	private JPanel panel;
+	private int modif;
 
-	Inte_Equipe_CreaModif(int idC, JPanel pan) {
+	Inte_Equipe_CreaModif(int idC, int idModif) {
 		thePanel = this;
 		idc = idC;
-		panel=pan;
+		modif = idModif;
 
-		thePanel.setTitle("Raidzultats"); // titre
+		thePanel.setTitle("Raidzultats - Création équipe");
 		thePanel.setSize(500, 350);
-		// taille de la fenetre
 		thePanel.setLocationRelativeTo(null);
 		// centre la fenetre thePanel.setResizable(false);
-		thePanel.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		// thePanel.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		thePanel.setLayout(new BorderLayout()); // Pour les placements
+
+		if (idModif != -1) {
+			thePanel.setTitle("Raidzultats - Modification équipe " + idModif);
+
+			String requeteSQL = "SELECT equipe.`nomEquipe`, equipe.`nomGroupe`, equipe.`typeDifficulte`, equipe.`typeEquipe`, equipe.`dossard`, posséder.`idDoigt` FROM equipe INNER JOIN posséder ON equipe.`idEquipe`=posséder.`idEquipe` WHERE equipe.`idCompetition` = '"
+					+ idc
+					+ "' && posséder.`idCompetition` = '"
+					+ idc
+					+ "' && equipe.`idEquipe` = '" + idModif + "'";
+
+			try {
+				Class.forName("com.mysql.jdbc.Driver");
+				System.out.println("Driver O.K.");
+
+				Connection conn = DataSourceProvider.getDataSource()
+						.getConnection();
+				System.out.println("Connexion effective !");
+				Statement stm = conn.createStatement();
+				ResultSet res = stm.executeQuery(requeteSQL);
+
+				while (res.next()) {
+					nomT.setText(res.getString(1));
+					grpC.setSelectedItem(res.getString(2));
+					difficC.setSelectedItem(res.getString(3));
+					catC.setSelectedItem(res.getString(4));
+					dossardT.setText(res.getString(5));
+					doigtC.addItem(res.getString(6));
+				}
+				conn.close();
+				res.close();
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 
 		oK.setPreferredSize(new Dimension(100, 30));
 		annuler.setPreferredSize(new Dimension(100, 30));
@@ -89,8 +116,8 @@ public class Inte_Equipe_CreaModif extends JFrame {
 		doigtP.add(doigtL);
 		updateDoigt();
 
-		JPanel dossartP = new JPanel();
-		dossartP.add(dossartL);
+		JPanel dossardP = new JPanel();
+		dossardP.add(dossardL);
 
 		JPanel diffP = new JPanel();
 		diffP.add(difficL);
@@ -114,8 +141,8 @@ public class Inte_Equipe_CreaModif extends JFrame {
 		megaP.add(nomT);
 		megaP.add(doigtL);
 		megaP.add(doigtC);
-		megaP.add(dossartL);
-		megaP.add(dossartT);
+		megaP.add(dossardL);
+		megaP.add(dossardT);
 		megaP.add(difficL);
 		megaP.add(difficC);
 		megaP.add(grpL);
@@ -129,7 +156,7 @@ public class Inte_Equipe_CreaModif extends JFrame {
 		gigaP.setLayout(new BoxLayout(gigaP, BoxLayout.PAGE_AXIS));
 		gigaP.add(megaP);
 		gigaP.add(btnP);
-		
+
 		JPanel panPan = new JPanel();
 		panPan.add(gigaP);
 
@@ -150,69 +177,122 @@ public class Inte_Equipe_CreaModif extends JFrame {
 		public void actionPerformed(ActionEvent arg0) {
 			String nom = nomT.getText();
 			String doigt = (String) doigtC.getSelectedItem();
-			String dossart = dossartT.getText();
+			String dossard = dossardT.getText();
 			String difficulte = (String) difficC.getSelectedItem();
 			String groupe = (String) grpC.getSelectedItem();
 			String categorie = (String) catC.getSelectedItem();
 			int idE = -1;
 
-			if (nom.equals("") || doigt.equals("CHOISIR") || dossart.equals("")
+			if (nom.equals("") || doigt.equals("CHOISIR") || dossard.equals("")
 					|| difficulte.equals("CHOISIR") || groupe.equals("CHOISIR")
 					|| categorie.equals("CHOISIR")) {
 				JOptionPane.showMessageDialog(null,
 						"Veuillez remplir tous les champs",
-						"Equipe non créée!", JOptionPane.INFORMATION_MESSAGE);
-			} else {
-				String requeteSQL = "INSERT INTO `raidzultat`.`equipe` (`idEquipe`, `nomEquipe`, `nomGroupe`, `typeDifficulte`, `typeEquipe`, `idCompetition`) VALUES (NULL, '"
-						+ nom
-						+ "', '"
-						+ groupe
-						+ "', '"
-						+ difficulte
-						+ "', '"
-						+ categorie + "', '" + idc + "')";
-				BDDquery(requeteSQL);
+						"Equipe non créée!", JOptionPane.WARNING_MESSAGE);
 
+			} else if (modif == -1) {
 				try {
-					String requeteSQL2 = "SELECT `idEquipe` FROM `equipe` WHERE `nomEquipe`= '"
-							+ nom + "' && `idCompetition`='" + idc + "'";
-					Class.forName("com.mysql.jdbc.Driver");
-					System.out.println("Driver O.K.");
+					Integer.parseInt(dossard);
+					System.out.println("C'est un entier");
 
-					Connection conn = DriverManager.getConnection(url, user,
-							passwd);
-					System.out.println("Connexion effective !");
-					Statement stm = conn.createStatement();
-					ResultSet res = stm.executeQuery(requeteSQL2);
+					String requeteSQL = "INSERT INTO `raidzultat`.`equipe` (`idEquipe`, `nomEquipe`, `nomGroupe`, `typeDifficulte`, `typeEquipe`,`dossard`, `idCompetition`) VALUES (NULL, '"
+							+ nom
+							+ "', '"
+							+ groupe
+							+ "', '"
+							+ difficulte
+							+ "', '"
+							+ categorie
+							+ "', '"
+							+ dossard
+							+ "', '"
+							+ idc + "')";
+					BDDquery(requeteSQL);
 
-					while (res.next()) {
-						idE = res.getInt(1);
-						System.out.println("Num Equipe : " + res.getInt(1));
+					try {
+						String requeteSQL2 = "SELECT `idEquipe` FROM `equipe` WHERE `nomEquipe`= '"
+								+ nom + "' && `idCompetition`='" + idc + "'";
+						Class.forName("com.mysql.jdbc.Driver");
+						System.out.println("Driver O.K.");
+
+						Connection conn = DataSourceProvider.getDataSource()
+								.getConnection();
+						System.out.println("Connexion effective !");
+						Statement stm = conn.createStatement();
+						ResultSet res = stm.executeQuery(requeteSQL2);
+
+						while (res.next()) {
+							idE = res.getInt(1);
+							System.out.println("Num Equipe : " + res.getInt(1));
+						}
+
+						conn.close();
+						res.close();
+
+					} catch (CommunicationsException com) {
+						JOptionPane.showMessageDialog(null,
+								"Pas de connection avec la Base de Données",
+								"Attention", JOptionPane.INFORMATION_MESSAGE);
+
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
 
-					conn.close();
-					res.close();
+					String requeteSQL3 = "INSERT INTO `raidzultat`.`posséder` (`idDoigt`, `idEquipe`, `dateHeureAttribution`,`idCompetition`) VALUES ('"
+							+ doigt + "', '" + idE + "', NULL,'" + idc + "')";
+					BDDquery(requeteSQL3);
 
-				} catch (CommunicationsException com) {
-					JOptionPane.showMessageDialog(null,
-							"Pas de connection avec la Base de Données",
-							"Attention", JOptionPane.INFORMATION_MESSAGE);
-
+					thePanel.dispose();
 				} catch (Exception e) {
-					e.printStackTrace();
+					System.out
+							.println("Je ne suis pas un entier, et alors ca te derange ?");
+					JOptionPane
+							.showMessageDialog(
+									null,
+									"Attention entrer un entier comme numéro de dossard",
+									"Equipe non créée!",
+									JOptionPane.WARNING_MESSAGE);
+				}
+			} else {
+				try {
+					Integer.parseInt(dossard);
+					System.out.println("C'est un entier");
+					String requeteSQL = "UPDATE`raidzultat`.`equipe` SET `nomEquipe` = '"
+							+ nom
+							+ "',`nomGroupe` = '"
+							+ groupe
+							+ "', `typeDifficulte`='"
+							+ difficulte
+							+ "', `typeEquipe`='"
+							+ categorie
+							+ "',`dossard`=  '"
+							+ dossard
+							+ "' WHERE idEquipe = '"
+							+ modif
+							+ "' && `idCompetition`='" + idc + "'";
+
+					BDDupdate(requeteSQL);
+
+					String requeteSQL3 = "UPDATE `raidzultat`.`posséder` SET `idDoigt` = '"
+							+ doigt
+							+ "', `dateHeureAttribution`= NULL WHERE idEquipe = '"
+							+ modif + "' && `idCompetition`='" + idc + "'";
+					BDDupdate(requeteSQL3);
+
+					thePanel.dispose();
 				}
 
-				String requeteSQL3 = "INSERT INTO `raidzultat`.`posséder` (`idDoigt`, `idEquipe`, `dateHeureAttribution`,`idCompetition`) VALUES ('"
-						+ doigt + "', '" + idE + "', NULL,'" + idc + "')";
-				BDDquery(requeteSQL3);
-
-				//Inte_Equipe equ = new Inte_Equipe(idc);
-				//equ.updateTable();
-				panel.revalidate();
-				panel.repaint();
-				thePanel.dispose();
+				catch (Exception e) {
+					System.out
+							.println("Je ne suis pas un entier, et alors ca te derange ?");
+					JOptionPane
+							.showMessageDialog(
+									null,
+									"Attention entrer un entier comme numéro de dossard",
+									"Equipe non modifiée!",
+									JOptionPane.WARNING_MESSAGE);
+				}
 			}
-
 		}
 	}
 
@@ -228,14 +308,15 @@ public class Inte_Equipe_CreaModif extends JFrame {
 		String requeteSQL = "SELECT `idDoigt` FROM `doigt` WHERE `idDoigt` NOT IN ( SELECT `idDoigt` FROM `posséder` WHERE `idCompetition` = '"
 				+ idc + "') && `idCompetition` = '" + idc + "'";
 
-		doigtC.removeAllItems();
+		// doigtC.removeAllItems();
 		doigtC.addItem("CHOISIR");
 
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			System.out.println("Driver O.K.");
 
-			Connection conn = DriverManager.getConnection(url, user, passwd);
+			Connection conn = DataSourceProvider.getDataSource()
+					.getConnection();
 			System.out.println("Connexion effective !");
 			Statement stm = conn.createStatement();
 			ResultSet res = stm.executeQuery(requeteSQL);
@@ -266,7 +347,8 @@ public class Inte_Equipe_CreaModif extends JFrame {
 			Class.forName("com.mysql.jdbc.Driver");
 			System.out.println("Driver O.K.");
 
-			Connection conn = DriverManager.getConnection(url, user, passwd);
+			Connection conn = DataSourceProvider.getDataSource()
+					.getConnection();
 			System.out.println("Connexion effective !");
 			Statement stm = conn.createStatement();
 			int res = stm.executeUpdate(requeteSQL);
@@ -286,7 +368,8 @@ public class Inte_Equipe_CreaModif extends JFrame {
 			Class.forName("com.mysql.jdbc.Driver");
 			System.out.println("Driver O.K.");
 
-			Connection conn = DriverManager.getConnection(url, user, passwd);
+			Connection conn = DataSourceProvider.getDataSource()
+					.getConnection();
 			System.out.println("Connexion effective !");
 			Statement stm = conn.createStatement();
 			int res = stm.executeUpdate(requeteSQL);

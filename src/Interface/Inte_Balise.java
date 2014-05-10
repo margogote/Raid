@@ -19,6 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
+import BDD.DataSourceProvider;
 import Models.TabModel;
 
 public class Inte_Balise extends JPanel {
@@ -38,11 +39,6 @@ public class Inte_Balise extends JPanel {
 	private JButton supp = new JButton("Supprimer");
 	private JButton creer = new JButton("Créer");
 
-	/* BDD */
-	String url = "jdbc:mysql://localhost/raidzultat";
-	String user = "root";
-	String passwd = "";
-
 	/* Tableau */
 	private TabModel tabModel;
 	private JTable tableau;
@@ -56,7 +52,7 @@ public class Inte_Balise extends JPanel {
 		thePanel = this;
 		idc=idC;
 
-		data = updateTable();
+		updateTable();
 
 		EcouteurModif ecoutModif = new EcouteurModif();
 		modif.addActionListener(ecoutModif);
@@ -71,7 +67,7 @@ public class Inte_Balise extends JPanel {
 	public void Interface() {
 
 		thePanel.removeAll();
-		panMega.removeAll();
+		panTitre.removeAll();
 
 		modif.setPreferredSize(new Dimension(100, 30));
 		creer.setPreferredSize(new Dimension(100, 30));
@@ -95,7 +91,7 @@ public class Inte_Balise extends JPanel {
 		JScrollPane jScroll = new JScrollPane(tableau);
 		jScroll.setPreferredSize(new Dimension(600, 400));
 		
-		panTitre.setBorder(BorderFactory.createTitledBorder("Ici vous pouvez gérer vous différents balises"));
+		panTitre.setBorder(BorderFactory.createTitledBorder("Ici vous pouvez gérer vous différentes balises"));
 		panTitre.setPreferredSize(new Dimension(750, 450));
 		panTitre.add(panBoutonsListe);
 		panTitre.add(jScroll);
@@ -253,7 +249,7 @@ public class Inte_Balise extends JPanel {
 			Class.forName("com.mysql.jdbc.Driver");
 			System.out.println("Driver O.K.");
 
-			Connection conn = DriverManager.getConnection(url, user, passwd);
+			Connection conn = DataSourceProvider.getDataSource().getConnection();
 			System.out.println("Connexion effective !");
 			Statement stm = conn.createStatement();
 			ResultSet res = stm.executeQuery(requeteSQL);
@@ -323,8 +319,7 @@ public class Inte_Balise extends JPanel {
 			Class.forName("com.mysql.jdbc.Driver");
 			System.out.println("Driver O.K.");
 
-			Connection conn = DriverManager.getConnection(url,
-					user, passwd);
+			Connection conn = DataSourceProvider.getDataSource().getConnection();
 			System.out.println("Connexion effective !");
 			Statement stm = conn.createStatement();
 			int res = stm.executeUpdate(requeteSQL);
@@ -344,8 +339,7 @@ public class Inte_Balise extends JPanel {
 			Class.forName("com.mysql.jdbc.Driver");
 			System.out.println("Driver O.K.");
 
-			Connection conn = DriverManager.getConnection(url,
-					user, passwd);
+			Connection conn = DataSourceProvider.getDataSource().getConnection();
 			System.out.println("Connexion effective !");
 			Statement stm = conn.createStatement();
 			int res = stm.executeUpdate(requeteSQL);

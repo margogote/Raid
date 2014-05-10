@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -19,6 +21,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
+import BDD.DataSourceProvider;
 import Models.TabModel;
 
 import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
@@ -40,17 +43,12 @@ public class Inte_Equipe extends JPanel {
 	private JButton supp = new JButton("Supprimer");
 	private JButton creer = new JButton("Créer");
 
-	/* BDD */
-	String url = "jdbc:mysql://localhost/raidzultat";
-	String user = "root";
-	String passwd = "";
-
 	/* Tableau */
 	private TabModel tabModel;
 	private JTable tableau;
 	private Object[][] data;
-	private String title[] = { "Check", "idEquipe", "Nom d'équipe",
-			"Nom du groupe", "Difficulté", "Type d'équipe", "Doigt" };
+	private String title[] = { "", "idEquipe", "Nom", "Groupe", "Difficulté",
+			"Type", "Dossart", "Doigt" };
 
 	int idc;
 
@@ -74,12 +72,12 @@ public class Inte_Equipe extends JPanel {
 	public void Interface() {
 
 		thePanel.removeAll();
-		panMega.removeAll();
+		panTitre.removeAll();
 
 		modif.setPreferredSize(new Dimension(100, 30));
 		creer.setPreferredSize(new Dimension(100, 30));
 		supp.setPreferredSize(new Dimension(100, 30));
-		
+
 		panBoutCreer.add(creer);
 		panBoutSupp.add(supp);
 		panBoutModif.add(modif);
@@ -97,77 +95,113 @@ public class Inte_Equipe extends JPanel {
 		tableau.setRowHeight(30);
 		JScrollPane jScroll = new JScrollPane(tableau);
 		jScroll.setPreferredSize(new Dimension(600, 400));
-		
-		panTitre.setBorder(BorderFactory.createTitledBorder("Ici vous pouvez gérer vos différentes équipes"));
+
+		panTitre.setBorder(BorderFactory
+				.createTitledBorder("Ici vous pouvez gérer vos différentes équipes"));
 		panTitre.setPreferredSize(new Dimension(750, 450));
 		panTitre.add(panBoutonsListe);
 		panTitre.add(jScroll);
 
 		panMega.add(panTitre);
-		
+
 		/*
-		panMega.setLayout(new BorderLayout());
-		panMega.add(bjr, BorderLayout.NORTH);
-		panMega.add(panTitre, BorderLayout.WEST);
-		panMega.add(new JScrollPane(tableau), BorderLayout.CENTER);
-		*/
+		 * panMega.setLayout(new BorderLayout()); panMega.add(bjr,
+		 * BorderLayout.NORTH); panMega.add(panTitre, BorderLayout.WEST);
+		 * panMega.add(new JScrollPane(tableau), BorderLayout.CENTER);
+		 */
 
 		thePanel.add(panMega);
 	}
 
-	public class EcouteurCreer implements ActionListener { // Action du creer
+	public class EcouteurCreer implements ActionListener, WindowListener { // Action
+																			// du
+																			// creer
 
 		public void actionPerformed(ActionEvent arg0) {
 
-			Inte_Equipe_CreaModif formulaire = new Inte_Equipe_CreaModif(idc,panMega);
-			
-			//updateTable(); 
+			Inte_Equipe_CreaModif formulaire = new Inte_Equipe_CreaModif(idc, -1);
+			formulaire.addWindowListener(this);
+		}
+
+		@Override
+		public void windowActivated(WindowEvent e) {
+		}
+
+		@Override
+		public void windowClosed(WindowEvent e) {
+			updateTable();
+		}
+
+		@Override
+		public void windowClosing(WindowEvent e) {
+		}
+
+		@Override
+		public void windowDeactivated(WindowEvent e) {
+		}
+
+		@Override
+		public void windowDeiconified(WindowEvent e) {
+		}
+
+		@Override
+		public void windowIconified(WindowEvent e) {
+		}
+
+		@Override
+		public void windowOpened(WindowEvent e) {
 		}
 	}
 
-	public class EcouteurModif implements ActionListener { // Action du modif
+	public class EcouteurModif implements ActionListener, WindowListener { // Action
+																			// du
+																			// modif
 
 		public void actionPerformed(ActionEvent arg0) {
-			ArrayList<Object> tab = getIndexSelectTab(data);
+			int flagExiste = 0;
+			int[] tab = getIndexSelectTab(data);
 
-			if (tab.size() == 0) {
+			if (tab.length == 0) {
 				JOptionPane.showMessageDialog(null, "Veuillez cochez une case",
-						"Pas de doigt à modifier!",
+						"Pas d'équipe à modifier!",
 						JOptionPane.INFORMATION_MESSAGE);
 			}
-			for (int i = 0; i < tab.size(); i++) {
-				String nb = JOptionPane.showInputDialog(null,
-						"Donner le nouveau numéro de votre doigt !",
-						"Transformation du doigt " + tab.get(i) + "?",
-						JOptionPane.QUESTION_MESSAGE);
-				System.out.println("Donner num doigt : " + nb);
-				if (nb != null) {
-					while (nb.equals("")) {
-						JOptionPane.showMessageDialog(null,
-								"Veuillez entrer un numéro",
-								"Doigt " + tab.get(i) + " non modifié!",
-								JOptionPane.INFORMATION_MESSAGE);
-						System.out.println("chaîne vide");
-						nb = JOptionPane
-								.showInputDialog(null,
-										"Donner le numéro de votre doigt !",
-										"Nouveau doigt ?",
-										JOptionPane.QUESTION_MESSAGE);
-					}
+			for (int i = 0; i < tab.length; i++) {
 
-					if (!nb.equals("")) {
-						String requeteSQL = "UPDATE `doigt` SET  `idDoigt` = '"
-								+ nb + "' WHERE CONCAT(`doigt`.`idDoigt`) = '"
-								+ tab.get(i) + "'";
-						BDDupdate(requeteSQL);
+				Inte_Equipe_CreaModif formulaire = new Inte_Equipe_CreaModif(
+						idc,  tab[i]);
 
-						JOptionPane.showMessageDialog(null,
-								"Le doigt est maintenant : " + nb, "Doigt "
-										+ tab.get(i) + " modifié!",
-								JOptionPane.INFORMATION_MESSAGE);
-					}
-				}
+				formulaire.addWindowListener(this);
 			}
+		}
+
+		@Override
+		public void windowActivated(WindowEvent e) {
+		}
+
+		@Override
+		public void windowClosed(WindowEvent e) {
+			updateTable();
+		}
+
+		@Override
+		public void windowClosing(WindowEvent e) {
+		}
+
+		@Override
+		public void windowDeactivated(WindowEvent e) {
+		}
+
+		@Override
+		public void windowDeiconified(WindowEvent e) {
+		}
+
+		@Override
+		public void windowIconified(WindowEvent e) {
+		}
+
+		@Override
+		public void windowOpened(WindowEvent e) {
 		}
 	}
 
@@ -177,23 +211,23 @@ public class Inte_Equipe extends JPanel {
 			// on prend le num de la compet , on le stock
 			// on demande confirmation, si oui on la supprime
 
-			ArrayList<Object> tab = getIndexSelectTab(data);
+			int[] tab = getIndexSelectTab(data);
 			int rep = 0;
 
-			if (tab.size() == 0) {
+			if (tab.length == 0) {
 				JOptionPane.showMessageDialog(null, "Veuillez cochez une case",
 						"Pas d'équipe à supprimer!",
 						JOptionPane.INFORMATION_MESSAGE);
 			}
 
-			for (int i = 0; i < tab.size(); i++) {
+			for (int i = 0; i < tab.length; i++) {
 				rep = JOptionPane.showConfirmDialog(null,
-						"Voulez vous vraiment supprimer l'équipe " + tab.get(i)
+						"Voulez vous vraiment supprimer l'équipe " + tab[i]
 								+ " ?", "Attention", JOptionPane.YES_NO_OPTION);
 
 				if (rep == 0) {
 					String requeteSQL = "DELETE FROM `raidzultat`.`equipe` WHERE CONCAT(`equipe`.`idEquipe`) = '"
-							+ tab.get(i)
+							+ tab[i]
 							+ "' && `idCompetition` = '"
 							+ idc
 							+ "'";
@@ -201,10 +235,10 @@ public class Inte_Equipe extends JPanel {
 
 					JOptionPane.showMessageDialog(null,
 							"L'équipe est maintenant supprimée", "Equipe "
-									+ tab.get(i) + " Supprimée!",
+									+ tab[i] + " Supprimée!",
 							JOptionPane.INFORMATION_MESSAGE);
 
-					System.out.println("Equipe " + tab.get(i) + " Supprimée");
+					System.out.println("Equipe " + tab[i] + " Supprimée");
 				}
 			}
 		}
@@ -214,25 +248,28 @@ public class Inte_Equipe extends JPanel {
 
 		ArrayList<Object[]> ArrayData = new ArrayList<>();
 
-		//String requeteSQL = "SELECT * FROM equipe WHERE `idCompetition` = '"+idc+"'";
-		String requeteSQL = "SELECT equipe.`idEquipe`, equipe.`nomEquipe`, equipe.`nomGroupe`, equipe.`typeDifficulte`, equipe.`typeEquipe`, posséder.`idDoigt` FROM equipe INNER JOIN posséder ON equipe.`idEquipe`=posséder.`idEquipe` WHERE equipe.`idCompetition` = '"+idc+"' && posséder.`idCompetition` = '"+idc+"'";
+		// String requeteSQL =
+		// "SELECT * FROM equipe WHERE `idCompetition` = '"+idc+"'";
+		String requeteSQL = "SELECT equipe.`idEquipe`, equipe.`nomEquipe`, equipe.`nomGroupe`, equipe.`typeDifficulte`, equipe.`typeEquipe`, equipe.`dossard`, posséder.`idDoigt` FROM equipe INNER JOIN posséder ON equipe.`idEquipe`=posséder.`idEquipe` WHERE equipe.`idCompetition` = '"
+				+ idc + "' && posséder.`idCompetition` = '" + idc + "'";
 
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			System.out.println("Driver O.K.");
 
-			Connection conn = DriverManager.getConnection(url, user, passwd);
+			Connection conn = DataSourceProvider.getDataSource()
+					.getConnection();
 			System.out.println("Connexion effective !");
 			Statement stm = conn.createStatement();
 			ResultSet res = stm.executeQuery(requeteSQL);
 			while (res.next()) {
 				ArrayData.add(new Object[] { new Boolean(false),
-						res.getString(1), res.getString(2), res.getString(3),
-						res.getString(4), res.getString(5), res.getString(6) });
+						res.getInt(1), res.getString(2), res.getString(3),
+						res.getString(4), res.getString(5), res.getString(6), res.getString(7) });
 				System.out.println("Id : " + res.getInt(1) + " nom : "
 						+ res.getString(2) + " Grp : " + res.getString(3)
 						+ " Diff : " + res.getString(4) + " Type : "
-						+ res.getString(5) + " Doigt : "+res.getString(6));
+						+ res.getString(5) + " Dossart : "+ res.getInt(6)+" Doigt : " + res.getString(7));
 			}
 
 			conn.close();
@@ -272,24 +309,29 @@ public class Inte_Equipe extends JPanel {
 		return tab;
 	}
 
-	public ArrayList<Object> getIndexSelectTab(Object[][] table) {
-		ArrayList<Object> ArrayDataSelect = new ArrayList<Object>();
+	public int[] getIndexSelectTab(Object[][] table) {
+		ArrayList<Integer> ArrayDataSelect = new ArrayList<Integer>();
 		int lig = table.length;
 		int col = table[0].length;
 
 		System.out.println(lig);
 		System.out.println(col);
+		
 		for (int i = 0; i < lig; i++) {
 			if ((boolean) table[i][0] == (true)) {
 				System.out.println(ArrayDataSelect);
-				ArrayDataSelect.add(table[i][1]);
+				ArrayDataSelect.add( (Integer) table[i][1]);
 			}
 
 		}
-		//Object[] tab = new Object[ArrayDataSelect.size()];
+		
 		System.out.println(ArrayDataSelect);
+		int[] tab = new int[ArrayDataSelect.size()];
+		for (int i = 0; i <ArrayDataSelect.size(); i++) {
+			tab[i] = ArrayDataSelect.get(i);
+		}
 
-		return ArrayDataSelect;
+		return tab;
 	}
 
 	public void BDDupdate(String requeteSQL) {
@@ -297,7 +339,8 @@ public class Inte_Equipe extends JPanel {
 			Class.forName("com.mysql.jdbc.Driver");
 			System.out.println("Driver O.K.");
 
-			Connection conn = DriverManager.getConnection(url, user, passwd);
+			Connection conn = DataSourceProvider.getDataSource()
+					.getConnection();
 			System.out.println("Connexion effective !");
 			Statement stm = conn.createStatement();
 			int res = stm.executeUpdate(requeteSQL);
@@ -317,7 +360,8 @@ public class Inte_Equipe extends JPanel {
 			Class.forName("com.mysql.jdbc.Driver");
 			System.out.println("Driver O.K.");
 
-			Connection conn = DriverManager.getConnection(url, user, passwd);
+			Connection conn = DataSourceProvider.getDataSource()
+					.getConnection();
 			System.out.println("Connexion effective !");
 			Statement stm = conn.createStatement();
 			int res = stm.executeUpdate(requeteSQL);

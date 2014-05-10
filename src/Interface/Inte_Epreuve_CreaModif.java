@@ -21,11 +21,6 @@ import Models.TabModel;
 
 public class Inte_Epreuve_CreaModif extends JFrame{
 
-	/* BDD */
-	String url = "jdbc:mysql://localhost/raidzultat";
-	String user = "root";
-	String passwd = "";
-
 	JFrame thePanel = new JFrame();
 
 	/*   Champs  */
@@ -40,9 +35,6 @@ public class Inte_Epreuve_CreaModif extends JFrame{
 
 	private JLabel dureeL = new JLabel("Durée");
 	private JTextField dureeT = new JTextField("..... durée ....");
-	
-	private JLabel nbreL = new JLabel("Nombre d'équipe");
-	private JTextField nbreT = new JTextField("..... nbr d'équipe ....");
 	
 	private JLabel difficL = new JLabel("Difficulté");
 	private String[] difficulte = { "CHOISIR", "Aventure", "Expert" };
@@ -101,8 +93,6 @@ public class Inte_Epreuve_CreaModif extends JFrame{
 		labelP.add(dateT);
 		labelP.add(dureeL);
 		labelP.add(dureeT);
-		labelP.add(nbreL);
-		labelP.add(nbreT);
 		labelP.add(difficL);
 		labelP.add(difficC);
 		

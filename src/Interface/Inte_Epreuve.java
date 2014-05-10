@@ -22,6 +22,7 @@ import javax.swing.JTable;
 
 import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
 
+import BDD.DataSourceProvider;
 import Interface.Inte_Equipe.EcouteurCreer;
 import Interface.Inte_Equipe.EcouteurModif;
 import Interface.Inte_Equipe.EcouteurSupp;
@@ -50,12 +51,7 @@ public class Inte_Epreuve extends JPanel {
 	private JButton creer = new JButton("Créer");
 	private JButton aquis = new JButton("Aquisition");
 
-	private JComboBox<String> comboEpreuv = new JComboBox<>();
-	
-	/* BDD */
-	String url = "jdbc:mysql://localhost/raidzultat";
-	String user = "root";
-	String passwd = "";
+	private JComboBox<Object> comboEpreuv = new JComboBox<>();
 
 	/* Tableau */
 	private TabModel tabModel;
@@ -72,9 +68,9 @@ public class Inte_Epreuve extends JPanel {
 
 		thePanel = this;
 		idc = idC;
-		
+
 		data = updateTable();
-		
+
 		thePanel.removeAll();
 		panMega.removeAll();
 
@@ -82,7 +78,7 @@ public class Inte_Epreuve extends JPanel {
 		creer.setPreferredSize(new Dimension(100, 30));
 		supp.setPreferredSize(new Dimension(100, 30));
 		aquis.setPreferredSize(new Dimension(100, 30));
-		
+
 		panBoutCreer.add(creer);
 		panBoutSupp.add(supp);
 		panBoutModif.add(modif);
@@ -100,19 +96,23 @@ public class Inte_Epreuve extends JPanel {
 		tableau.setRowHeight(30);
 		JScrollPane jScroll = new JScrollPane(tableau);
 		jScroll.setPreferredSize(new Dimension(600, 400));
-		
-		panTitre.setBorder(BorderFactory.createTitledBorder("Ici vous pouvez gérer vos différentes épreuves"));
+
+		panTitre.setBorder(BorderFactory
+				.createTitledBorder("Ici vous pouvez gérer vos différentes épreuves"));
 		panTitre.setPreferredSize(new Dimension(750, 450));
 		panTitre.add(panBoutonsListe);
 		panTitre.add(jScroll);
-		
-		
+
 		panEpL.add(epreuveL);
 		panEpre.add(epreuveL);
 		panCombo.add(comboEpreuv);
 		panBoutAqui.add(aquis);
 		
-		panZoneAquis.setBorder(BorderFactory.createTitledBorder("Ici vous pouvez gérer vous aquisitions par épreuve"));
+		updateCombo(comboEpreuv);
+
+		panZoneAquis
+				.setBorder(BorderFactory
+						.createTitledBorder("Ici vous pouvez gérer vous aquisitions par épreuve"));
 		panZoneAquis.add(panEpre);
 		panZoneAquis.add(panCombo);
 		panZoneAquis.add(panBoutAqui);
@@ -123,24 +123,25 @@ public class Inte_Epreuve extends JPanel {
 
 		thePanel.add(panMega);
 		/*
-		EcouteurModif ecoutModif = new EcouteurModif();
-		modif.addActionListener(ecoutModif);
-
-		EcouteurSupp ecoutSupp = new EcouteurSupp();
-		supp.addActionListener(ecoutSupp);
-*/
+		 * EcouteurModif ecoutModif = new EcouteurModif();
+		 * modif.addActionListener(ecoutModif);
+		 * 
+		 * EcouteurSupp ecoutSupp = new EcouteurSupp();
+		 * supp.addActionListener(ecoutSupp);
+		 */
 		EcouteurCreer ecoutCreer = new EcouteurCreer();
 		creer.addActionListener(ecoutCreer);
 
 	}
-	
+
 	public class EcouteurCreer implements ActionListener { // Action du creer
 
 		public void actionPerformed(ActionEvent arg0) {
 
-			Inte_Epreuve_CreaModif formulaire = new Inte_Epreuve_CreaModif(idc,panMega);
-			
-			//updateTable(); 
+			Inte_Epreuve_CreaModif formulaire = new Inte_Epreuve_CreaModif(idc,
+					panMega);
+
+			// updateTable();
 		}
 	}
 
@@ -155,11 +156,12 @@ public class Inte_Epreuve extends JPanel {
 			Class.forName("com.mysql.jdbc.Driver");
 			System.out.println("Driver O.K.");
 
-			Connection conn = DriverManager.getConnection(url, user, passwd);
+			Connection conn = DataSourceProvider.getDataSource()
+					.getConnection();
 			System.out.println("Connexion effective !");
 			Statement stm = conn.createStatement();
 			ResultSet res = stm.executeQuery(requeteSQL);
-	
+
 			while (res.next()) {
 				ArrayData.add(new Object[] { new Boolean(false),
 						res.getString(1), res.getString(2), res.getString(3),
@@ -191,6 +193,35 @@ public class Inte_Epreuve extends JPanel {
 		return data;
 	}
 
+	public void updateCombo(JComboBox<Object> combo) {
+		combo.removeAllItems();
+		String requeteSQL = "SELECT nomEpreuve FROM epreuve WHERE idCompetition = '"+idc+"'";
+
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			System.out.println("Driver O.K.");
+
+			Connection conn = DataSourceProvider.getDataSource()
+					.getConnection();
+			System.out.println("Connexion effective !");
+			Statement stm = conn.createStatement();
+			ResultSet res = stm.executeQuery(requeteSQL);
+
+			while (res.next()) {
+				combo.addItem(res.getString(1));
+				System.out.println("Nom : " + res.getString(1));
+			}
+
+			conn.close();
+			res.close();
+
+		}  catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		System.out.println("MAJ Combo");
+	}
+
 	public Object[][] ArrayToTab(ArrayList<Object[]> array) {
 
 		int lengthLig = array.size();
@@ -212,7 +243,8 @@ public class Inte_Epreuve extends JPanel {
 			Class.forName("com.mysql.jdbc.Driver");
 			System.out.println("Driver O.K.");
 
-			Connection conn = DriverManager.getConnection(url, user, passwd);
+			Connection conn = DataSourceProvider.getDataSource()
+					.getConnection();
 			System.out.println("Connexion effective !");
 			Statement stm = conn.createStatement();
 			int res = stm.executeUpdate(requeteSQL);
@@ -232,7 +264,8 @@ public class Inte_Epreuve extends JPanel {
 			Class.forName("com.mysql.jdbc.Driver");
 			System.out.println("Driver O.K.");
 
-			Connection conn = DriverManager.getConnection(url, user, passwd);
+			Connection conn = DataSourceProvider.getDataSource()
+					.getConnection();
 			System.out.println("Connexion effective !");
 			Statement stm = conn.createStatement();
 			int res = stm.executeUpdate(requeteSQL);
@@ -247,6 +280,5 @@ public class Inte_Epreuve extends JPanel {
 			e.printStackTrace();
 		}
 	}
-	
-	
+
 }
