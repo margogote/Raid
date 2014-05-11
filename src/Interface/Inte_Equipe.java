@@ -57,7 +57,7 @@ public class Inte_Equipe extends JPanel {
 		thePanel = this;
 		idc = idC;
 
-		data = updateTable();
+		updateTable();
 
 		EcouteurModif ecoutModif = new EcouteurModif();
 		modif.addActionListener(ecoutModif);
@@ -244,7 +244,7 @@ public class Inte_Equipe extends JPanel {
 		}
 	}
 
-	public Object[][] updateTable() {
+	public void updateTable() {
 
 		ArrayList<Object[]> ArrayData = new ArrayList<>();
 
@@ -288,9 +288,7 @@ public class Inte_Equipe extends JPanel {
 
 		Interface();
 
-		System.out.println(data);
-		System.out.println("MAJ Table");
-		return data;
+		System.out.println("MAJ Table equipe");
 	}
 
 	public Object[][] ArrayToTab(ArrayList<Object[]> array) {

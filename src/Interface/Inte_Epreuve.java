@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -69,10 +71,22 @@ public class Inte_Epreuve extends JPanel {
 		thePanel = this;
 		idc = idC;
 
-		data = updateTable();
+		updateTable();
 
+		EcouteurCreer ecoutCreer = new EcouteurCreer();
+		creer.addActionListener(ecoutCreer);
+
+		EcouteurModif ecoutModif = new EcouteurModif();
+		modif.addActionListener(ecoutModif);
+
+		EcouteurSupp ecoutSupp = new EcouteurSupp();
+		supp.addActionListener(ecoutSupp);
+
+	}
+
+	public void Interface() {
 		thePanel.removeAll();
-		panMega.removeAll();
+		panTitre.removeAll();
 
 		modif.setPreferredSize(new Dimension(100, 30));
 		creer.setPreferredSize(new Dimension(100, 30));
@@ -107,7 +121,7 @@ public class Inte_Epreuve extends JPanel {
 		panEpre.add(epreuveL);
 		panCombo.add(comboEpreuv);
 		panBoutAqui.add(aquis);
-		
+
 		updateCombo(comboEpreuv);
 
 		panZoneAquis
@@ -122,30 +136,137 @@ public class Inte_Epreuve extends JPanel {
 		panMega.add(panZoneAquis);
 
 		thePanel.add(panMega);
-		/*
-		 * EcouteurModif ecoutModif = new EcouteurModif();
-		 * modif.addActionListener(ecoutModif);
-		 * 
-		 * EcouteurSupp ecoutSupp = new EcouteurSupp();
-		 * supp.addActionListener(ecoutSupp);
-		 */
-		EcouteurCreer ecoutCreer = new EcouteurCreer();
-		creer.addActionListener(ecoutCreer);
-
 	}
 
-	public class EcouteurCreer implements ActionListener { // Action du creer
-
+	public class EcouteurCreer implements ActionListener, WindowListener { // Action
+																			// du
+																			// creer
 		public void actionPerformed(ActionEvent arg0) {
 
-			Inte_Epreuve_CreaModif formulaire = new Inte_Epreuve_CreaModif(idc,
-					panMega);
+			Inte_Epreuve_Crea formulaireC = new Inte_Epreuve_Crea(idc);
 
-			// updateTable();
+			formulaireC.addWindowListener(this);
+		}
+
+		@Override
+		public void windowActivated(WindowEvent e) {
+		}
+
+		@Override
+		public void windowClosed(WindowEvent e) {
+			updateTable();
+		}
+
+		@Override
+		public void windowClosing(WindowEvent e) {
+		}
+
+		@Override
+		public void windowDeactivated(WindowEvent e) {
+		}
+
+		@Override
+		public void windowDeiconified(WindowEvent e) {
+		}
+
+		@Override
+		public void windowIconified(WindowEvent e) {
+		}
+
+		@Override
+		public void windowOpened(WindowEvent e) {
 		}
 	}
 
-	public Object[][] updateTable() {
+	public class EcouteurModif implements ActionListener, WindowListener { // Action
+		// du
+		// modif
+
+		public void actionPerformed(ActionEvent arg0) {
+			int flagExiste = 0;
+			int[] tab = getIndexSelectTab(data);
+
+			if (tab.length == 0) {
+				JOptionPane.showMessageDialog(null, "Veuillez cochez une case",
+						"Pas d'équipe à modifier!",
+						JOptionPane.INFORMATION_MESSAGE);
+			}
+			for (int i = 0; i < tab.length; i++) {
+
+				Inte_Epreuve_Modif formulaire = new Inte_Epreuve_Modif(
+						idc, tab[i]);
+
+				formulaire.addWindowListener(this);
+			}
+		}
+
+		@Override
+		public void windowActivated(WindowEvent e) {
+		}
+
+		@Override
+		public void windowClosed(WindowEvent e) {
+			updateTable();
+		}
+
+		@Override
+		public void windowClosing(WindowEvent e) {
+		}
+
+		@Override
+		public void windowDeactivated(WindowEvent e) {
+		}
+
+		@Override
+		public void windowDeiconified(WindowEvent e) {
+		}
+
+		@Override
+		public void windowIconified(WindowEvent e) {
+		}
+
+		@Override
+		public void windowOpened(WindowEvent e) {
+		}
+	}
+
+	public class EcouteurSupp implements ActionListener { // Action du supprimer
+
+		public void actionPerformed(ActionEvent arg0) {
+			// on prend le num de la compet , on le stock
+			// on demande confirmation, si oui on la supprime
+
+			int[] tab = getIndexSelectTab(data);
+			int rep = 0;
+
+			if (tab.length == 0) {
+				JOptionPane.showMessageDialog(null, "Veuillez cochez une case",
+						"Pas d'épreuve à supprimer!",
+						JOptionPane.INFORMATION_MESSAGE);
+			}
+
+			for (int i = 0; i < tab.length; i++) {
+				rep = JOptionPane.showConfirmDialog(null,
+						"Voulez vous vraiment supprimer l'équipe " + tab[i]
+								+ " ?", "Attention", JOptionPane.YES_NO_OPTION);
+
+				if (rep == 0) {
+					String requeteSQL = "DELETE FROM `raidzultat`.`epreuve` WHERE CONCAT(`epreuve`.`idEpreuve`) = '"
+							+ tab[i] + "' && `idCompetition` = '" + idc + "'";
+					BDDupdate(requeteSQL);
+
+					JOptionPane.showMessageDialog(null,
+							"L'épreuve est maintenant supprimée", "Epreuve "
+									+ tab[i] + " Supprimée!",
+							JOptionPane.INFORMATION_MESSAGE);
+
+					System.out.println("Epreuve " + tab[i] + " Supprimée");
+				}
+			}
+		}
+	}
+
+	public void updateTable() {
 
 		ArrayList<Object[]> ArrayData = new ArrayList<>();
 
@@ -164,7 +285,7 @@ public class Inte_Epreuve extends JPanel {
 
 			while (res.next()) {
 				ArrayData.add(new Object[] { new Boolean(false),
-						res.getString(1), res.getString(2), res.getString(3),
+						res.getInt(1), res.getString(2), res.getString(3),
 						res.getString(4), res.getString(5), res.getString(6) });
 				System.out.println("Id : " + res.getInt(1) + " nom : "
 						+ res.getString(2) + " Type : " + res.getString(3)
@@ -186,16 +307,16 @@ public class Inte_Epreuve extends JPanel {
 
 		data = ArrayToTab(ArrayData);
 
-		panMega.revalidate();
+		Interface();
 
 		System.out.println(data);
 		System.out.println("MAJ Table");
-		return data;
 	}
 
 	public void updateCombo(JComboBox<Object> combo) {
 		combo.removeAllItems();
-		String requeteSQL = "SELECT nomEpreuve FROM epreuve WHERE idCompetition = '"+idc+"'";
+		String requeteSQL = "SELECT nomEpreuve FROM epreuve WHERE idCompetition = '"
+				+ idc + "'";
 
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -215,7 +336,7 @@ public class Inte_Epreuve extends JPanel {
 			conn.close();
 			res.close();
 
-		}  catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
@@ -235,6 +356,31 @@ public class Inte_Epreuve extends JPanel {
 		for (int i = 0; i < lengthLig; i++) {
 			tab[i] = array.get(i);
 		}
+		return tab;
+	}
+
+	public int[] getIndexSelectTab(Object[][] table) {
+		ArrayList<Integer> ArrayDataSelect = new ArrayList<Integer>();
+		int lig = table.length;
+		int col = table[0].length;
+
+		System.out.println(lig);
+		System.out.println(col);
+		
+		for (int i = 0; i < lig; i++) {
+			if ((boolean) table[i][0] == (true)) {
+				System.out.println(ArrayDataSelect);
+				ArrayDataSelect.add( (Integer) table[i][1]);
+			}
+
+		}
+		
+		System.out.println(ArrayDataSelect);
+		int[] tab = new int[ArrayDataSelect.size()];
+		for (int i = 0; i <ArrayDataSelect.size(); i++) {
+			tab[i] = ArrayDataSelect.get(i);
+		}
+
 		return tab;
 	}
 

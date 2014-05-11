@@ -81,7 +81,11 @@ public class Inte_Resultat extends JPanel {
 		bG.add(epreuveR);
 		bG.add(jourR);
 		bG.add(generalR);
-
+		
+		Interface();
+	}
+	
+	public void Interface(){
 		generalP.add(generalR);
 
 		checkPanel.setBorder(BorderFactory
@@ -148,7 +152,6 @@ public class Inte_Resultat extends JPanel {
 		panMega.add(panTitre);
 		
 		this.add(panMega);
-
 	}
 	
 	public void updateCombo(JComboBox<String> combo) {

@@ -245,7 +245,7 @@ public class Inte_Equipe_CreaModif extends JFrame {
 					thePanel.dispose();
 				} catch (Exception e) {
 					System.out
-							.println("Je ne suis pas un entier, et alors ca te derange ?");
+							.println("Je ne suis pas un entier");
 					JOptionPane
 							.showMessageDialog(
 									null,
@@ -284,7 +284,7 @@ public class Inte_Equipe_CreaModif extends JFrame {
 
 				catch (Exception e) {
 					System.out
-							.println("Je ne suis pas un entier, et alors ca te derange ?");
+							.println("Je ne suis pas un entier");
 					JOptionPane
 							.showMessageDialog(
 									null,
@@ -338,7 +338,7 @@ public class Inte_Equipe_CreaModif extends JFrame {
 			e.printStackTrace();
 		}
 
-		System.out.println("MAJ Combo");
+		System.out.println("MAJ Combo doigt");
 	}
 
 	public void BDDupdate(String requeteSQL) {

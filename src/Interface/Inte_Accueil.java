@@ -22,14 +22,21 @@ import javax.swing.JPanel;
 import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
 
 import BDD.Connect;
+import BDD.DataSourceProvider;
+
+/**
+ * Slpash page d'accueil permet le choix de la competition, permet aussi
+ * d'en créer, d'en modifier et d'en supprimer
+ * 
+ * @author Margaux
+ * 
+ */
 
 public class Inte_Accueil {
 
 	JFrame fen = new JFrame();
 
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 1L;
 
 	/* --- Panels */
@@ -45,10 +52,10 @@ public class Inte_Accueil {
 	private JButton quitter = new JButton("Quitter");
 
 	/* --- BDD Liste des compet */
-	String url = "jdbc:mysql://localhost/raidzultat";
-	String user = "root";
-	String passwd = "";
-
+	/*
+	 * String url = "jdbc:mysql://localhost/raidzultat"; String user = "root";
+	 * String passwd = "";
+	 */
 	// private String[] competitions = { "compet1", "la 2é", "la 3é" };
 	private JComboBox<Object> compets = new JComboBox<Object>();
 	// private JComboBox<Object> compets;
@@ -162,18 +169,17 @@ public class Inte_Accueil {
 							"Nouvelle compétition ?",
 							JOptionPane.QUESTION_MESSAGE);
 				}
-					if (!nom.equals("")) {
-						String requeteSQL = "INSERT INTO `competition` (`nomCompetition`)VALUES ( '"
-								+ nom + "')";
-						BDDquery(requeteSQL);
+				if (!nom.equals("")) {
+					String requeteSQL = "INSERT INTO `competition` (`nomCompetition`)VALUES ( '"
+							+ nom + "')";
+					BDDquery(requeteSQL);
 
-						JOptionPane.showMessageDialog(null,
-								"La compétition est " + nom + ".",
-								"Nouvelle compétition !",
-								JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(null, "La compétition est "
+							+ nom + ".", "Nouvelle compétition !",
+							JOptionPane.INFORMATION_MESSAGE);
 
-						updateCombo(compets);
-					
+					updateCombo(compets);
+
 				}
 			}
 		}
@@ -219,7 +225,6 @@ public class Inte_Accueil {
 							JOptionPane.INFORMATION_MESSAGE);
 
 					updateCombo(compets);
-
 				}
 			}
 		}
@@ -275,20 +280,21 @@ public class Inte_Accueil {
 
 	public void updateCombo(JComboBox<Object> combo) {
 
-		compets.removeAllItems();
+		combo.removeAllItems();
 		String requeteSQL = "SELECT nomCompetition FROM competition";
 
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			System.out.println("Driver O.K.");
 
-			Connection conn = DriverManager.getConnection(url, user, passwd);
+			Connection conn = DataSourceProvider.getDataSource()
+					.getConnection();
 			System.out.println("Connexion effective !");
 			Statement stm = conn.createStatement();
 			ResultSet res = stm.executeQuery(requeteSQL);
 
 			while (res.next()) {
-				compets.addItem(res.getString(1));
+				combo.addItem(res.getString(1));
 				System.out.println("Nom : " + res.getString(1));
 			}
 
@@ -323,7 +329,8 @@ public class Inte_Accueil {
 			Class.forName("com.mysql.jdbc.Driver");
 			System.out.println("Driver O.K.");
 
-			Connection conn = DriverManager.getConnection(url, user, passwd);
+			Connection conn = DataSourceProvider.getDataSource()
+					.getConnection();
 			System.out.println("Connexion effective !");
 			Statement stm = conn.createStatement();
 			ResultSet res = stm.executeQuery(requeteSQL);
@@ -347,7 +354,8 @@ public class Inte_Accueil {
 			Class.forName("com.mysql.jdbc.Driver");
 			System.out.println("Driver O.K.");
 
-			Connection conn = DriverManager.getConnection(url, user, passwd);
+			Connection conn = DataSourceProvider.getDataSource()
+					.getConnection();
 			System.out.println("Connexion effective !");
 			Statement stm = conn.createStatement();
 			int res = stm.executeUpdate(requeteSQL);
@@ -367,7 +375,8 @@ public class Inte_Accueil {
 			Class.forName("com.mysql.jdbc.Driver");
 			System.out.println("Driver O.K.");
 
-			Connection conn = DriverManager.getConnection(url, user, passwd);
+			Connection conn = DataSourceProvider.getDataSource()
+					.getConnection();
 			System.out.println("Connexion effective !");
 			Statement stm = conn.createStatement();
 			int res = stm.executeUpdate(requeteSQL);
