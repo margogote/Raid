@@ -5,6 +5,8 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.Statement;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -17,6 +19,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 
+import BDD.DataSourceProvider;
 import Interface.Inte_Epreuve_Modif.EcouteurOK;
 import Interface.Inte_Epreuve_Modif.EcouteurQ;
 import Models.TabModel;
@@ -30,7 +33,8 @@ public class Inte_Epreuve_Crea extends JFrame {
 	private JTextField nomT = new JTextField("");
 
 	private JLabel typeL = new JLabel("Type");
-	private String[] typeS = { "CHOISIR", "Course d'orientation", "Course", "Orientshow" };
+	private String[] typeS = { "CHOISIR", "Course d`orientation", "Course",
+			"Orientshow" };
 	private JComboBox<Object> typeC = new JComboBox<Object>(typeS);
 
 	private JLabel dateL = new JLabel("Date de début");
@@ -66,20 +70,20 @@ public class Inte_Epreuve_Crea extends JFrame {
 
 	private int idc;
 	private int modif;
-	
-	public Inte_Epreuve_Crea(int idC){
+
+	public Inte_Epreuve_Crea(int idC) {
 		thePanel = this;
 		idc = idC;
-		
+
 		InterfaceEp();
 	}
-	
+
 	public void InterfaceEp() {
 		System.out.println("InterfaceEp");
 		thePanel.setTitle("Raidzultats Création Epreuve");
 		thePanel.setSize(400, 300);
 		thePanel.setLocationRelativeTo(null);
-		//thePanel.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		// thePanel.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		thePanel.setLayout(new BorderLayout()); // Pour les placements
 
 		oK.setPreferredSize(new Dimension(100, 30));
@@ -119,7 +123,7 @@ public class Inte_Epreuve_Crea extends JFrame {
 		thePanel.add(panPan);
 
 		thePanel.setVisible(true);
-		
+
 		EcouteurOKEp ecoutOKEp = new EcouteurOKEp();
 		oK.addActionListener(ecoutOKEp);
 
@@ -127,14 +131,14 @@ public class Inte_Epreuve_Crea extends JFrame {
 		annuler.addActionListener(ecoutQ);
 
 	}
-	
-	public void InterfaceBa(){
+
+	public void InterfaceBa() {
 		System.out.println("InterfaceBa");
 		thePanel.setTitle("Raidzultats Attribution de balises");
 		thePanel.setSize(500, 500);
-		
+
 		oK2.setPreferredSize(new Dimension(100, 30));
-		
+
 		creer.setPreferredSize(new Dimension(50, 30));
 		supp.setPreferredSize(new Dimension(50, 30));
 
@@ -160,11 +164,11 @@ public class Inte_Epreuve_Crea extends JFrame {
 		// panTitre.setPreferredSize(new Dimension(350, 450));
 		panTitre.add(panBoutonsListe);
 		panTitre.add(jScroll);
-		
+
 		JPanel btnP = new JPanel();
 		btnP.add(oK2);
 		btnP.add(annuler);
-		
+
 		JPanel ultraP = new JPanel();
 		ultraP.setLayout(new BoxLayout(ultraP, BoxLayout.PAGE_AXIS));
 		ultraP.add(panTitre);
@@ -172,7 +176,7 @@ public class Inte_Epreuve_Crea extends JFrame {
 
 		JPanel panPan = new JPanel();
 		panPan.add(ultraP);
-		
+
 		System.out.println("panpan");
 		thePanel.add(panPan);
 
@@ -180,24 +184,42 @@ public class Inte_Epreuve_Crea extends JFrame {
 		thePanel.revalidate();
 		thePanel.repaint();
 		thePanel.setVisible(true);
-		
+
 		EcouteurOKBa ecoutOKBa = new EcouteurOKBa();
 		oK2.addActionListener(ecoutOKBa);
-/*
-		EcouteurQ ecoutQ = new EcouteurQ();
-		annuler.addActionListener(ecoutQ);
-*/		
+		/*
+		 * EcouteurQ ecoutQ = new EcouteurQ();
+		 * annuler.addActionListener(ecoutQ);
+		 */
 
 	}
-	
+
 	public class EcouteurOKEp implements ActionListener { // Action du quitter
 
 		public void actionPerformed(ActionEvent arg0) {
 			System.out.println("Ok Ep");
+
+			String nom = nomT.getText();
+			String type = (String) typeC.getSelectedItem();
+			String difficulte = (String) difficC.getSelectedItem();
+			String date = (String) dateT.getText();
+			String duree = (String) dureeT.getText();
+//2014-04-27 11:00:00.0
 			InterfaceBa();
+			String requeteSQL = "INSERT INTO `raidzultat`.`epreuve` (`nomEpreuve`, `typeEpreuve`, `difficulte`, `dateHeureEpreuve`, `dureeEpreuve`, `idCompetition`) VALUES ('"
+					+ nom
+					+ "', '"
+					+ type
+					+ "', '"
+					+ difficulte
+					+ "', '"
+					+ date
+					+ "', '" + duree + "', '" + idc + "')";
+			System.out.println(requeteSQL);
+			BDDquery(requeteSQL);
 		}
 	}
-	
+
 	public class EcouteurOKBa implements ActionListener { // Action du quitter
 
 		public void actionPerformed(ActionEvent arg0) {
@@ -212,5 +234,25 @@ public class Inte_Epreuve_Crea extends JFrame {
 			thePanel.dispose();
 		}
 	}
-	
+
+	public void BDDquery(String requeteSQL) {
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			System.out.println("Driver O.K.");
+
+			Connection conn = DataSourceProvider.getDataSource()
+					.getConnection();
+			System.out.println("Connexion effective !");
+			Statement stm = conn.createStatement();
+			int res = stm.executeUpdate(requeteSQL);
+
+			System.out.println("Nb enregistrement : " + res);
+
+			conn.close();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 }

@@ -34,7 +34,7 @@ public class Inte_Epreuve_Modif extends JFrame {
 	private JTextField nomT = new JTextField("");
 
 	private JLabel typeL = new JLabel("Type");
-	private String[] typeS = { "CHOISIR", "Course d'orientation", "Course",
+	private String[] typeS = { "CHOISIR", "Course d`orientation", "Course",
 			"Orientshow" };
 	private JComboBox<Object> typeC = new JComboBox<Object>(typeS);
 

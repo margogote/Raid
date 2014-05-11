@@ -270,7 +270,7 @@ public class Inte_Epreuve extends JPanel {
 
 		ArrayList<Object[]> ArrayData = new ArrayList<>();
 
-		String requeteSQL = "SELECT * FROM epreuve WHERE `idCompetition` = '"
+		String requeteSQL = "SELECT * FROM epreuve WHERE idCompetition = '"
 				+ idc + "'";
 
 		try {
