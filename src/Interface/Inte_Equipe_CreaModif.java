@@ -152,7 +152,7 @@ public class Inte_Equipe_CreaModif extends JFrame {
 
 		JPanel gigaP = new JPanel();
 		gigaP.setBorder(BorderFactory
-				.createTitledBorder("Ici vous pouvez créer/modifier vous différentes équipes"));
+				.createTitledBorder("Ici vous pouvez créer/modifier vos différentes équipes"));
 		gigaP.setLayout(new BoxLayout(gigaP, BoxLayout.PAGE_AXIS));
 		gigaP.add(megaP);
 		gigaP.add(btnP);
@@ -308,7 +308,6 @@ public class Inte_Equipe_CreaModif extends JFrame {
 		String requeteSQL = "SELECT `idDoigt` FROM `doigt` WHERE `idDoigt` NOT IN ( SELECT `idDoigt` FROM `posséder` WHERE `idCompetition` = '"
 				+ idc + "') && `idCompetition` = '" + idc + "'";
 
-		// doigtC.removeAllItems();
 		doigtC.addItem("CHOISIR");
 
 		try {

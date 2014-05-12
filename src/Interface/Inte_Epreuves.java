@@ -30,7 +30,7 @@ import Interface.Inte_Equipe.EcouteurModif;
 import Interface.Inte_Equipe.EcouteurSupp;
 import Models.TabModel;
 
-public class Inte_Epreuve extends JPanel {
+public class Inte_Epreuves extends JPanel {
 
 	/* Panels */
 	private JPanel thePanel;
@@ -66,7 +66,12 @@ public class Inte_Epreuve extends JPanel {
 
 	private int idc;
 
-	public Inte_Epreuve(int idC) {
+	/**
+     * Classe principale.
+     * 
+     * @param idC, l'id de la compétition étudiée
+     */
+	public Inte_Epreuves(int idC) {
 
 		thePanel = this;
 		idc = idC;
@@ -339,7 +344,11 @@ public class Inte_Epreuve extends JPanel {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
+		if(combo.getItemCount()==0){
+			aquis.setEnabled(false);
+		}else{
+			aquis.setEnabled(true);
+		}
 		System.out.println("MAJ Combo");
 	}
 
@@ -362,7 +371,12 @@ public class Inte_Epreuve extends JPanel {
 	public int[] getIndexSelectTab(Object[][] table) {
 		ArrayList<Integer> ArrayDataSelect = new ArrayList<Integer>();
 		int lig = table.length;
-		int col = table[0].length;
+		int col;
+		
+		if(lig>0){
+		col = table[0].length;
+		}else{col=0;}
+
 
 		System.out.println(lig);
 		System.out.println(col);

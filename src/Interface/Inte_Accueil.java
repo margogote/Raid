@@ -5,37 +5,31 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
-
-import BDD.Connect;
 import BDD.DataSourceProvider;
 
+import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
+
 /**
- * Slpash page d'accueil permet le choix de la competition, permet aussi
- * d'en créer, d'en modifier et d'en supprimer
+ * Splash page d'accueil : permet le choix de la competition, permet aussi
+ * d'en créer, d'en modifier et d'en supprimer ou de quitter l'application
  * 
  * @author Margaux
  * 
  */
-
 public class Inte_Accueil {
 
 	JFrame fen = new JFrame();
-
 
 	private static final long serialVersionUID = 1L;
 
@@ -51,18 +45,14 @@ public class Inte_Accueil {
 	private JButton creerCompet = new JButton("Créer une compétition");
 	private JButton quitter = new JButton("Quitter");
 
-	/* --- BDD Liste des compet */
-	/*
-	 * String url = "jdbc:mysql://localhost/raidzultat"; String user = "root";
-	 * String passwd = "";
-	 */
-	// private String[] competitions = { "compet1", "la 2é", "la 3é" };
 	private JComboBox<Object> compets = new JComboBox<Object>();
-	// private JComboBox<Object> compets;
 
 	JLabel bjr = new JLabel(
 			"Bienvenu(e) sur Raidzultats, l'application qui permet de gérer le classement d'un Raid");
-
+	/**
+     * Classe principale.
+     * Permet la mise en place de l'interface
+     */
 	public Inte_Accueil() {
 
 		updateCombo(compets);
@@ -134,12 +124,14 @@ public class Inte_Accueil {
 
 	}
 
+	/**
+     * Permet de gérer les clics du type "Entrer".
+     */
 	public class EcouteurEntrer implements ActionListener { // Action du Entrer
 
 		public void actionPerformed(ActionEvent arg0) {
 			// on prend le num de la compet, on le stock
 			// on lance la page suivante
-			int id = getIndex(compets);
 
 			String nomC = (String) compets.getSelectedItem();
 
@@ -151,6 +143,9 @@ public class Inte_Accueil {
 		}
 	}
 
+	/**
+     * Permet de gérer les clics du type "Créer".
+     */
 	public class EcouteurCreer implements ActionListener { // Action du creer
 
 		public void actionPerformed(ActionEvent arg0) {
@@ -172,7 +167,7 @@ public class Inte_Accueil {
 				if (!nom.equals("")) {
 					String requeteSQL = "INSERT INTO `competition` (`nomCompetition`)VALUES ( '"
 							+ nom + "')";
-					BDDquery(requeteSQL);
+					BDDupdate(requeteSQL);
 
 					JOptionPane.showMessageDialog(null, "La compétition est "
 							+ nom + ".", "Nouvelle compétition !",
@@ -185,14 +180,16 @@ public class Inte_Accueil {
 		}
 	}
 
+	/**
+     * Permet de gérer les clics du type "Modifier".
+     */
 	public class EcouteurModif implements ActionListener { // Action du modifier
 
 		public void actionPerformed(ActionEvent arg0) {
 			// on prend le num de la compet , on le stock
 			// on lance le formulaire pré-remplit
 
-			int id;
-			id = getIndex(compets);
+			int idC = getSelectID(compets);
 			String nomAv = (String) compets.getSelectedItem();
 
 			// JOptionPane jop = new JOptionPane(), jop2 = new JOptionPane();
@@ -203,7 +200,7 @@ public class Inte_Accueil {
 			if (nom != null) {
 				while (nom.equals("")) {
 					JOptionPane.showMessageDialog(null,
-							"Veuillez entrer un nom", "Compétition " + id
+							"Veuillez entrer un nom", "Compétition " + idC
 									+ " non modifiée!",
 							JOptionPane.ERROR_MESSAGE);
 					nom = JOptionPane.showInputDialog(null,
@@ -221,7 +218,7 @@ public class Inte_Accueil {
 
 					JOptionPane.showMessageDialog(null,
 							"La competition est maintenant : " + nom,
-							"Compétition " + id + " modifiée!",
+							"Compétition " + idC + " modifiée!",
 							JOptionPane.INFORMATION_MESSAGE);
 
 					updateCombo(compets);
@@ -230,6 +227,9 @@ public class Inte_Accueil {
 		}
 	}
 
+	/**
+     * Permet de gérer les clics du type "Supprimer".
+     */
 	public class EcouteurSupp implements ActionListener { // Action du supprimer
 
 		public void actionPerformed(ActionEvent arg0) {
@@ -262,6 +262,9 @@ public class Inte_Accueil {
 		}
 	}
 
+	/**
+     * Permet de gérer les clics du type "Quitter".
+     */
 	public class EcouteurQ implements ActionListener { // Action du quitter
 
 		public void actionPerformed(ActionEvent arg0) {
@@ -278,6 +281,12 @@ public class Inte_Accueil {
 		}
 	}
 
+	/**
+     * Met à jour la comboBox pour la remplir avec les compétitions présentes dans la BDD.
+     * 
+     * @param combo
+     * 			La comboBox à mettre à jour
+     */
 	public void updateCombo(JComboBox<Object> combo) {
 
 		combo.removeAllItems();
@@ -311,15 +320,26 @@ public class Inte_Accueil {
 		}
 
 		System.out.println("MAJ Combo");
+		if(combo.getItemCount()==0){
+			entrerCompet.setEnabled(false);
+			modifCompet.setEnabled(false);
+			suppCompet.setEnabled(false);
+		}else{
+			entrerCompet.setEnabled(true);
+			modifCompet.setEnabled(true);
+			suppCompet.setEnabled(true);
+		}
 
 	}
 
-	public int getIndex(JComboBox<Object> combo) {
-		int id;
-		id = combo.getSelectedIndex() + 1;
-		return id;
-	}
-
+	/**
+     * Indique le numéro de l'object sélectioné dans la ComboBox correspondre avec la ligne de la BDD.
+     * 
+     * @param combo
+     * 			La comboBox à inspecter
+     * 
+     * @return iDSelect, le numéro de la ligne BDD correspondant à la ligne de la comboBox sélectionnée
+     */
 	public int getSelectID(JComboBox<Object> combo) {
 		String nom = (String) combo.getSelectedItem();
 		int iDSelect = -1;
@@ -347,29 +367,14 @@ public class Inte_Accueil {
 		}
 		return iDSelect;
 	}
-
+	
+	/**
+     * Effectue une requête de mise à jour et de gestion dans la BDD.
+     * 
+     * @param requeteSQL
+     * 			La requête SQL à saisir dans la BDD
+     */
 	public void BDDupdate(String requeteSQL) {
-		try {
-
-			Class.forName("com.mysql.jdbc.Driver");
-			System.out.println("Driver O.K.");
-
-			Connection conn = DataSourceProvider.getDataSource()
-					.getConnection();
-			System.out.println("Connexion effective !");
-			Statement stm = conn.createStatement();
-			int res = stm.executeUpdate(requeteSQL);
-
-			System.out.println("Nb enregistrement : " + res);
-
-			conn.close();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	public void BDDquery(String requeteSQL) {
 		try {
 
 			Class.forName("com.mysql.jdbc.Driver");

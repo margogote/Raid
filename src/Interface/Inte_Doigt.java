@@ -47,10 +47,15 @@ public class Inte_Doigt extends JPanel {
 
 	int idc;
 
+	/**
+     * Classe principale.
+     * 
+     * @param idC, l'id de la compétition étudiée
+     */
 	public Inte_Doigt(int idC) {
 
 		thePanel = this;
-		idc=idC;
+		idc = idC;
 
 		updateTable();
 
@@ -90,8 +95,9 @@ public class Inte_Doigt extends JPanel {
 		tableau.setRowHeight(30);
 		JScrollPane jScroll = new JScrollPane(tableau);
 		jScroll.setPreferredSize(new Dimension(600, 400));
-		
-		panTitre.setBorder(BorderFactory.createTitledBorder("Ici vous pouvez gérer vos différents doigts"));
+
+		panTitre.setBorder(BorderFactory
+				.createTitledBorder("Ici vous pouvez gérer vos différents doigts"));
 		panTitre.setPreferredSize(new Dimension(750, 450));
 		panTitre.add(panBoutonsListe);
 		panTitre.add(jScroll);
@@ -133,14 +139,26 @@ public class Inte_Doigt extends JPanel {
 								"Ce doigt existe déjà", "Doigt non créé!",
 								JOptionPane.INFORMATION_MESSAGE);
 					} else {
-						
-						String requeteSQL = "INSERT INTO `doigt` (`idDoigt`,`idCompetition`) VALUES ( "
-								+ nb +","+ idc+ ")";
-						BDDquery(requeteSQL);
+						try {
+							Integer.parseInt(nb);
+							System.out.println("C'est un entier");
 
-						JOptionPane.showMessageDialog(null, "Le doigt est "
-								+ nb + ".", "Nouvelle compétition !",
-								JOptionPane.INFORMATION_MESSAGE);
+							String requeteSQL = "INSERT INTO `doigt` (`idDoigt`,`idCompetition`) VALUES ( "
+									+ nb + "," + idc + ")";
+							BDDquery(requeteSQL);
+
+							JOptionPane.showMessageDialog(null, "Le doigt est "
+									+ nb + ".", "Nouvelle compétition !",
+									JOptionPane.INFORMATION_MESSAGE);
+						} catch (Exception e) {
+							System.out.println("Je ne suis pas un entier");
+							JOptionPane
+									.showMessageDialog(
+											null,
+											"Attention entrer un entier comme numéro de doigt",
+											"Doigt non créé!",
+											JOptionPane.WARNING_MESSAGE);
+						}
 					}
 				}
 			}
@@ -150,7 +168,7 @@ public class Inte_Doigt extends JPanel {
 	public class EcouteurModif implements ActionListener { // Action du modif
 
 		public void actionPerformed(ActionEvent arg0) {
-			int flagExiste=0;
+			int flagExiste = 0;
 			ArrayList<Object> tab = getIndexSelectTab(data);
 
 			if (tab.size() == 0) {
@@ -158,7 +176,7 @@ public class Inte_Doigt extends JPanel {
 						"Pas de doigt à modifier!",
 						JOptionPane.INFORMATION_MESSAGE);
 			}
-			
+
 			for (int i = 0; i < tab.size(); i++) {
 				String nb = JOptionPane.showInputDialog(null,
 						"Donner le nouveau numéro de votre doigt !",
@@ -187,13 +205,16 @@ public class Inte_Doigt extends JPanel {
 						}
 						if (flagExiste == 1) {
 							JOptionPane.showMessageDialog(null,
-									"Ce doigt existe déjà", "Doigt non modifié!",
+									"Ce doigt existe déjà",
+									"Doigt non modifié!",
 									JOptionPane.INFORMATION_MESSAGE);
 						} else {
 							String requeteSQL = "UPDATE `doigt` SET  `idDoigt` = '"
 									+ nb
 									+ "' WHERE CONCAT(`doigt`.`idDoigt`) = '"
-									+ tab.get(i) + "' && `idCompetition` = '"+idc+"'";
+									+ tab.get(i)
+									+ "' && `idCompetition` = '"
+									+ idc + "'";
 							BDDupdate(requeteSQL);
 
 							JOptionPane.showMessageDialog(null,
@@ -229,9 +250,12 @@ public class Inte_Doigt extends JPanel {
 
 				if (rep == 0) {
 					String requeteSQL = "DELETE FROM `raidzultat`.`doigt` WHERE CONCAT(`doigt`.`idDoigt`) = '"
-							+ tab.get(i) + "' && `idCompetition` = '"+idc + "'";
+							+ tab.get(i)
+							+ "' && `idCompetition` = '"
+							+ idc
+							+ "'";
 					BDDupdate(requeteSQL);
-				
+
 					JOptionPane.showMessageDialog(null,
 							"Le doigt est maintenant supprimé",
 							"Doigt " + tab.get(i) + " Supprimé!",
@@ -247,13 +271,15 @@ public class Inte_Doigt extends JPanel {
 
 		ArrayList<Object[]> ArrayData = new ArrayList<>();
 
-		String requeteSQL = "SELECT * FROM doigt WHERE `idCompetition` = '"+idc+"'";
+		String requeteSQL = "SELECT * FROM doigt WHERE `idCompetition` = '"
+				+ idc + "'";
 
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			System.out.println("Driver O.K.");
 
-			Connection conn = DataSourceProvider.getDataSource().getConnection();
+			Connection conn = DataSourceProvider.getDataSource()
+					.getConnection();
 			System.out.println("Connexion effective !");
 			Statement stm = conn.createStatement();
 			ResultSet res = stm.executeQuery(requeteSQL);
@@ -280,18 +306,20 @@ public class Inte_Doigt extends JPanel {
 		Interface();
 
 		System.out.println("MAJ Table");
-		//return data;
+		// return data;
 	}
 
 	public Object[][] ArrayToTab(ArrayList<Object[]> array) {
 
 		int lengthLig = array.size();
-		
+
 		int lengthCol;
-		if(lengthLig>0){
-		lengthCol = array.get(0).length;
-		}else{lengthCol=0;}
-		
+		if (lengthLig > 0) {
+			lengthCol = array.get(0).length;
+		} else {
+			lengthCol = 0;
+		}
+
 		Object[][] tab = new Object[lengthLig][lengthCol];
 		for (int i = 0; i < lengthLig; i++) {
 			tab[i] = array.get(i);
@@ -303,7 +331,13 @@ public class Inte_Doigt extends JPanel {
 	public ArrayList<Object> getIndexSelectTab(Object[][] table) {
 		ArrayList<Object> ArrayDataSelect = new ArrayList<Object>();
 		int lig = table.length;
-		int col = table[0].length;
+		int col;
+
+		if (lig > 0) {
+			col = table[0].length;
+		} else {
+			col = 0;
+		}
 
 		System.out.println(lig);
 		System.out.println(col);
@@ -319,12 +353,13 @@ public class Inte_Doigt extends JPanel {
 		return ArrayDataSelect;
 	}
 
-	public void BDDupdate(String requeteSQL){
+	public void BDDupdate(String requeteSQL) {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			System.out.println("Driver O.K.");
 
-			Connection conn = DataSourceProvider.getDataSource().getConnection();
+			Connection conn = DataSourceProvider.getDataSource()
+					.getConnection();
 			System.out.println("Connexion effective !");
 			Statement stm = conn.createStatement();
 			int res = stm.executeUpdate(requeteSQL);
@@ -338,13 +373,14 @@ public class Inte_Doigt extends JPanel {
 			e.printStackTrace();
 		}
 	}
-	
-	public void BDDquery(String requeteSQL){
+
+	public void BDDquery(String requeteSQL) {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			System.out.println("Driver O.K.");
 
-			Connection conn = DataSourceProvider.getDataSource().getConnection();
+			Connection conn = DataSourceProvider.getDataSource()
+					.getConnection();
 			System.out.println("Connexion effective !");
 			Statement stm = conn.createStatement();
 			int res = stm.executeUpdate(requeteSQL);
@@ -359,5 +395,5 @@ public class Inte_Doigt extends JPanel {
 			e.printStackTrace();
 		}
 	}
-	
+
 }

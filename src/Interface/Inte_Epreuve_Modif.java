@@ -305,8 +305,12 @@ public class Inte_Epreuve_Modif extends JFrame {
 
 	public int[] getIndexSelectTab(Object[][] table) {
 		ArrayList<Integer> ArrayDataSelect = new ArrayList<Integer>();
-		int lig = table.length;
-		int col = table[0].length;
+		int lig = table.length;	
+		int col;
+		
+		if(lig>0){
+		col = table[0].length;
+		}else{col=0;}
 
 		System.out.println(lig);
 		System.out.println(col);

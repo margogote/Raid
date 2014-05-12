@@ -179,7 +179,11 @@ public class Inte_Resultat extends JPanel {
 		}  catch (Exception e) {
 			e.printStackTrace();
 		}
-
+		if(combo.getItemCount()==0){
+			epreuveR.setEnabled(false);
+		}else{
+			epreuveR.setEnabled(true);
+		}
 		System.out.println("MAJ Combo");
 	}
 

@@ -23,7 +23,7 @@ public class Inte_monAppli {
 		Inte_Balise inte_Balise = new Inte_Balise(idC);
 		Inte_Equipe inte_Equipe = new Inte_Equipe(idC);
 		Inte_Resultat inte_Resultat = new Inte_Resultat(idC);
-		Inte_Epreuve inte_Epreuve = new Inte_Epreuve(idC);
+		Inte_Epreuves inte_Epreuves = new Inte_Epreuves(idC);
 		Inte_MalusBonus inte_MalusBonus =new Inte_MalusBonus(idC);
 		Inte_Menu inte_Menu = new Inte_Menu(fen2);
 
@@ -39,7 +39,7 @@ public class Inte_monAppli {
 		tabbedPane.add("Balises",inte_Balise);
 		tabbedPane.add("Equipes",inte_Equipe);
 		tabbedPane.add("Malus & Bonus",inte_MalusBonus);
-		tabbedPane.add("Epreuves",inte_Epreuve);
+		tabbedPane.add("Epreuves",inte_Epreuves);
 		tabbedPane.add("Résultats",inte_Resultat);
 		tabbedPane.add("Menu", inte_Menu);
 		

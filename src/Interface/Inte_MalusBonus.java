@@ -47,7 +47,7 @@ public class Inte_MalusBonus extends JPanel {
 	private TabModel tabModel;
 	private JTable tableau;
 	private Object[][] data;
-	private String title[] = { "", "nomMalusBonus", "tempsMalusBonus", "idEpreuve" };
+	private String title[] = { "", "id","nomMalusBonus","Malus?", "tempsMalusBonus" };
 
 	int idc;
 
@@ -102,12 +102,6 @@ public class Inte_MalusBonus extends JPanel {
 
 		panMega.add(panTitre);
 
-		/*
-		 * panMega.setLayout(new BorderLayout()); panMega.add(bjr,
-		 * BorderLayout.NORTH); panMega.add(panTitre, BorderLayout.WEST);
-		 * panMega.add(new JScrollPane(tableau), BorderLayout.CENTER);
-		 */
-
 		thePanel.add(panMega);
 	}
 
@@ -116,7 +110,7 @@ public class Inte_MalusBonus extends JPanel {
 																			// creer
 		public void actionPerformed(ActionEvent arg0) {
 
-			Inte_Equipe_CreaModif formulaire = new Inte_Equipe_CreaModif(idc,
+			Inte_MalusBonus_CreaModif formulaire = new Inte_MalusBonus_CreaModif(idc,
 					-1);
 			formulaire.addWindowListener(this);
 		}
@@ -154,7 +148,6 @@ public class Inte_MalusBonus extends JPanel {
 	public class EcouteurModif implements ActionListener, WindowListener { // Action
 																			// du
 																			// modif
-
 		public void actionPerformed(ActionEvent arg0) {
 			int flagExiste = 0;
 			int[] tab = getIndexSelectTab(data);
@@ -166,7 +159,7 @@ public class Inte_MalusBonus extends JPanel {
 			}
 			for (int i = 0; i < tab.length; i++) {
 
-				Inte_Equipe_CreaModif formulaire = new Inte_Equipe_CreaModif(
+				Inte_MalusBonus_CreaModif formulaire = new Inte_MalusBonus_CreaModif(
 						idc, tab[i]);
 
 				formulaire.addWindowListener(this);
@@ -214,28 +207,29 @@ public class Inte_MalusBonus extends JPanel {
 
 			if (tab.length == 0) {
 				JOptionPane.showMessageDialog(null, "Veuillez cochez une case",
-						"Pas d'équipe à supprimer!",
+						"Pas de malus/bonus à supprimer!",
 						JOptionPane.INFORMATION_MESSAGE);
 			}
 
 			for (int i = 0; i < tab.length; i++) {
 				rep = JOptionPane.showConfirmDialog(null,
-						"Voulez vous vraiment supprimer l'équipe " + tab[i]
+						"Voulez vous vraiment supprimer le malus/bonus " + tab[i]
 								+ " ?", "Attention", JOptionPane.YES_NO_OPTION);
 
 				if (rep == 0) {
-					String requeteSQL = "DELETE FROM `raidzultat`.`malusbonus` WHERE CONCAT(`malusbonus`.`nomMalusBonus`) = '"
+					String requeteSQL = "DELETE FROM `raidzultat`.`malusbonus` WHERE CONCAT(`malusbonus`.`idMB`) = '"
 							+ tab[i] + "' && `idCompetition` = '" + idc + "'";
 					BDDupdate(requeteSQL);
 
 					JOptionPane.showMessageDialog(null,
-							"L'équipe est maintenant supprimée", "Equipe "
-									+ tab[i] + " Supprimée!",
+							"Le malus/bonus est maintenant supprimé", "Malus/Bonus "
+									+ tab[i] + " Supprimé!",
 							JOptionPane.INFORMATION_MESSAGE);
 
-					System.out.println("Equipe " + tab[i] + " Supprimée");
+					System.out.println("Malus/Bonus " + tab[i] + " Supprimé");
 				}
 			}
+			updateTable();
 		}
 	}
 
@@ -243,10 +237,8 @@ public class Inte_MalusBonus extends JPanel {
 
 		ArrayList<Object[]> ArrayData = new ArrayList<>();
 
-		// String requeteSQL =
-		// "SELECT * FROM equipe WHERE `idCompetition` = '"+idc+"'";
-		String requeteSQL = "SELECT malusbonus.`idEquipe`, malusbonus.`nomEquipe`, malusbonus.`nomGroupe` FROM equipe WHERE malusbonus.`idCompetition` = '"
-				+ idc + "' && malusbonus.`idEquipe` = '" + idc + "'";
+		String requeteSQL = "SELECT * FROM malusbonus WHERE malusbonus.`idCompetition` = '"
+				+ idc + "'";
 
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -257,15 +249,13 @@ public class Inte_MalusBonus extends JPanel {
 			System.out.println("Connexion effective !");
 			Statement stm = conn.createStatement();
 			ResultSet res = stm.executeQuery(requeteSQL);
+			
 			while (res.next()) {
-				ArrayData.add(new Object[] { new Boolean(false), res.getInt(1),
-						res.getString(2), res.getString(3), res.getString(4),
-						res.getString(5), res.getString(6), res.getString(7) });
-				System.out.println("Id : " + res.getInt(1) + " nom : "
-						+ res.getString(2) + " Grp : " + res.getString(3)
-						+ " Diff : " + res.getString(4) + " Type : "
-						+ res.getString(5) + " Dossart : " + res.getInt(6)
-						+ " Doigt : " + res.getString(7));
+				ArrayData.add(new Object[] { new Boolean(false), res.getInt(1),res.getString(2),
+						res.getInt(3), res.getString(4)});
+				System.out.println("id : " + res.getInt(1)+ " nomMB : " + res.getString(2) + " malus : "
+						+ res.getInt(3) + " tpsMB : " + res.getString(4)
+						+ " idComp : " + res.getString(5));
 			}
 
 			conn.close();
@@ -306,7 +296,11 @@ public class Inte_MalusBonus extends JPanel {
 	public int[] getIndexSelectTab(Object[][] table) {
 		ArrayList<Integer> ArrayDataSelect = new ArrayList<Integer>();
 		int lig = table.length;
-		int col = table[0].length;
+		int col;
+		
+		if(lig>0){
+		col = table[0].length;
+		}else{col=0;}
 
 		System.out.println(lig);
 		System.out.println(col);

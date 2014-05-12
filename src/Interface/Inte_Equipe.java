@@ -52,6 +52,11 @@ public class Inte_Equipe extends JPanel {
 
 	int idc;
 
+	/**
+     * Classe principale.
+     * 
+     * @param idC, l'id de la compétition étudiée
+     */
 	public Inte_Equipe(int idC) {
 
 		thePanel = this;
@@ -310,7 +315,12 @@ public class Inte_Equipe extends JPanel {
 	public int[] getIndexSelectTab(Object[][] table) {
 		ArrayList<Integer> ArrayDataSelect = new ArrayList<Integer>();
 		int lig = table.length;
-		int col = table[0].length;
+		int col;
+		
+		if(lig>0){
+		col = table[0].length;
+		}else{col=0;}
+
 
 		System.out.println(lig);
 		System.out.println(col);

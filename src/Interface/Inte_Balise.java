@@ -22,6 +22,13 @@ import javax.swing.JTable;
 import BDD.DataSourceProvider;
 import Models.TabModel;
 
+/**
+ * Onglet de gestion des balises : permet le permet
+ * de créer, modifier et supprimer des balises
+ * 
+ * @author Margaux
+ * 
+ */
 public class Inte_Balise extends JPanel {
 
 	/* Panels */
@@ -44,13 +51,18 @@ public class Inte_Balise extends JPanel {
 	private JTable tableau;
 	private Object[][] data;
 	private String title[] = { "Check", "idBalise" };
-	
+
 	private int idc;
 
+	/**
+     * Classe principale.
+     * 
+     * @param idC, l'id de la compétition étudiée
+     */
 	public Inte_Balise(int idC) {
 
 		thePanel = this;
-		idc=idC;
+		idc = idC;
 
 		updateTable();
 
@@ -72,7 +84,7 @@ public class Inte_Balise extends JPanel {
 		modif.setPreferredSize(new Dimension(100, 30));
 		creer.setPreferredSize(new Dimension(100, 30));
 		supp.setPreferredSize(new Dimension(100, 30));
-		
+
 		panBoutCreer.add(creer);
 		panBoutSupp.add(supp);
 		panBoutModif.add(modif);
@@ -90,14 +102,15 @@ public class Inte_Balise extends JPanel {
 		tableau.setRowHeight(30);
 		JScrollPane jScroll = new JScrollPane(tableau);
 		jScroll.setPreferredSize(new Dimension(600, 400));
-		
-		panTitre.setBorder(BorderFactory.createTitledBorder("Ici vous pouvez gérer vous différentes balises"));
+
+		panTitre.setBorder(BorderFactory
+				.createTitledBorder("Ici vous pouvez gérer vous différentes balises"));
 		panTitre.setPreferredSize(new Dimension(750, 450));
 		panTitre.add(panBoutonsListe);
 		panTitre.add(jScroll);
 
 		panMega.add(panTitre);
-		
+
 		this.add(panMega);
 	}
 
@@ -128,17 +141,31 @@ public class Inte_Balise extends JPanel {
 					}
 					if (flagExiste == 1) {
 						JOptionPane.showMessageDialog(null,
-								"Cette balise existe déjà", "Balise non créée!",
+								"Cette balise existe déjà",
+								"Balise non créée!",
 								JOptionPane.INFORMATION_MESSAGE);
 					} else {
-						
-						String requeteSQL = "INSERT INTO `balise` (`idBalise`,`idCompetition`) VALUES ( "
-								+ nb +","+ idc+ ")";
-						BDDquery(requeteSQL);
+						try {
+							Integer.parseInt(nb);
+							System.out.println("C'est un entier");
 
-						JOptionPane.showMessageDialog(null, "La balise est "
-								+ nb + ".", "Nouvelle compétition !",
-								JOptionPane.INFORMATION_MESSAGE);
+							String requeteSQL = "INSERT INTO `balise` (`idBalise`,`idCompetition`) VALUES ( "
+									+ nb + "," + idc + ")";
+							BDDupdate(requeteSQL);
+
+							JOptionPane.showMessageDialog(null,
+									"La balise est " + nb + ".",
+									"Nouvelle balise !",
+									JOptionPane.INFORMATION_MESSAGE);
+						} catch (Exception e) {
+							System.out.println("Je ne suis pas un entier");
+							JOptionPane
+									.showMessageDialog(
+											null,
+											"Attention entrer un entier comme numéro de balise",
+											"Balise non créée!",
+											JOptionPane.WARNING_MESSAGE);
+						}
 					}
 				}
 			}
@@ -181,13 +208,16 @@ public class Inte_Balise extends JPanel {
 						}
 						if (flagExiste == 1) {
 							JOptionPane.showMessageDialog(null,
-									"Cette balise existe déjà", "Balise non modifiée!",
+									"Cette balise existe déjà",
+									"Balise non modifiée!",
 									JOptionPane.INFORMATION_MESSAGE);
 						} else {
 							String requeteSQL = "UPDATE `balise` SET  `idBalise` = '"
 									+ nb
 									+ "' WHERE CONCAT(`balise`.`idBalise`) = '"
-									+ tab.get(i) + "' && `idCompetition` = '"+idc + "'";
+									+ tab.get(i)
+									+ "' && `idCompetition` = '"
+									+ idc + "'";
 							BDDupdate(requeteSQL);
 
 							JOptionPane.showMessageDialog(null,
@@ -225,7 +255,10 @@ public class Inte_Balise extends JPanel {
 
 				if (rep == 0) {
 					String requeteSQL = "DELETE FROM `raidzultat`.`balise` WHERE CONCAT(`balise`.`idBalise`) = '"
-							+ tab.get(i) + "' && `idCompetition` = '"+idc + "'";
+							+ tab.get(i)
+							+ "' && `idCompetition` = '"
+							+ idc
+							+ "'";
 					BDDupdate(requeteSQL);
 
 					JOptionPane.showMessageDialog(null,
@@ -243,22 +276,24 @@ public class Inte_Balise extends JPanel {
 
 		ArrayList<Object[]> ArrayData = new ArrayList<>();
 
-		String requeteSQL = "SELECT * FROM balise WHERE `idCompetition` = '"+idc+"'";
+		String requeteSQL = "SELECT * FROM balise WHERE `idCompetition` = '"
+				+ idc + "'";
 
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			System.out.println("Driver O.K.");
 
-			Connection conn = DataSourceProvider.getDataSource().getConnection();
+			Connection conn = DataSourceProvider.getDataSource()
+					.getConnection();
 			System.out.println("Connexion effective !");
 			Statement stm = conn.createStatement();
 			ResultSet res = stm.executeQuery(requeteSQL);
-			
+
 			while (res.next()) {
 				ArrayData.add(new Object[] { new Boolean(false),
 						res.getString(1) });
 				System.out.println("Nom : " + res.getString(1));
-				
+
 			}
 
 			conn.close();
@@ -280,9 +315,11 @@ public class Inte_Balise extends JPanel {
 
 		int lengthLig = array.size();
 		int lengthCol;
-		if(lengthLig>0){
-		lengthCol = array.get(0).length;
-		}else{lengthCol=0;}
+		if (lengthLig > 0) {
+			lengthCol = array.get(0).length;
+		} else {
+			lengthCol = 0;
+		}
 		Object[][] tab = new Object[lengthLig][lengthCol];
 		for (int i = 0; i < lengthLig; i++) {
 			tab[i] = array.get(i);
@@ -294,7 +331,13 @@ public class Inte_Balise extends JPanel {
 	public ArrayList<Object> getIndexSelectTab(Object[][] table) {
 		ArrayList<Object> ArrayDataSelect = new ArrayList<Object>();
 		int lig = table.length;
-		int col = table[0].length;
+		int col;
+
+		if (lig > 0) {
+			col = table[0].length;
+		} else {
+			col = 0;
+		}
 
 		System.out.println(lig);
 		System.out.println(col);
@@ -314,12 +357,19 @@ public class Inte_Balise extends JPanel {
 		return ArrayDataSelect;
 	}
 
-	public void BDDupdate(String requeteSQL){
+	/**
+     * Effectue une requête de mise à jour et de gestion dans la BDD.
+     * 
+     * @param requeteSQL
+     * 			La requête SQL à saisir dans la BDD
+     */
+	public void BDDupdate(String requeteSQL) {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			System.out.println("Driver O.K.");
 
-			Connection conn = DataSourceProvider.getDataSource().getConnection();
+			Connection conn = DataSourceProvider.getDataSource()
+					.getConnection();
 			System.out.println("Connexion effective !");
 			Statement stm = conn.createStatement();
 			int res = stm.executeUpdate(requeteSQL);
@@ -327,27 +377,6 @@ public class Inte_Balise extends JPanel {
 			System.out.println("Nb enregistrement : " + res);
 
 			conn.close();
-			updateTable();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public void BDDquery(String requeteSQL){
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			System.out.println("Driver O.K.");
-
-			Connection conn = DataSourceProvider.getDataSource().getConnection();
-			System.out.println("Connexion effective !");
-			Statement stm = conn.createStatement();
-			int res = stm.executeUpdate(requeteSQL);
-
-			System.out.println("Nb enregistrement : " + res);
-
-			conn.close();
-
 			updateTable();
 
 		} catch (Exception e) {
