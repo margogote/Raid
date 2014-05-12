@@ -74,6 +74,9 @@ public class Inte_Equipe extends JPanel {
 		creer.addActionListener(ecoutCreer);
 	}
 
+	/**
+	 * Fonction gérant l'interface du panel
+	 */
 	public void Interface() {
 
 		thePanel.removeAll();

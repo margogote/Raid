@@ -117,6 +117,9 @@ public class Inte_Epreuve_Modif extends JFrame {
 		annuler.addActionListener(ecoutQ);
 	}
 
+	/**
+	 * Fonction gérant l'interface de la fenetre
+	 */
 	public void Interface() {
 		thePanel.setTitle("Raidzultats");
 		thePanel.setSize(850, 600);

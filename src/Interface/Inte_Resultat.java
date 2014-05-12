@@ -75,6 +75,11 @@ public class Inte_Resultat extends JPanel {
 	
 	int idc;
 	
+	/**
+     * Classe principale.
+     * 
+     * @param idC, l'id de la compétition étudiée
+     */
 	public Inte_Resultat(int idC) {
 		idc=idC;
 		
@@ -85,6 +90,9 @@ public class Inte_Resultat extends JPanel {
 		Interface();
 	}
 	
+	/**
+	 * Fonction gérant l'interface du panel
+	 */
 	public void Interface(){
 		generalP.add(generalR);
 

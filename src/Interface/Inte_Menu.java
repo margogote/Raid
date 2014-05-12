@@ -28,6 +28,10 @@ public class Inte_Menu extends JPanel {
 	private JButton quitter = new JButton("Quitter");
 	private JButton aPropos = new JButton("A propos");
 
+	/**
+     * Classe principale.
+     * permet de gérer l'interface du panel
+     */
 	public Inte_Menu(JFrame jFrameContenantLOnglet) {
 
 		this.jFrameContenantLOnglet = jFrameContenantLOnglet;
@@ -75,6 +79,9 @@ public class Inte_Menu extends JPanel {
 
 	}
 
+	/**
+     * Permet de gérer les clics du type "Quitter".
+     */
 	public class EcouteurQ implements ActionListener { // Action du quitter
 
 		public void actionPerformed(ActionEvent arg0) {
@@ -94,6 +101,9 @@ public class Inte_Menu extends JPanel {
 		}
 	}
 
+	/**
+     * Permet de gérer les clics du type "Changer de competition".
+     */
 	public class EcouteurRet implements ActionListener { // Action du retour
 
 		public void actionPerformed(ActionEvent arg0) {
@@ -111,6 +121,9 @@ public class Inte_Menu extends JPanel {
 		}
 	}
 
+	/**
+     * Permet de gérer les clics du type "A Propos".
+     */
 	public class EcouteurAP implements ActionListener { // Action du Apropos
 
 		public void actionPerformed(ActionEvent arg0) {

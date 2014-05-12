@@ -22,6 +22,13 @@ import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
 import BDD.DataSourceProvider;
 import Models.TabModel;
 
+/**
+ * Onglet de gestion des doigts : permet le permet
+ * de créer, modifier et supprimer des doigts
+ * 
+ * @author Margaux
+ * 
+ */
 public class Inte_Doigt extends JPanel {
 
 	/* Panels */
@@ -48,10 +55,11 @@ public class Inte_Doigt extends JPanel {
 	int idc;
 
 	/**
-     * Classe principale.
-     * 
-     * @param idC, l'id de la compétition étudiée
-     */
+	 * Classe principale.
+	 * 
+	 * @param idC
+	 *            , l'id de la compétition étudiée
+	 */
 	public Inte_Doigt(int idC) {
 
 		thePanel = this;
@@ -69,6 +77,9 @@ public class Inte_Doigt extends JPanel {
 		creer.addActionListener(ecoutCreer);
 	}
 
+	/**
+	 * Fonction gérant l'interface du panel
+	 */
 	public void Interface() {
 
 		thePanel.removeAll();
@@ -107,6 +118,9 @@ public class Inte_Doigt extends JPanel {
 		thePanel.add(panMega);
 	}
 
+	/**
+     * Permet de gérer les clics du type "Créer".
+     */
 	public class EcouteurCreer implements ActionListener { // Action du creer
 
 		public void actionPerformed(ActionEvent arg0) {
@@ -145,7 +159,7 @@ public class Inte_Doigt extends JPanel {
 
 							String requeteSQL = "INSERT INTO `doigt` (`idDoigt`,`idCompetition`) VALUES ( "
 									+ nb + "," + idc + ")";
-							BDDquery(requeteSQL);
+							BDDupdate(requeteSQL);
 
 							JOptionPane.showMessageDialog(null, "Le doigt est "
 									+ nb + ".", "Nouvelle compétition !",
@@ -165,6 +179,9 @@ public class Inte_Doigt extends JPanel {
 		}
 	}
 
+	/**
+     * Permet de gérer les clics du type "Modifier".
+     */
 	public class EcouteurModif implements ActionListener { // Action du modif
 
 		public void actionPerformed(ActionEvent arg0) {
@@ -228,6 +245,9 @@ public class Inte_Doigt extends JPanel {
 		}
 	}
 
+	/**
+     * Permet de gérer les clics du type "Supprimer".
+     */
 	public class EcouteurSupp implements ActionListener { // Action du supprimer
 
 		public void actionPerformed(ActionEvent arg0) {
@@ -267,6 +287,9 @@ public class Inte_Doigt extends JPanel {
 		}
 	}
 
+	/**
+     * Fonction mettant à jour le tableau
+     */
 	public void updateTable() {
 
 		ArrayList<Object[]> ArrayData = new ArrayList<>();
@@ -309,6 +332,14 @@ public class Inte_Doigt extends JPanel {
 		// return data;
 	}
 
+	/**
+     * Fonction transformant une ArrayList en tableau
+     * 
+     * @param array, l'arrayList à transformer
+     * 
+     * @return tab, le tableau correspondant à l'arrayList prise en parametre
+     * 
+     */
 	public Object[][] ArrayToTab(ArrayList<Object[]> array) {
 
 		int lengthLig = array.size();
@@ -328,6 +359,14 @@ public class Inte_Doigt extends JPanel {
 		return tab;
 	}
 
+	/**
+     * Fonction permettant de renvoyer les différentes lignes cochées dans un tableau
+     * 
+     * @param table, le tableau à analyser
+     * 
+     * @return ArrayDataSelect, l'arrayList contenant les indices de chaque ligne cochée
+     * 
+     */
 	public ArrayList<Object> getIndexSelectTab(Object[][] table) {
 		ArrayList<Object> ArrayDataSelect = new ArrayList<Object>();
 		int lig = table.length;
@@ -353,6 +392,12 @@ public class Inte_Doigt extends JPanel {
 		return ArrayDataSelect;
 	}
 
+	/**
+     * Effectue une requête de mise à jour et de gestion dans la BDD.
+     * 
+     * @param requeteSQL
+     * 			La requête SQL à saisir dans la BDD
+     */
 	public void BDDupdate(String requeteSQL) {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -373,27 +418,4 @@ public class Inte_Doigt extends JPanel {
 			e.printStackTrace();
 		}
 	}
-
-	public void BDDquery(String requeteSQL) {
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			System.out.println("Driver O.K.");
-
-			Connection conn = DataSourceProvider.getDataSource()
-					.getConnection();
-			System.out.println("Connexion effective !");
-			Statement stm = conn.createStatement();
-			int res = stm.executeUpdate(requeteSQL);
-
-			System.out.println("Nb enregistrement : " + res);
-
-			conn.close();
-
-			updateTable();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
 }

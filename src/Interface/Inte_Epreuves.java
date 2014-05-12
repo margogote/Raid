@@ -89,6 +89,9 @@ public class Inte_Epreuves extends JPanel {
 
 	}
 
+	/**
+	 * Fonction gérant l'interface du panel
+	 */
 	public void Interface() {
 		thePanel.removeAll();
 		panTitre.removeAll();

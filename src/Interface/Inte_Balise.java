@@ -1,11 +1,9 @@
 package Interface;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -13,7 +11,6 @@ import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -76,6 +73,9 @@ public class Inte_Balise extends JPanel {
 		creer.addActionListener(ecoutCreer);
 	}
 
+	/**
+     * Fonction gérant l'interface du panel
+     */
 	public void Interface() {
 
 		thePanel.removeAll();
@@ -114,6 +114,9 @@ public class Inte_Balise extends JPanel {
 		this.add(panMega);
 	}
 
+	/**
+     * Permet de gérer les clics du type "Créer".
+     */
 	public class EcouteurCreer implements ActionListener { // Action du creer
 
 		public void actionPerformed(ActionEvent arg0) {
@@ -172,6 +175,9 @@ public class Inte_Balise extends JPanel {
 		}
 	}
 
+	/**
+     * Permet de gérer les clics du type "Modifier".
+     */
 	public class EcouteurModif implements ActionListener { // Action du quitter
 
 		public void actionPerformed(ActionEvent arg0) {
@@ -231,6 +237,9 @@ public class Inte_Balise extends JPanel {
 		}
 	}
 
+	/**
+     * Permet de gérer les clics du type "Supprimer".
+     */
 	public class EcouteurSupp implements ActionListener { // Action du supprimer
 
 		public void actionPerformed(ActionEvent arg0) {
@@ -272,7 +281,10 @@ public class Inte_Balise extends JPanel {
 		}
 	}
 
-	public Object[][] updateTable() {
+	/**
+     * Fonction mettant à jour le tableau
+     */
+	public void updateTable() {
 
 		ArrayList<Object[]> ArrayData = new ArrayList<>();
 
@@ -308,9 +320,16 @@ public class Inte_Balise extends JPanel {
 		Interface();
 
 		System.out.println("MAJ Table");
-		return data;
 	}
 
+	/**
+     * Fonction transformant une ArrayList en tableau
+     * 
+     * @param array, l'arrayList à transformer
+     * 
+     * @return tab, le tableau correspondant à l'arrayList prise en parametre
+     * 
+     */
 	public Object[][] ArrayToTab(ArrayList<Object[]> array) {
 
 		int lengthLig = array.size();
@@ -328,6 +347,14 @@ public class Inte_Balise extends JPanel {
 		return tab;
 	}
 
+	/**
+     * Fonction permettant de renvoyer les différentes lignes cochées dans un tableau
+     * 
+     * @param table, le tableau à analyser
+     * 
+     * @return ArrayDataSelect, l'arrayList contenant les indices de chaque ligne cochée
+     * 
+     */
 	public ArrayList<Object> getIndexSelectTab(Object[][] table) {
 		ArrayList<Object> ArrayDataSelect = new ArrayList<Object>();
 		int lig = table.length;
@@ -350,10 +377,7 @@ public class Inte_Balise extends JPanel {
 		}
 		Object[] tab = new Object[ArrayDataSelect.size()];
 		System.out.println(ArrayDataSelect);
-		/*
-		 * for (int i = 0; i < ArrayDataSelect.size(); i++) { tab[i] =
-		 * ArrayDataSelect.get(i); } //System.out.println(tab); return tab;
-		 */
+
 		return ArrayDataSelect;
 	}
 

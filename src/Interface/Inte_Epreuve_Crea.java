@@ -78,6 +78,10 @@ public class Inte_Epreuve_Crea extends JFrame {
 		InterfaceEp();
 	}
 
+	/**
+	 * Fonction gérant l'interface de la fenetre4
+	 * Partie 1 : création de l'epreuve
+	 */
 	public void InterfaceEp() {
 		System.out.println("InterfaceEp");
 		thePanel.setTitle("Raidzultats Création Epreuve");
@@ -132,6 +136,10 @@ public class Inte_Epreuve_Crea extends JFrame {
 
 	}
 
+	/**
+	 * Fonction gérant l'interface de la fenetre4
+	 * Partie 2 : l'association de balises dans l'epreuve
+	 */
 	public void InterfaceBa() {
 		System.out.println("InterfaceBa");
 		thePanel.setTitle("Raidzultats Attribution de balises");
@@ -204,7 +212,7 @@ public class Inte_Epreuve_Crea extends JFrame {
 			String difficulte = (String) difficC.getSelectedItem();
 			String date = (String) dateT.getText();
 			String duree = (String) dureeT.getText();
-//2014-04-27 11:00:00.0
+
 			InterfaceBa();
 			String requeteSQL = "INSERT INTO `raidzultat`.`epreuve` (`nomEpreuve`, `typeEpreuve`, `difficulte`, `dateHeureEpreuve`, `dureeEpreuve`, `idCompetition`) VALUES ('"
 					+ nom
@@ -216,7 +224,7 @@ public class Inte_Epreuve_Crea extends JFrame {
 					+ date
 					+ "', '" + duree + "', '" + idc + "')";
 			System.out.println(requeteSQL);
-			BDDquery(requeteSQL);
+			BDDupdate(requeteSQL);
 		}
 	}
 
@@ -235,7 +243,7 @@ public class Inte_Epreuve_Crea extends JFrame {
 		}
 	}
 
-	public void BDDquery(String requeteSQL) {
+	public void BDDupdate(String requeteSQL) {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			System.out.println("Driver O.K.");

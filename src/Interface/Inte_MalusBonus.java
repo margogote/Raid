@@ -51,6 +51,11 @@ public class Inte_MalusBonus extends JPanel {
 
 	int idc;
 
+	/**
+     * Classe principale.
+     * 
+     * @param idC, l'id de la compétition étudiée
+     */
 	public Inte_MalusBonus(int idC) {
 		thePanel = this;
 		idc = idC;
@@ -67,6 +72,9 @@ public class Inte_MalusBonus extends JPanel {
 		creer.addActionListener(ecoutCreer);
 	}
 
+	/**
+	 * Fonction gérant l'interface du panel
+	 */
 	public void Interface() {
 
 		thePanel.removeAll();
