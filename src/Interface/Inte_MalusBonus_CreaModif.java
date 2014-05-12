@@ -146,7 +146,7 @@ public class Inte_MalusBonus_CreaModif extends JFrame {
 						+ "', '"
 						+ idc
 						+ "')";
-				BDDquery(requeteSQL);
+				BDDupdate(requeteSQL);
 
 				thePanel.dispose();
 			} else {
@@ -195,26 +195,4 @@ public class Inte_MalusBonus_CreaModif extends JFrame {
 			e.printStackTrace();
 		}
 	}
-
-	public void BDDquery(String requeteSQL) {
-		try {
-
-			Class.forName("com.mysql.jdbc.Driver");
-			System.out.println("Driver O.K.");
-
-			Connection conn = DataSourceProvider.getDataSource()
-					.getConnection();
-			System.out.println("Connexion effective !");
-			Statement stm = conn.createStatement();
-			int res = stm.executeUpdate(requeteSQL);
-
-			System.out.println("Nb enregistrement : " + res);
-
-			conn.close();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
 }

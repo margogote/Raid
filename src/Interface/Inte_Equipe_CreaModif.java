@@ -207,7 +207,7 @@ public class Inte_Equipe_CreaModif extends JFrame {
 							+ dossard
 							+ "', '"
 							+ idc + "')";
-					BDDquery(requeteSQL);
+					BDDupdate(requeteSQL);
 
 					try {
 						String requeteSQL2 = "SELECT `idEquipe` FROM `equipe` WHERE `nomEquipe`= '"
@@ -240,7 +240,7 @@ public class Inte_Equipe_CreaModif extends JFrame {
 
 					String requeteSQL3 = "INSERT INTO `raidzultat`.`posséder` (`idDoigt`, `idEquipe`, `dateHeureAttribution`,`idCompetition`) VALUES ('"
 							+ doigt + "', '" + idE + "', NULL,'" + idc + "')";
-					BDDquery(requeteSQL3);
+					BDDupdate(requeteSQL3);
 
 					thePanel.dispose();
 				} catch (Exception e) {
@@ -360,26 +360,4 @@ public class Inte_Equipe_CreaModif extends JFrame {
 			e.printStackTrace();
 		}
 	}
-
-	public void BDDquery(String requeteSQL) {
-		try {
-
-			Class.forName("com.mysql.jdbc.Driver");
-			System.out.println("Driver O.K.");
-
-			Connection conn = DataSourceProvider.getDataSource()
-					.getConnection();
-			System.out.println("Connexion effective !");
-			Statement stm = conn.createStatement();
-			int res = stm.executeUpdate(requeteSQL);
-
-			System.out.println("Nb enregistrement : " + res);
-
-			conn.close();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
 }
