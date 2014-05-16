@@ -26,6 +26,13 @@ import Interface.Inte_Equipe.EcouteurModif;
 import Interface.Inte_Equipe.EcouteurSupp;
 import Models.TabModel;
 
+/**
+ * Onglet de gestion des Malus et des Bonus : permet d'en créer, d'en modifier
+ * et d'en supprimer
+ * 
+ * @author Margaux
+ * 
+ */
 public class Inte_MalusBonus extends JPanel {
 
 	/* Panels */
@@ -47,15 +54,17 @@ public class Inte_MalusBonus extends JPanel {
 	private TabModel tabModel;
 	private JTable tableau;
 	private Object[][] data;
-	private String title[] = { "", "id","nomMalusBonus","Malus?", "tempsMalusBonus" };
+	private String title[] = { "", "id", "nomMalusBonus", "Malus?",
+			"tempsMalusBonus" };
 
 	int idc;
 
 	/**
-     * Classe principale.
-     * 
-     * @param idC, l'id de la compétition étudiée
-     */
+	 * Classe principale.
+	 * 
+	 * @param idC
+	 *            , l'id de la compétition étudiée
+	 */
 	public Inte_MalusBonus(int idC) {
 		thePanel = this;
 		idc = idC;
@@ -113,13 +122,17 @@ public class Inte_MalusBonus extends JPanel {
 		thePanel.add(panMega);
 	}
 
+	/**
+	 * Permet de gérer les clics du type "Créer" Lancement du formulaire associé
+	 * mise à jour du tableau lors de la fermeture du formulaire
+	 */
 	public class EcouteurCreer implements ActionListener, WindowListener { // Action
 																			// du
 																			// creer
 		public void actionPerformed(ActionEvent arg0) {
 
-			Inte_MalusBonus_CreaModif formulaire = new Inte_MalusBonus_CreaModif(idc,
-					-1);
+			Inte_MalusBonus_CreaModif formulaire = new Inte_MalusBonus_CreaModif(
+					idc, -1);
 			formulaire.addWindowListener(this);
 		}
 
@@ -153,6 +166,10 @@ public class Inte_MalusBonus extends JPanel {
 		}
 	}
 
+	/**
+	 * Permet de gérer les clics du type "Modifier" pour une épreuve
+	 * Recupérations des données entrées et insertion dans la BDD
+	 */
 	public class EcouteurModif implements ActionListener, WindowListener { // Action
 																			// du
 																			// modif
@@ -204,6 +221,10 @@ public class Inte_MalusBonus extends JPanel {
 		}
 	}
 
+	/**
+	 * Permet de gérer les clics du type "Supprimer" pour une épreuve
+	 * Suppression de la BDD
+	 */
 	public class EcouteurSupp implements ActionListener { // Action du supprimer
 
 		public void actionPerformed(ActionEvent arg0) {
@@ -221,8 +242,9 @@ public class Inte_MalusBonus extends JPanel {
 
 			for (int i = 0; i < tab.length; i++) {
 				rep = JOptionPane.showConfirmDialog(null,
-						"Voulez vous vraiment supprimer le malus/bonus " + tab[i]
-								+ " ?", "Attention", JOptionPane.YES_NO_OPTION);
+						"Voulez vous vraiment supprimer le malus/bonus "
+								+ tab[i] + " ?", "Attention",
+						JOptionPane.YES_NO_OPTION);
 
 				if (rep == 0) {
 					String requeteSQL = "DELETE FROM `raidzultat`.`malusbonus` WHERE CONCAT(`malusbonus`.`idMB`) = '"
@@ -230,8 +252,8 @@ public class Inte_MalusBonus extends JPanel {
 					BDDupdate(requeteSQL);
 
 					JOptionPane.showMessageDialog(null,
-							"Le malus/bonus est maintenant supprimé", "Malus/Bonus "
-									+ tab[i] + " Supprimé!",
+							"Le malus/bonus est maintenant supprimé",
+							"Malus/Bonus " + tab[i] + " Supprimé!",
 							JOptionPane.INFORMATION_MESSAGE);
 
 					System.out.println("Malus/Bonus " + tab[i] + " Supprimé");
@@ -241,6 +263,10 @@ public class Inte_MalusBonus extends JPanel {
 		}
 	}
 
+	/**
+	 * Met à jour du tableau pour le remplir avec les Malus/bonus de la compétition
+	 * à partir de la BDD.
+	 */
 	public void updateTable() {
 
 		ArrayList<Object[]> ArrayData = new ArrayList<>();
@@ -257,13 +283,14 @@ public class Inte_MalusBonus extends JPanel {
 			System.out.println("Connexion effective !");
 			Statement stm = conn.createStatement();
 			ResultSet res = stm.executeQuery(requeteSQL);
-			
+
 			while (res.next()) {
-				ArrayData.add(new Object[] { new Boolean(false), res.getInt(1),res.getString(2),
-						res.getInt(3), res.getString(4)});
-				System.out.println("id : " + res.getInt(1)+ " nomMB : " + res.getString(2) + " malus : "
-						+ res.getInt(3) + " tpsMB : " + res.getString(4)
-						+ " idComp : " + res.getString(5));
+				ArrayData.add(new Object[] { new Boolean(false), res.getInt(1),
+						res.getString(2), res.getInt(3), res.getString(4) });
+				System.out.println("id : " + res.getInt(1) + " nomMB : "
+						+ res.getString(2) + " malus : " + res.getInt(3)
+						+ " tpsMB : " + res.getString(4) + " idComp : "
+						+ res.getString(5));
 			}
 
 			conn.close();
@@ -285,6 +312,15 @@ public class Inte_MalusBonus extends JPanel {
 		System.out.println("MAJ Table equipe");
 	}
 
+	/**
+	 * Fonction transformant une ArrayList en tableau
+	 * 
+	 * @param array
+	 *            , l'arrayList à transformer
+	 * 
+	 * @return tab, le tableau correspondant à l'arrayList prise en parametre
+	 * 
+	 */
 	public Object[][] ArrayToTab(ArrayList<Object[]> array) {
 
 		int lengthLig = array.size();
@@ -301,14 +337,27 @@ public class Inte_MalusBonus extends JPanel {
 		return tab;
 	}
 
+	/**
+	 * Fonction permettant de renvoyer les différentes lignes cochées dans un
+	 * tableau
+	 * 
+	 * @param table
+	 *            , le tableau à analyser
+	 * 
+	 * @return ArrayDataSelect, l'arrayList contenant les indices de chaque
+	 *         ligne cochée
+	 * 
+	 */
 	public int[] getIndexSelectTab(Object[][] table) {
 		ArrayList<Integer> ArrayDataSelect = new ArrayList<Integer>();
 		int lig = table.length;
 		int col;
-		
-		if(lig>0){
-		col = table[0].length;
-		}else{col=0;}
+
+		if (lig > 0) {
+			col = table[0].length;
+		} else {
+			col = 0;
+		}
 
 		System.out.println(lig);
 		System.out.println(col);
@@ -330,6 +379,12 @@ public class Inte_MalusBonus extends JPanel {
 		return tab;
 	}
 
+	/**
+	 * Effectue une requête de mise à jour et de gestion dans la BDD.
+	 * 
+	 * @param requeteSQL
+	 *            La requête SQL à saisir dans la BDD
+	 */
 	public void BDDupdate(String requeteSQL) {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");

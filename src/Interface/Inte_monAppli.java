@@ -4,9 +4,10 @@ import java.awt.BorderLayout;
 
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
+
 /**
  * monAppli est la classe qui correspond à la seconde fenêtre
- * elle est contituée de différents onglets
+ * elle est remplie des différents onglets de l'application
  * 
  * @author Margaux
  *
@@ -16,6 +17,14 @@ public class Inte_monAppli {
 	JFrame fen2 = new JFrame();
 	JTabbedPane tabbedPane = new JTabbedPane();
 
+	/**
+	 * Classe principale
+	 * 
+	 * @param nomC
+	 *            , le nom de la compétition étudiée
+	 * @param idC
+	 *            , l'id de la compétition étudiée
+	 */
 	public Inte_monAppli(String nomC, int idC) {
 		
 		

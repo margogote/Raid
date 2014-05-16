@@ -2,6 +2,8 @@ package Interface;
 
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -12,14 +14,23 @@ import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
 import BDD.DataSourceProvider;
+import Interface.Inte_Epreuve_Modif.EcouteurPlus;
 import Models.TabModel;
 
+/**
+ * Onglet Resultat : Permet de générer un classement en fonction de différents
+ * filtres, permet(ra) de générer un PDF résumant ce classement et de l'imprimer
+ * 
+ * @author Margaux
+ * 
+ */
 public class Inte_Resultat extends JPanel {
 
 	/* Boutons Radio */
@@ -32,7 +43,7 @@ public class Inte_Resultat extends JPanel {
 	private String[] grpS = { "CHOISIR", "Etudiant", "Salarié" };
 	private String[] diffS = { "CHOISIR", "Aventure", "Expert" };
 	private String[] catS = { "CHOISIR", "Masculin", "Feminin", "Mixte" };
-	
+
 	private JComboBox<String> epreuveC = new JComboBox<String>();
 	private JComboBox<String> diffC = new JComboBox<String>(diffS);
 	private JComboBox<String> grpC = new JComboBox<String>(grpS);
@@ -45,16 +56,16 @@ public class Inte_Resultat extends JPanel {
 	private JLabel jourL = new JLabel("Date...");
 
 	/* Boutons */
-	private JButton impr = new JButton("Imprimer");
+	private JButton print = new JButton("Imprimer");
 	private JButton telec = new JButton("Télécharger PDF");
 	private JButton classement = new JButton("Classement");
 
 	/* Tableau */
 	private TabModel tabModel;
 	private JTable tableau;
-	private Object[][] data= {};
-	private String title[] = { "Check", "idEpreuve", "Nom de l'epreuve",
-			"Type", "Difficulté", "Heure début", "Durée" };
+	private Object[][] data = {};
+	private String title[] = { "", "Rang", "Dossard", "Catégorie",
+			"Nom équipe", "Temps", "Point", "Tps Total" };
 
 	/* JPanel */
 
@@ -72,33 +83,43 @@ public class Inte_Resultat extends JPanel {
 
 	private JPanel panTitre = new JPanel();
 	private JPanel panMega = new JPanel();
-	
+
 	int idc;
-	
+
 	/**
-     * Classe principale.
-     * 
-     * @param idC, l'id de la compétition étudiée
-     */
+	 * Classe principale
+	 * 
+	 * @param idC
+	 *            , l'id de la compétition étudiée
+	 */
 	public Inte_Resultat(int idC) {
-		idc=idC;
-		
+		idc = idC;
+
 		bG.add(epreuveR);
 		bG.add(jourR);
 		bG.add(generalR);
-		
+
 		Interface();
+
+		EcouteurCl clas = new EcouteurCl();
+		classement.addActionListener(clas);
+
+		EcouteurPrint imp = new EcouteurPrint();
+		print.addActionListener(imp);
+
+		EcouteurPDF pdf = new EcouteurPDF();
+		telec.addActionListener(pdf);
 	}
-	
+
 	/**
 	 * Fonction gérant l'interface du panel
 	 */
-	public void Interface(){
+	public void Interface() {
 		generalP.add(generalR);
 
 		checkPanel.setBorder(BorderFactory
 				.createTitledBorder("Type de classement"));
-		//checkPanel.setLayout(new BoxLayout(checkPanel, BoxLayout.PAGE_AXIS));
+		// checkPanel.setLayout(new BoxLayout(checkPanel, BoxLayout.PAGE_AXIS));
 		checkPanel.setPreferredSize(new Dimension(300, 100));
 		checkPanel.setLayout(new GridLayout(3, 2));
 		checkPanel.add(epreuveR);
@@ -106,11 +127,11 @@ public class Inte_Resultat extends JPanel {
 		checkPanel.add(jourR);
 		checkPanel.add(jourL);
 		checkPanel.add(generalR);
-		
+
 		updateCombo(epreuveC);
 
 		filtreP.setBorder(BorderFactory.createTitledBorder("Filtres"));
-		//filtreP.setLayout(new BoxLayout(filtreP, BoxLayout.PAGE_AXIS));
+		// filtreP.setLayout(new BoxLayout(filtreP, BoxLayout.PAGE_AXIS));
 		filtreP.setPreferredSize(new Dimension(300, 100));
 		filtreP.setLayout(new GridLayout(3, 2));
 		filtreP.add(diffL);
@@ -130,9 +151,9 @@ public class Inte_Resultat extends JPanel {
 		choixP.add(filtreP);
 		choixP.add(classementPB);
 
-		impr.setPreferredSize(new Dimension(130, 30));
+		print.setPreferredSize(new Dimension(130, 30));
 		telec.setPreferredSize(new Dimension(130, 30));
-		imprePB.add(impr);
+		imprePB.add(print);
 		telechPB.add(telec);
 
 		panBoutonsListe.setLayout(new BoxLayout(panBoutonsListe,
@@ -148,23 +169,61 @@ public class Inte_Resultat extends JPanel {
 		JScrollPane jScroll = new JScrollPane(tableau);
 		jScroll.setPreferredSize(new Dimension(600, 360));
 
-		
 		panTitre.setBorder(BorderFactory
 				.createTitledBorder("Ici vous pouvez voir les classement"));
-		//panTitre.setPreferredSize(new Dimension(750, 350));
+		// panTitre.setPreferredSize(new Dimension(750, 350));
 		panTitre.add(panBoutonsListe);
 		panTitre.add(jScroll);
 
 		panMega.setLayout(new BoxLayout(panMega, BoxLayout.PAGE_AXIS));
 		panMega.add(choixP);
 		panMega.add(panTitre);
-		
+
 		this.add(panMega);
 	}
-	
+
+	/**
+     * Permet de gérer les clics du type "Classement".
+     */
+	public class EcouteurCl implements ActionListener { // Action du quitter
+
+		public void actionPerformed(ActionEvent arg0) {
+
+		}
+	}
+
+	/**
+     * Permet de gérer les clics du type "Telecharger PDF".
+     */
+	public class EcouteurPDF implements ActionListener { // Action du quitter
+
+		public void actionPerformed(ActionEvent arg0) {
+			JOptionPane.showMessageDialog(null, "Bouton en chantier",
+					"Chantier!", JOptionPane.WARNING_MESSAGE);
+		}
+	}
+
+	/**
+     * Permet de gérer les clics du type "Imprimer".
+     */
+	public class EcouteurPrint implements ActionListener { // Action du quitter
+
+		public void actionPerformed(ActionEvent arg0) {
+			JOptionPane.showMessageDialog(null, "Bouton en chantier",
+					"Chantier!", JOptionPane.WARNING_MESSAGE);
+		}
+	}
+
+	/**
+     * Met à jour la comboBox pour la remplir avec les épeuves présentes dans la BDD.
+     * 
+     * @param combo
+     * 			La comboBox à mettre à jour
+     */
 	public void updateCombo(JComboBox<String> combo) {
 		combo.removeAllItems();
-		String requeteSQL = "SELECT nomEpreuve FROM epreuve WHERE idCompetition = '"+idc+"'";
+		String requeteSQL = "SELECT nomEpreuve FROM epreuve WHERE idCompetition = '"
+				+ idc + "'";
 
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -184,12 +243,12 @@ public class Inte_Resultat extends JPanel {
 			conn.close();
 			res.close();
 
-		}  catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		if(combo.getItemCount()==0){
+		if (combo.getItemCount() == 0) {
 			epreuveR.setEnabled(false);
-		}else{
+		} else {
 			epreuveR.setEnabled(true);
 		}
 		System.out.println("MAJ Combo");

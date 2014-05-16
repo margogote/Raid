@@ -26,6 +26,13 @@ import Models.TabModel;
 
 import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
 
+/**
+ * Onglet de gestion des Equipes : permet d'en créer, d'en modifier et d'en
+ * supprimer
+ * 
+ * @author Margaux
+ * 
+ */
 public class Inte_Equipe extends JPanel {
 
 	/* Panels */
@@ -53,10 +60,11 @@ public class Inte_Equipe extends JPanel {
 	int idc;
 
 	/**
-     * Classe principale.
-     * 
-     * @param idC, l'id de la compétition étudiée
-     */
+	 * Classe principale
+	 * 
+	 * @param idC
+	 *            , l'id de la compétition étudiée
+	 */
 	public Inte_Equipe(int idC) {
 
 		thePanel = this;
@@ -121,13 +129,17 @@ public class Inte_Equipe extends JPanel {
 		thePanel.add(panMega);
 	}
 
+	/**
+	 * Permet de gérer les clics du type "Créer" Lancement du formulaire associé
+	 * mise à jour du tableau lors de la fermeture du formulaire
+	 */
 	public class EcouteurCreer implements ActionListener, WindowListener { // Action
 																			// du
 																			// creer
-
 		public void actionPerformed(ActionEvent arg0) {
 
-			Inte_Equipe_CreaModif formulaire = new Inte_Equipe_CreaModif(idc, -1);
+			Inte_Equipe_CreaModif formulaire = new Inte_Equipe_CreaModif(idc,
+					-1);
 			formulaire.addWindowListener(this);
 		}
 
@@ -161,10 +173,13 @@ public class Inte_Equipe extends JPanel {
 		}
 	}
 
+	/**
+	 * Permet de gérer les clics du type "Modifier" pour une épreuve
+	 * Recupérations des données entrées et insertion dans la BDD
+	 */
 	public class EcouteurModif implements ActionListener, WindowListener { // Action
 																			// du
 																			// modif
-
 		public void actionPerformed(ActionEvent arg0) {
 			int flagExiste = 0;
 			int[] tab = getIndexSelectTab(data);
@@ -177,7 +192,7 @@ public class Inte_Equipe extends JPanel {
 			for (int i = 0; i < tab.length; i++) {
 
 				Inte_Equipe_CreaModif formulaire = new Inte_Equipe_CreaModif(
-						idc,  tab[i]);
+						idc, tab[i]);
 
 				formulaire.addWindowListener(this);
 			}
@@ -213,6 +228,10 @@ public class Inte_Equipe extends JPanel {
 		}
 	}
 
+	/**
+	 * Permet de gérer les clics du type "Supprimer" pour une épreuve
+	 * Suppression de la BDD
+	 */
 	public class EcouteurSupp implements ActionListener { // Action du supprimer
 
 		public void actionPerformed(ActionEvent arg0) {
@@ -235,10 +254,7 @@ public class Inte_Equipe extends JPanel {
 
 				if (rep == 0) {
 					String requeteSQL = "DELETE FROM `raidzultat`.`equipe` WHERE CONCAT(`equipe`.`idEquipe`) = '"
-							+ tab[i]
-							+ "' && `idCompetition` = '"
-							+ idc
-							+ "'";
+							+ tab[i] + "' && `idCompetition` = '" + idc + "'";
 					BDDupdate(requeteSQL);
 
 					JOptionPane.showMessageDialog(null,
@@ -252,12 +268,14 @@ public class Inte_Equipe extends JPanel {
 		}
 	}
 
+	/**
+	 * Met à jour du tableau pour le remplir avec les équipes de la compétition
+	 * à partir de la BDD.
+	 */
 	public void updateTable() {
 
 		ArrayList<Object[]> ArrayData = new ArrayList<>();
 
-		// String requeteSQL =
-		// "SELECT * FROM equipe WHERE `idCompetition` = '"+idc+"'";
 		String requeteSQL = "SELECT equipe.`idEquipe`, equipe.`nomEquipe`, equipe.`nomGroupe`, equipe.`typeDifficulte`, equipe.`typeEquipe`, equipe.`dossard`, posséder.`idDoigt` FROM equipe INNER JOIN posséder ON equipe.`idEquipe`=posséder.`idEquipe` WHERE equipe.`idCompetition` = '"
 				+ idc + "' && posséder.`idCompetition` = '" + idc + "'";
 
@@ -271,13 +289,14 @@ public class Inte_Equipe extends JPanel {
 			Statement stm = conn.createStatement();
 			ResultSet res = stm.executeQuery(requeteSQL);
 			while (res.next()) {
-				ArrayData.add(new Object[] { new Boolean(false),
-						res.getInt(1), res.getString(2), res.getString(3),
-						res.getString(4), res.getString(5), res.getString(6), res.getString(7) });
+				ArrayData.add(new Object[] { new Boolean(false), res.getInt(1),
+						res.getString(2), res.getString(3), res.getString(4),
+						res.getString(5), res.getString(6), res.getString(7) });
 				System.out.println("Id : " + res.getInt(1) + " nom : "
 						+ res.getString(2) + " Grp : " + res.getString(3)
 						+ " Diff : " + res.getString(4) + " Type : "
-						+ res.getString(5) + " Dossart : "+ res.getInt(6)+" Doigt : " + res.getString(7));
+						+ res.getString(5) + " Dossart : " + res.getInt(6)
+						+ " Doigt : " + res.getString(7));
 			}
 
 			conn.close();
@@ -299,6 +318,15 @@ public class Inte_Equipe extends JPanel {
 		System.out.println("MAJ Table equipe");
 	}
 
+	/**
+	 * Fonction transformant une ArrayList en tableau
+	 * 
+	 * @param array
+	 *            , l'arrayList à transformer
+	 * 
+	 * @return tab, le tableau correspondant à l'arrayList prise en parametre
+	 * 
+	 */
 	public Object[][] ArrayToTab(ArrayList<Object[]> array) {
 
 		int lengthLig = array.size();
@@ -315,36 +343,54 @@ public class Inte_Equipe extends JPanel {
 		return tab;
 	}
 
+	/**
+	 * Fonction permettant de renvoyer les différentes lignes cochées dans un
+	 * tableau
+	 * 
+	 * @param table
+	 *            , le tableau à analyser
+	 * 
+	 * @return ArrayDataSelect, l'arrayList contenant les indices de chaque
+	 *         ligne cochée
+	 * 
+	 */
 	public int[] getIndexSelectTab(Object[][] table) {
 		ArrayList<Integer> ArrayDataSelect = new ArrayList<Integer>();
 		int lig = table.length;
 		int col;
-		
-		if(lig>0){
-		col = table[0].length;
-		}else{col=0;}
 
+		if (lig > 0) {
+			col = table[0].length;
+		} else {
+			col = 0;
+		}
 
 		System.out.println(lig);
 		System.out.println(col);
-		
+
 		for (int i = 0; i < lig; i++) {
 			if ((boolean) table[i][0] == (true)) {
 				System.out.println(ArrayDataSelect);
-				ArrayDataSelect.add( (Integer) table[i][1]);
+				ArrayDataSelect.add((Integer) table[i][1]);
 			}
 
 		}
-		
+
 		System.out.println(ArrayDataSelect);
 		int[] tab = new int[ArrayDataSelect.size()];
-		for (int i = 0; i <ArrayDataSelect.size(); i++) {
+		for (int i = 0; i < ArrayDataSelect.size(); i++) {
 			tab[i] = ArrayDataSelect.get(i);
 		}
 
 		return tab;
 	}
 
+	/**
+     * Effectue une requête de mise à jour et de gestion dans la BDD.
+     * 
+     * @param requeteSQL
+     * 			La requête SQL à saisir dans la BDD
+     */
 	public void BDDupdate(String requeteSQL) {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");

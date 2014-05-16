@@ -5,6 +5,8 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -25,6 +27,13 @@ import javax.swing.JTextField;
 import BDD.DataSourceProvider;
 import Models.TabModel;
 
+/**
+ * Formulaire permettant de renseigner les informations pour modifier une
+ * épreuve
+ * 
+ * @author Margaux
+ * 
+ */
 public class Inte_Epreuve_Modif extends JFrame {
 
 	JFrame thePanel = new JFrame();
@@ -44,7 +53,6 @@ public class Inte_Epreuve_Modif extends JFrame {
 	private JLabel dureeL = new JLabel("Durée");
 	private JTextField dureeT = new JTextField("..... durée ....");
 
-	
 	private JLabel difficL = new JLabel("Difficulté");
 	private String[] difficulte = { "CHOISIR", "Aventure", "Expert" };
 	private JComboBox<Object> difficC = new JComboBox<Object>(difficulte);
@@ -62,6 +70,7 @@ public class Inte_Epreuve_Modif extends JFrame {
 	private JPanel panBoutModif = new JPanel();
 
 	private JPanel panTitre = new JPanel();
+	private JPanel panPan = new JPanel();
 
 	/* Tableau */
 	private TabModel tabModel;
@@ -72,6 +81,14 @@ public class Inte_Epreuve_Modif extends JFrame {
 	private int idc;
 	private int modif;
 
+	/**
+	 * Classe principale
+	 * 
+	 * @param idC
+	 *            , l'id de la compétition étudiée
+	 * @param idModif
+	 *            , l'id de l'épreuve à modifier
+	 */
 	public Inte_Epreuve_Modif(int idC, int idModif) {
 		thePanel = this;
 		idc = idC;
@@ -110,6 +127,12 @@ public class Inte_Epreuve_Modif extends JFrame {
 			}
 		}
 
+		EcouteurPlus plus = new EcouteurPlus();
+		creer.addActionListener(plus);
+
+		EcouteurMoins moins = new EcouteurMoins();
+		supp.addActionListener(moins);
+
 		EcouteurOK ecoutOK = new EcouteurOK();
 		oK.addActionListener(ecoutOK);
 
@@ -121,11 +144,13 @@ public class Inte_Epreuve_Modif extends JFrame {
 	 * Fonction gérant l'interface de la fenetre
 	 */
 	public void Interface() {
-		thePanel.setTitle("Raidzultats");
+		thePanel.setTitle("Raidzultats Modification d'épreuve");
 		thePanel.setSize(850, 600);
 		thePanel.setLocationRelativeTo(null);
-		thePanel.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		thePanel.setLayout(new BorderLayout()); // Pour les placements
+
+		panTitre.removeAll();
+		panPan.removeAll();
 
 		oK.setPreferredSize(new Dimension(100, 30));
 		annuler.setPreferredSize(new Dimension(100, 30));
@@ -188,15 +213,110 @@ public class Inte_Epreuve_Modif extends JFrame {
 		ultraP.add(gigaP);
 		ultraP.add(btnP);
 
-		JPanel panPan = new JPanel();
 		panPan.add(ultraP);
 
 		thePanel.add(panPan);
 
 		thePanel.setVisible(true);
-
 	}
 
+	/**
+	 * Permet de gérer les clics du type "+" pour associer une balise à une
+	 * épreuve Lancement du formulaire associé mise à jour du tableau lors de la
+	 * fermeture du formulaire
+	 */
+	public class EcouteurPlus implements ActionListener, WindowListener { // Action
+		// du
+		// +
+
+		public void actionPerformed(ActionEvent arg0) {
+
+			Inte_Epreuve_Balise_Crea formulaire = new Inte_Epreuve_Balise_Crea(
+					idc, modif);
+			formulaire.addWindowListener(this);
+		}
+
+		@Override
+		public void windowActivated(WindowEvent arg0) {
+		}
+
+		@Override
+		public void windowClosed(WindowEvent arg0) {
+			updateTable();
+		}
+
+		@Override
+		public void windowClosing(WindowEvent arg0) {
+		}
+
+		@Override
+		public void windowDeactivated(WindowEvent arg0) {
+		}
+
+		@Override
+		public void windowDeiconified(WindowEvent arg0) {
+		}
+
+		@Override
+		public void windowIconified(WindowEvent arg0) {
+		}
+
+		@Override
+		public void windowOpened(WindowEvent arg0) {
+		}
+	}
+
+	/**
+	 * Permet de gérer les clics du type "-" pour dissocier une balise d'une
+	 * épreuve Suppressions de la BDD
+	 */
+	public class EcouteurMoins implements ActionListener { // Action du quitter
+
+		public void actionPerformed(ActionEvent arg0) {
+
+			ArrayList<Object> tab = getIndexSelectTab(data);
+			int rep = 0;
+
+			if (tab.size() == 0) {
+				JOptionPane.showMessageDialog(null, "Veuillez cochez une case",
+						"Pas de balise à supprimer!",
+						JOptionPane.INFORMATION_MESSAGE);
+			}
+
+			for (int i = 0; i < tab.size(); i++) {
+				rep = JOptionPane.showConfirmDialog(
+						null,
+						"Voulez vous vraiment supprimer la balise "
+								+ tab.get(i) + " de cette épreuve ?",
+						"Attention", JOptionPane.YES_NO_OPTION);
+
+				if (rep == 0) {
+					String requeteSQL = "DELETE FROM `valoir` WHERE CONCAT(`valoir`.`idBalise`) = '"
+							+ tab.get(i)
+							+ "' && `idEpreuve` = '"
+							+ modif
+							+ "' && `idCompetition` = '" + idc + "'";
+					BDDupdate(requeteSQL);
+
+					JOptionPane
+							.showMessageDialog(
+									null,
+									"La balise est maintenant supprimée de cette épreuve",
+									"Balise " + tab.get(i) + " Supprimée!",
+									JOptionPane.INFORMATION_MESSAGE);
+
+					System.out.println("Balise " + tab.get(i) + " Supprimée");
+
+					updateTable();
+				}
+			}
+		}
+	}
+
+	/**
+	 * Permet de gérer les clics du type "Ok" pour la fenêtre de modification
+	 * d'épreuve. Recupérations des données entrées et insertion dans la BDD
+	 */
 	public class EcouteurOK implements ActionListener { // Action du quitter
 
 		public void actionPerformed(ActionEvent arg0) {
@@ -208,7 +328,7 @@ public class Inte_Epreuve_Modif extends JFrame {
 
 			try {
 				// Integer.parseInt(dossard);
-				
+
 				String requeteSQL = "UPDATE`raidzultat`.`epreuve` SET `nomEpreuve` = '"
 						+ nom
 						+ "', `typeEpreuve` = '"
@@ -222,7 +342,7 @@ public class Inte_Epreuve_Modif extends JFrame {
 						+ "' WHERE idEpreuve = '"
 						+ modif
 						+ "' && `idCompetition`='" + idc + "'";
-				
+
 				System.out.println(requeteSQL);
 
 				BDDupdate(requeteSQL);
@@ -240,6 +360,9 @@ public class Inte_Epreuve_Modif extends JFrame {
 		}
 	}
 
+	/**
+	 * Permet de gérer les clics du type "Quitter". Fermer la fenêtre
+	 */
 	public class EcouteurQ implements ActionListener { // Action du quitter
 
 		public void actionPerformed(ActionEvent arg0) {
@@ -248,12 +371,17 @@ public class Inte_Epreuve_Modif extends JFrame {
 		}
 	}
 
+	/**
+	 * Met à jour du tableau pour le remplir avec les balises de l'épreuve de la
+	 * compétition à partir de la BDD.
+	 * 
+	 * @param combo
+	 *           , La comboBox à mettre à jour
+	 */
 	public void updateTable() {
 
 		ArrayList<Object[]> ArrayData = new ArrayList<>();
 
-		// String requeteSQL =
-		// "SELECT * FROM balise WHERE `idCompetition` = '"+idc+"'";
 		String requeteSQL = "SELECT `idBalise`,`type`,`valeurBalise` FROM `valoir` WHERE `idCompetition` = '"
 				+ idc + "' && `idEpreuve` = '" + modif + "'";
 
@@ -290,6 +418,15 @@ public class Inte_Epreuve_Modif extends JFrame {
 		System.out.println("MAJ Table balise");
 	}
 
+	/**
+	 * Fonction transformant une ArrayList en tableau
+	 * 
+	 * @param array
+	 *            , l'arrayList à transformer
+	 * 
+	 * @return tab , le tableau correspondant à l'arrayList prise en parametre
+	 * 
+	 */
 	public Object[][] ArrayToTab(ArrayList<Object[]> array) {
 
 		int lengthLig = array.size();
@@ -306,57 +443,50 @@ public class Inte_Epreuve_Modif extends JFrame {
 		return tab;
 	}
 
-	public int[] getIndexSelectTab(Object[][] table) {
-		ArrayList<Integer> ArrayDataSelect = new ArrayList<Integer>();
-		int lig = table.length;	
+	/**
+	 * Fonction permettant de renvoyer les différentes lignes cochées dans un
+	 * tableau
+	 * 
+	 * @param table
+	 *            , le tableau à analyser
+	 * 
+	 * @return ArrayDataSelect, l'arrayList contenant les indices de chaque
+	 *         ligne cochée
+	 * 
+	 */
+	public ArrayList<Object> getIndexSelectTab(Object[][] table) {
+		ArrayList<Object> ArrayDataSelect = new ArrayList<Object>();
+		int lig = table.length;
 		int col;
-		
-		if(lig>0){
-		col = table[0].length;
-		}else{col=0;}
+
+		if (lig > 0) {
+			col = table[0].length;
+		} else {
+			col = 0;
+		}
 
 		System.out.println(lig);
 		System.out.println(col);
-
 		for (int i = 0; i < lig; i++) {
 			if ((boolean) table[i][0] == (true)) {
 				System.out.println(ArrayDataSelect);
-				ArrayDataSelect.add((Integer) table[i][1]);
+				ArrayDataSelect.add(table[i][1]);
 			}
 
 		}
-
+		Object[] tab = new Object[ArrayDataSelect.size()];
 		System.out.println(ArrayDataSelect);
-		int[] tab = new int[ArrayDataSelect.size()];
-		for (int i = 0; i < ArrayDataSelect.size(); i++) {
-			tab[i] = ArrayDataSelect.get(i);
-		}
 
-		return tab;
+		return ArrayDataSelect;
 	}
 
+	/**
+	 * Effectue une requête de mise à jour et de gestion dans la BDD.
+	 * 
+	 * @param requeteSQL
+	 *            La requête SQL à saisir dans la BDD
+	 */
 	public void BDDupdate(String requeteSQL) {
-		try {
-
-			Class.forName("com.mysql.jdbc.Driver");
-			System.out.println("Driver O.K.");
-
-			Connection conn = DataSourceProvider.getDataSource()
-					.getConnection();
-			System.out.println("Connexion effective !");
-			Statement stm = conn.createStatement();
-			int res = stm.executeUpdate(requeteSQL);
-
-			System.out.println("Nb enregistrement : " + res);
-
-			conn.close();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	public void BDDquery(String requeteSQL) {
 		try {
 
 			Class.forName("com.mysql.jdbc.Driver");

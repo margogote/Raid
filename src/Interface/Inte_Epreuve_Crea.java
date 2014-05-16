@@ -5,8 +5,12 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -14,16 +18,25 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 
 import BDD.DataSourceProvider;
+import Interface.Inte_Epreuve_Modif.EcouteurMoins;
 import Interface.Inte_Epreuve_Modif.EcouteurOK;
+import Interface.Inte_Epreuve_Modif.EcouteurPlus;
 import Interface.Inte_Epreuve_Modif.EcouteurQ;
 import Models.TabModel;
 
+/**
+ * Formulaire permettant de renseigner les informations pour créer une épreuve
+ * 
+ * @author Margaux
+ * 
+ */
 public class Inte_Epreuve_Crea extends JFrame {
 
 	JFrame thePanel = new JFrame();
@@ -38,7 +51,7 @@ public class Inte_Epreuve_Crea extends JFrame {
 	private JComboBox<Object> typeC = new JComboBox<Object>(typeS);
 
 	private JLabel dateL = new JLabel("Date de début");
-	private JTextField dateT = new JTextField("AAAA-MM-JJ HH:MM:SS.0");
+	private JTextField dateT = new JTextField("AAAA-MM-JJ hh:mm:ss");
 
 	private JLabel dureeL = new JLabel("Durée");
 	private JTextField dureeT = new JTextField("hh:mm:ss");
@@ -71,24 +84,35 @@ public class Inte_Epreuve_Crea extends JFrame {
 	private int idc;
 	private int modif;
 
+	/**
+	 * Classe principale
+	 * 
+	 * @param idC
+	 *            , l'id de la compétition étudiée
+	 */
 	public Inte_Epreuve_Crea(int idC) {
 		thePanel = this;
 		idc = idC;
 
 		InterfaceEp();
+
+		EcouteurOKEp ecoutOKEp = new EcouteurOKEp();
+		oK.addActionListener(ecoutOKEp);
+
+		EcouteurQ ecoutQ = new EcouteurQ();
+		annuler.addActionListener(ecoutQ);
 	}
 
 	/**
-	 * Fonction gérant l'interface de la fenetre4
-	 * Partie 1 : création de l'epreuve
+	 * Fonction gérant l'interface de la fenetre Partie 1 : création de
+	 * l'epreuve
 	 */
 	public void InterfaceEp() {
 		System.out.println("InterfaceEp");
 		thePanel.setTitle("Raidzultats Création Epreuve");
 		thePanel.setSize(400, 300);
 		thePanel.setLocationRelativeTo(null);
-		// thePanel.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		thePanel.setLayout(new BorderLayout()); // Pour les placements
+		thePanel.setLayout(new BorderLayout());
 
 		oK.setPreferredSize(new Dimension(100, 30));
 		annuler.setPreferredSize(new Dimension(100, 30));
@@ -127,23 +151,18 @@ public class Inte_Epreuve_Crea extends JFrame {
 		thePanel.add(panPan);
 
 		thePanel.setVisible(true);
-
-		EcouteurOKEp ecoutOKEp = new EcouteurOKEp();
-		oK.addActionListener(ecoutOKEp);
-
-		EcouteurQ ecoutQ = new EcouteurQ();
-		annuler.addActionListener(ecoutQ);
-
 	}
 
 	/**
-	 * Fonction gérant l'interface de la fenetre4
-	 * Partie 2 : l'association de balises dans l'epreuve
+	 * Fonction gérant l'interface de la fenetre4 Partie 2 : l'association de
+	 * balises dans l'epreuve
 	 */
 	public void InterfaceBa() {
 		System.out.println("InterfaceBa");
 		thePanel.setTitle("Raidzultats Attribution de balises");
 		thePanel.setSize(500, 500);
+
+		panTitre.removeAll();
 
 		oK2.setPreferredSize(new Dimension(100, 30));
 
@@ -195,13 +214,18 @@ public class Inte_Epreuve_Crea extends JFrame {
 
 		EcouteurOKBa ecoutOKBa = new EcouteurOKBa();
 		oK2.addActionListener(ecoutOKBa);
-		/*
-		 * EcouteurQ ecoutQ = new EcouteurQ();
-		 * annuler.addActionListener(ecoutQ);
-		 */
 
+		EcouteurPlus plus = new EcouteurPlus();
+		creer.addActionListener(plus);
+
+		EcouteurMoins moins = new EcouteurMoins();
+		supp.addActionListener(moins);
 	}
 
+	/**
+	 * Permet de gérer les clics du type "Ok" pour la fenêtre de création
+	 * d'épreuve. Recupérations des données entrées et insertion dans la BDD
+	 */
 	public class EcouteurOKEp implements ActionListener { // Action du quitter
 
 		public void actionPerformed(ActionEvent arg0) {
@@ -214,7 +238,8 @@ public class Inte_Epreuve_Crea extends JFrame {
 			String duree = (String) dureeT.getText();
 
 			InterfaceBa();
-			String requeteSQL = "INSERT INTO `raidzultat`.`epreuve` (`nomEpreuve`, `typeEpreuve`, `difficulte`, `dateHeureEpreuve`, `dureeEpreuve`, `idCompetition`) VALUES ('"
+			
+			String requeteSQL = "INSERT INTO `epreuve` (`nomEpreuve`, `typeEpreuve`, `difficulte`, `dateHeureEpreuve`, `dureeEpreuve`, `idCompetition`) VALUES ('"
 					+ nom
 					+ "', '"
 					+ type
@@ -225,16 +250,152 @@ public class Inte_Epreuve_Crea extends JFrame {
 					+ "', '" + duree + "', '" + idc + "')";
 			System.out.println(requeteSQL);
 			BDDupdate(requeteSQL);
+
+			String requeteSQL2 = "SELECT `epreuve`.`idEpreuve`  FROM `epreuve` WHERE `nomEpreuve` = '"
+					+ nom
+					+ "'&& `typeEpreuve` = '"
+					+ type
+					+ "'&& `difficulte`='"
+					+ difficulte
+					+ "'&& `dateHeureEpreuve`='"
+					+ date
+					+ "'&& `dureeEpreuve`=  '"
+					+ duree
+					+ "'&& `idCompetition`='" + idc + "'";
+			System.out.println(requeteSQL2);
+
+			try {
+				Class.forName("com.mysql.jdbc.Driver");
+				System.out.println("Driver O.K.");
+
+				Connection conn = DataSourceProvider.getDataSource()
+						.getConnection();
+				System.out.println("Connexion effective !");
+				Statement stm = conn.createStatement();
+				ResultSet res = stm.executeQuery(requeteSQL2);
+
+				while (res.next()) {
+					modif = res.getInt(1);
+					System.out.println("Num Epreuve : " + res.getString(1));
+
+				}
+				System.out.println("Num Epreuve+ : " +modif);
+
+				conn.close();
+				res.close();
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
-	public class EcouteurOKBa implements ActionListener { // Action du quitter
+	/**
+	 * Permet de gérer les clics du type "+" pour associer une balise à une
+	 * épreuve Lancement du formulaire associé mise à jour du tableau lors de la
+	 * fermeture du formulaire
+	 */
+	public class EcouteurPlus implements ActionListener, WindowListener { // Action
+																			// du
+																			// +
+		public void actionPerformed(ActionEvent arg0) {
+
+			Inte_Epreuve_Balise_Crea formulaire = new Inte_Epreuve_Balise_Crea(
+					idc, modif);
+			formulaire.addWindowListener(this);
+		}
+
+		@Override
+		public void windowActivated(WindowEvent arg0) {
+		}
+
+		@Override
+		public void windowClosed(WindowEvent arg0) {
+			updateTable();
+		}
+
+		@Override
+		public void windowClosing(WindowEvent arg0) {
+		}
+
+		@Override
+		public void windowDeactivated(WindowEvent arg0) {
+		}
+
+		@Override
+		public void windowDeiconified(WindowEvent arg0) {
+		}
+
+		@Override
+		public void windowIconified(WindowEvent arg0) {
+		}
+
+		@Override
+		public void windowOpened(WindowEvent arg0) {
+		}
+	}
+
+	/**
+	 * Permet de gérer les clics du type "-" pour dissocier une balise d'une
+	 * épreuve Suppressions de la BDD
+	 */
+	public class EcouteurMoins implements ActionListener { // Action du quitter
 
 		public void actionPerformed(ActionEvent arg0) {
 
+			ArrayList<Object> tab = getIndexSelectTab(data);
+			int rep = 0;
+
+			if (tab.size() == 0) {
+				JOptionPane.showMessageDialog(null, "Veuillez cochez une case",
+						"Pas de balise à supprimer!",
+						JOptionPane.INFORMATION_MESSAGE);
+			}
+
+			for (int i = 0; i < tab.size(); i++) {
+				rep = JOptionPane.showConfirmDialog(
+						null,
+						"Voulez vous vraiment supprimer la balise "
+								+ tab.get(i) + " de cette épreuve ?",
+						"Attention", JOptionPane.YES_NO_OPTION);
+
+				if (rep == 0) {
+					String requeteSQL = "DELETE FROM `valoir` WHERE CONCAT(`valoir`.`idBalise`) = '"
+							+ tab.get(i)
+							+ "' && `idEpreuve` = '"
+							+ modif
+							+ "' && `idCompetition` = '" + idc + "'";
+					BDDupdate(requeteSQL);
+
+					JOptionPane
+							.showMessageDialog(
+									null,
+									"La balise est maintenant supprimée de cette épreuve",
+									"Balise " + tab.get(i) + " Supprimée!",
+									JOptionPane.INFORMATION_MESSAGE);
+
+					System.out.println("Balise " + tab.get(i) + " Supprimée");
+
+					updateTable();
+				}
+			}
 		}
 	}
 
+	/**
+	 * Permet de gérer les clics du type "Ok" pour la fenêtre d'attribution de
+	 * balise à une épreuve Fermer la fenêtre
+	 */
+	public class EcouteurOKBa implements ActionListener { // Action du quitter
+
+		public void actionPerformed(ActionEvent arg0) {
+			thePanel.dispose();
+		}
+	}
+
+	/**
+	 * Permet de gérer les clics du type "Quitter". Fermer la fenêtre
+	 */
 	public class EcouteurQ implements ActionListener { // Action du quitter
 
 		public void actionPerformed(ActionEvent arg0) {
@@ -243,6 +404,121 @@ public class Inte_Epreuve_Crea extends JFrame {
 		}
 	}
 
+	/**
+	 * Met à jour la comboBox pour la remplir avec les balises de la compétition
+	 * qui ont été affécté à l'eppreuve à partir de la BDD.
+	 * 
+	 * @param combo
+	 *            , La comboBox à mettre à jour
+	 */
+	public void updateTable() {
+
+		ArrayList<Object[]> ArrayData = new ArrayList<>();
+
+		String requeteSQL = "SELECT `idBalise`,`type`,`valeurBalise` FROM `valoir` WHERE `idCompetition` = '"
+				+ idc + "' && `idEpreuve` = '" + modif + "'";
+
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			System.out.println("Driver O.K.");
+
+			Connection conn = DataSourceProvider.getDataSource()
+					.getConnection();
+			System.out.println("Connexion effective !");
+			Statement stm = conn.createStatement();
+			ResultSet res = stm.executeQuery(requeteSQL);
+
+			while (res.next()) {
+				ArrayData.add(new Object[] { new Boolean(false), res.getInt(1),
+						res.getString(2), res.getString(3) });
+				System.out.println("idbalise : " + res.getString(1)
+						+ " type : " + res.getString(2) + " val : "
+						+ res.getString(3));
+			}
+
+			conn.close();
+			res.close();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		data = ArrayToTab(ArrayData);
+
+		InterfaceBa();
+
+		System.out.println(requeteSQL);
+		System.out.println("MAJ Table balise");
+	}
+
+	/**
+	 * Fonction transformant une ArrayList en tableau
+	 * 
+	 * @param array
+	 *            , l'arrayList à transformer
+	 * 
+	 * @return tab, le tableau correspondant à l'arrayList prise en parametre
+	 * 
+	 */
+	public Object[][] ArrayToTab(ArrayList<Object[]> array) {
+
+		int lengthLig = array.size();
+		int lengthCol;
+		if (lengthLig > 0) {
+			lengthCol = array.get(0).length;
+		} else {
+			lengthCol = 0;
+		}
+		Object[][] tab = new Object[lengthLig][lengthCol];
+		for (int i = 0; i < lengthLig; i++) {
+			tab[i] = array.get(i);
+		}
+		return tab;
+	}
+
+	/**
+	 * Fonction permettant de renvoyer les différentes lignes cochées dans un
+	 * tableau
+	 * 
+	 * @param table
+	 *            , le tableau à analyser
+	 * 
+	 * @return ArrayDataSelect, l'arrayList contenant les indices de chaque
+	 *         ligne cochée
+	 * 
+	 */
+	public ArrayList<Object> getIndexSelectTab(Object[][] table) {
+		ArrayList<Object> ArrayDataSelect = new ArrayList<Object>();
+		int lig = table.length;
+		int col;
+
+		if (lig > 0) {
+			col = table[0].length;
+		} else {
+			col = 0;
+		}
+
+		System.out.println(lig);
+		System.out.println(col);
+		for (int i = 0; i < lig; i++) {
+			if ((boolean) table[i][0] == (true)) {
+				System.out.println(ArrayDataSelect);
+				ArrayDataSelect.add(table[i][1]);
+			}
+
+		}
+		Object[] tab = new Object[ArrayDataSelect.size()];
+		System.out.println(ArrayDataSelect);
+
+		return ArrayDataSelect;
+	}
+
+	/**
+	 * Effectue une requête de mise à jour et de gestion dans la BDD.
+	 * 
+	 * @param requeteSQL
+	 *            La requête SQL à saisir dans la BDD
+	 */
 	public void BDDupdate(String requeteSQL) {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");

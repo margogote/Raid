@@ -5,10 +5,7 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowStateListener;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
@@ -22,11 +19,17 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import BDD.DataSourceProvider;
+
 import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
 
-import BDD.DataSourceProvider;
-import Interface.Inte_Menu.EcouteurQ;
-
+/**
+ * Formulaire permettant de renseigner les informations pour créer/modifier une
+ * équipe
+ * 
+ * @author Margaux
+ * 
+ */
 public class Inte_Equipe_CreaModif extends JFrame {
 
 	JFrame thePanel = new JFrame();
@@ -58,6 +61,14 @@ public class Inte_Equipe_CreaModif extends JFrame {
 	private int idc;
 	private int modif;
 
+	/**
+	 * Classe principale
+	 * 
+	 * @param idC
+	 *            , l'id de la compétition étudiée
+	 * @param idModif
+	 *            , l'id de l'équipe à modifier
+	 */
 	Inte_Equipe_CreaModif(int idC, int idModif) {
 		thePanel = this;
 		idc = idC;
@@ -172,6 +183,10 @@ public class Inte_Equipe_CreaModif extends JFrame {
 
 	}
 
+	/**
+	 * Permet de gérer les clics du type "Ok" pour la fenêtre de modification
+	 * d'épreuve. Recupérations des données entrées et insertion dans la BDD
+	 */
 	public class EcouteurOK implements ActionListener { // Action du quitter
 
 		public void actionPerformed(ActionEvent arg0) {
@@ -182,6 +197,7 @@ public class Inte_Equipe_CreaModif extends JFrame {
 			String groupe = (String) grpC.getSelectedItem();
 			String categorie = (String) catC.getSelectedItem();
 			int idE = -1;
+			int flagExiste = 0;
 
 			if (nom.equals("") || doigt.equals("CHOISIR") || dossard.equals("")
 					|| difficulte.equals("CHOISIR") || groupe.equals("CHOISIR")
@@ -195,23 +211,9 @@ public class Inte_Equipe_CreaModif extends JFrame {
 					Integer.parseInt(dossard);
 					System.out.println("C'est un entier");
 
-					String requeteSQL = "INSERT INTO `raidzultat`.`equipe` (`idEquipe`, `nomEquipe`, `nomGroupe`, `typeDifficulte`, `typeEquipe`,`dossard`, `idCompetition`) VALUES (NULL, '"
-							+ nom
-							+ "', '"
-							+ groupe
-							+ "', '"
-							+ difficulte
-							+ "', '"
-							+ categorie
-							+ "', '"
-							+ dossard
-							+ "', '"
-							+ idc + "')";
-					BDDupdate(requeteSQL);
-
 					try {
-						String requeteSQL2 = "SELECT `idEquipe` FROM `equipe` WHERE `nomEquipe`= '"
-								+ nom + "' && `idCompetition`='" + idc + "'";
+						String requeteSQL0 = "SELECT `dossard` FROM `equipe` WHERE `idCompetition`='"
+								+ idc + "'";
 						Class.forName("com.mysql.jdbc.Driver");
 						System.out.println("Driver O.K.");
 
@@ -219,33 +221,90 @@ public class Inte_Equipe_CreaModif extends JFrame {
 								.getConnection();
 						System.out.println("Connexion effective !");
 						Statement stm = conn.createStatement();
-						ResultSet res = stm.executeQuery(requeteSQL2);
+						ResultSet res = stm.executeQuery(requeteSQL0);
 
 						while (res.next()) {
-							idE = res.getInt(1);
-							System.out.println("Num Equipe : " + res.getInt(1));
+							if (dossard.equals(res.getString(1))) {
+								flagExiste = 1;
+							}
+							System.out.println("num dossard:! !"
+									+ res.getInt(1));
+							System.out.println("FLAGGGGG : " + flagExiste);
 						}
 
 						conn.close();
 						res.close();
 
-					} catch (CommunicationsException com) {
-						JOptionPane.showMessageDialog(null,
-								"Pas de connection avec la Base de Données",
-								"Attention", JOptionPane.INFORMATION_MESSAGE);
-
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
+					if (flagExiste == 1) {
+						JOptionPane.showMessageDialog(null,
+								"Ce dossard existe déjà", "Equipe non créée!",
+								JOptionPane.INFORMATION_MESSAGE);
+					} else {
+						String requeteSQL = "INSERT INTO `raidzultat`.`equipe` (`idEquipe`, `nomEquipe`, `nomGroupe`, `typeDifficulte`, `typeEquipe`,`dossard`, `idCompetition`) VALUES (NULL, '"
+								+ nom
+								+ "', '"
+								+ groupe
+								+ "', '"
+								+ difficulte
+								+ "', '"
+								+ categorie
+								+ "', '"
+								+ dossard
+								+ "', '" + idc + "')";
+						BDDupdate(requeteSQL);
 
-					String requeteSQL3 = "INSERT INTO `raidzultat`.`posséder` (`idDoigt`, `idEquipe`, `dateHeureAttribution`,`idCompetition`) VALUES ('"
-							+ doigt + "', '" + idE + "', NULL,'" + idc + "')";
-					BDDupdate(requeteSQL3);
+						try {
+							String requeteSQL2 = "SELECT `idEquipe` FROM `equipe` WHERE `nomEquipe`= '"
+									+ nom
+									+ "' && `idCompetition`='"
+									+ idc
+									+ "'";
+							Class.forName("com.mysql.jdbc.Driver");
+							System.out.println("Driver O.K.");
 
-					thePanel.dispose();
+							Connection conn = DataSourceProvider
+									.getDataSource().getConnection();
+							System.out.println("Connexion effective !");
+							Statement stm = conn.createStatement();
+							ResultSet res = stm.executeQuery(requeteSQL2);
+
+							while (res.next()) {
+								idE = res.getInt(1);
+								System.out.println("Num Equipe : "
+										+ res.getInt(1));
+							}
+
+							conn.close();
+							res.close();
+
+						} catch (CommunicationsException com) {
+							JOptionPane
+									.showMessageDialog(
+											null,
+											"Pas de connection avec la Base de Données",
+											"Attention",
+											JOptionPane.INFORMATION_MESSAGE);
+
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+
+						String requeteSQL3 = "INSERT INTO `raidzultat`.`posséder` (`idDoigt`, `idEquipe`, `dateHeureAttribution`,`idCompetition`) VALUES ('"
+								+ doigt
+								+ "', '"
+								+ idE
+								+ "', NULL,'"
+								+ idc
+								+ "')";
+						BDDupdate(requeteSQL3);
+
+						thePanel.dispose();
+					}
 				} catch (Exception e) {
-					System.out
-							.println("Je ne suis pas un entier");
+					System.out.println("Je ne suis pas un entier");
 					JOptionPane
 							.showMessageDialog(
 									null,
@@ -255,47 +314,81 @@ public class Inte_Equipe_CreaModif extends JFrame {
 				}
 			} else {
 				try {
-					Integer.parseInt(dossard);
-					System.out.println("C'est un entier");
-					String requeteSQL = "UPDATE`raidzultat`.`equipe` SET `nomEquipe` = '"
-							+ nom
-							+ "',`nomGroupe` = '"
-							+ groupe
-							+ "', `typeDifficulte`='"
-							+ difficulte
-							+ "', `typeEquipe`='"
-							+ categorie
-							+ "',`dossard`=  '"
-							+ dossard
-							+ "' WHERE idEquipe = '"
-							+ modif
-							+ "' && `idCompetition`='" + idc + "'";
+					String requeteSQL0 = "SELECT `dossard` FROM `equipe` WHERE `idCompetition`='"
+							+ idc + "'";
+					Class.forName("com.mysql.jdbc.Driver");
+					System.out.println("Driver O.K.");
 
-					BDDupdate(requeteSQL);
+					Connection conn = DataSourceProvider.getDataSource()
+							.getConnection();
+					System.out.println("Connexion effective !");
+					Statement stm = conn.createStatement();
+					ResultSet res = stm.executeQuery(requeteSQL0);
 
-					String requeteSQL3 = "UPDATE `raidzultat`.`posséder` SET `idDoigt` = '"
-							+ doigt
-							+ "', `dateHeureAttribution`= NULL WHERE idEquipe = '"
-							+ modif + "' && `idCompetition`='" + idc + "'";
-					BDDupdate(requeteSQL3);
+					while (res.next()) {
+						if (dossard.equals(res.getString(1))) {
+							flagExiste = 1;
+						}
+						System.out.println("num dossard:! !" + res.getInt(1));
+						System.out.println("FLAGGGGG : " + flagExiste);
+					}
 
-					thePanel.dispose();
+					conn.close();
+					res.close();
+
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
+				if (flagExiste == 1) {
+					JOptionPane.showMessageDialog(null,
+							"Ce dossard existe déjà", "Equipe non modifiée!",
+							JOptionPane.INFORMATION_MESSAGE);
+				} else {
+					try {
+						Integer.parseInt(dossard);
+						System.out.println("C'est un entier");
+						String requeteSQL = "UPDATE`raidzultat`.`equipe` SET `nomEquipe` = '"
+								+ nom
+								+ "',`nomGroupe` = '"
+								+ groupe
+								+ "', `typeDifficulte`='"
+								+ difficulte
+								+ "', `typeEquipe`='"
+								+ categorie
+								+ "',`dossard`=  '"
+								+ dossard
+								+ "' WHERE idEquipe = '"
+								+ modif
+								+ "' && `idCompetition`='" + idc + "'";
 
-				catch (Exception e) {
-					System.out
-							.println("Je ne suis pas un entier");
-					JOptionPane
-							.showMessageDialog(
-									null,
-									"Attention entrer un entier comme numéro de dossard",
-									"Equipe non modifiée!",
-									JOptionPane.WARNING_MESSAGE);
+						BDDupdate(requeteSQL);
+
+						String requeteSQL3 = "UPDATE `raidzultat`.`posséder` SET `idDoigt` = '"
+								+ doigt
+								+ "', `dateHeureAttribution`= NULL WHERE idEquipe = '"
+								+ modif + "' && `idCompetition`='" + idc + "'";
+						BDDupdate(requeteSQL3);
+
+						thePanel.dispose();
+					}
+
+					catch (Exception e) {
+						System.out.println("Je ne suis pas un entier");
+						JOptionPane
+								.showMessageDialog(
+										null,
+										"Attention entrer un entier comme numéro de dossard",
+										"Equipe non modifiée!",
+										JOptionPane.WARNING_MESSAGE);
+					}
 				}
 			}
 		}
 	}
 
+	/**
+	 * Permet de gérer les clics du type "Quitter", Ferme la fenêtre
+	 */
 	public class EcouteurQ implements ActionListener { // Action du quitter
 
 		public void actionPerformed(ActionEvent arg0) {
@@ -304,6 +397,11 @@ public class Inte_Equipe_CreaModif extends JFrame {
 		}
 	}
 
+	/**
+	 * Met à jour la comboBox pour la remplir avec les doigts de la compétition
+	 * qui n'ont pas encore été utilisés à partir de la BDD.
+	 * 
+	 */
 	public void updateDoigt() {
 		String requeteSQL = "SELECT `idDoigt` FROM `doigt` WHERE `idDoigt` NOT IN ( SELECT `idDoigt` FROM `posséder` WHERE `idCompetition` = '"
 				+ idc + "') && `idCompetition` = '" + idc + "'";
@@ -340,6 +438,12 @@ public class Inte_Equipe_CreaModif extends JFrame {
 		System.out.println("MAJ Combo doigt");
 	}
 
+	/**
+	 * Effectue une requête de mise à jour et de gestion dans la BDD.
+	 * 
+	 * @param requeteSQL
+	 *            La requête SQL à saisir dans la BDD
+	 */
 	public void BDDupdate(String requeteSQL) {
 		try {
 

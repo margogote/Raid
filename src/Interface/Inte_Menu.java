@@ -14,6 +14,12 @@ import javax.swing.JPanel;
 
 import Interface.Inte_Accueil.EcouteurQ;
 
+/**
+ * Onglet menu : Permet de changer de competition, de quitter l'application et d'avoir des informations supplémentaires
+ * 
+ * @author Margaux
+ * 
+ */
 public class Inte_Menu extends JPanel {
 
 	private JFrame jFrameContenantLOnglet;
@@ -29,7 +35,7 @@ public class Inte_Menu extends JPanel {
 	private JButton aPropos = new JButton("A propos");
 
 	/**
-     * Classe principale.
+     * Classe principale
      * permet de gérer l'interface du panel
      */
 	public Inte_Menu(JFrame jFrameContenantLOnglet) {
@@ -80,7 +86,8 @@ public class Inte_Menu extends JPanel {
 	}
 
 	/**
-     * Permet de gérer les clics du type "Quitter".
+     * Permet de gérer les clics du type "Quitter"
+     * Ferme la fenêtre
      */
 	public class EcouteurQ implements ActionListener { // Action du quitter
 

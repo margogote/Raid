@@ -21,6 +21,12 @@ import javax.swing.JTextField;
 
 import BDD.DataSourceProvider;
 
+/**
+ * Formulaire permettant de renseigner les informations pour créer/modifier un Malus/Bonus
+ * 
+ * @author Margaux
+ * 
+ */
 public class Inte_MalusBonus_CreaModif extends JFrame {
 
 	JFrame thePanel = new JFrame();
@@ -41,13 +47,21 @@ public class Inte_MalusBonus_CreaModif extends JFrame {
 	private int idc;
 	private int modif;
 
+	/**
+	 * Classe principale
+	 * 
+	 * @param idC
+	 *            , l'id de la compétition étudiée
+	 * @param idModif
+	 *            , l'id de l'équipe à modifier
+	 */
 	public Inte_MalusBonus_CreaModif(int idC, int idModif) {
 
 		thePanel = this;
 		idc = idC;
 		modif = idModif;
 
-		thePanel.setTitle("Raidzultats - Création équipe");
+		thePanel.setTitle("Raidzultats - Création Malus/Bonus");
 		thePanel.setSize(450, 220);
 		thePanel.setLocationRelativeTo(null);
 		// centre la fenetre thePanel.setResizable(false);
@@ -122,11 +136,15 @@ public class Inte_MalusBonus_CreaModif extends JFrame {
 
 	}
 
-	public class EcouteurOK implements ActionListener { // Action du quitter
+	/**
+	 * Permet de gérer les clics du type "Ok" pour la fenêtre de modification
+	 * d'épreuve. Recupérations des données entrées et insertion dans la BDD
+	 */
+	public class EcouteurOK implements ActionListener { // Action du Ok
 
 		public void actionPerformed(ActionEvent arg0) {
 			String nom = nomT.getText();
-			//String type = (String) typeC.getSelectedItem();
+			
 			int type = typeC.getSelectedIndex()-1;
 			String tps = tpsT.getText();
 
@@ -167,6 +185,9 @@ public class Inte_MalusBonus_CreaModif extends JFrame {
 		}
 	}
 
+	/**
+	 * Permet de gérer les clics du type "Quitter", Ferme la fenêtre
+	 */
 	public class EcouteurQ implements ActionListener { // Action du quitter
 
 		public void actionPerformed(ActionEvent arg0) {
@@ -175,6 +196,12 @@ public class Inte_MalusBonus_CreaModif extends JFrame {
 		}
 	}
 
+	/**
+     * Effectue une requête de mise à jour et de gestion dans la BDD.
+     * 
+     * @param requeteSQL
+     * 			La requête SQL à saisir dans la BDD
+     */
 	public void BDDupdate(String requeteSQL) {
 		try {
 

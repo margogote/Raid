@@ -21,8 +21,8 @@ import BDD.DataSourceProvider;
 import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
 
 /**
- * Splash page d'accueil : permet le choix de la competition, permet aussi
- * d'en créer, d'en modifier et d'en supprimer ou de quitter l'application
+ * Splash page d'accueil : permet le choix de la competition, permet aussi d'en
+ * créer, d'en modifier et d'en supprimer ou de quitter l'application
  * 
  * @author Margaux
  * 
@@ -49,10 +49,11 @@ public class Inte_Accueil {
 
 	JLabel bjr = new JLabel(
 			"Bienvenu(e) sur Raidzultats, l'application qui permet de gérer le classement d'un Raid");
+
 	/**
-     * Classe principale.
-     * Permet la mise en place de l'interface
-     */
+	 * Classe principale
+	 * Permet la mise en place de l'interface
+	 */
 	public Inte_Accueil() {
 
 		updateCombo(compets);
@@ -125,8 +126,8 @@ public class Inte_Accueil {
 	}
 
 	/**
-     * Permet de gérer les clics du type "Entrer".
-     */
+	 * Permet de gérer les clics du type "Entrer"
+	 */
 	public class EcouteurEntrer implements ActionListener { // Action du Entrer
 
 		public void actionPerformed(ActionEvent arg0) {
@@ -144,13 +145,11 @@ public class Inte_Accueil {
 	}
 
 	/**
-     * Permet de gérer les clics du type "Créer".
-     */
+	 * Permet de gérer les clics du type "Créer"
+	 */
 	public class EcouteurCreer implements ActionListener { // Action du creer
 
 		public void actionPerformed(ActionEvent arg0) {
-			// String nom="test";
-			// JOptionPane jop = new JOptionPane(), jop2 = new JOptionPane();
 			String nom = JOptionPane.showInputDialog(null,
 					"Donner le nom de votre compétition !",
 					"Nouvelle compétition ?", JOptionPane.QUESTION_MESSAGE);
@@ -181,8 +180,8 @@ public class Inte_Accueil {
 	}
 
 	/**
-     * Permet de gérer les clics du type "Modifier".
-     */
+	 * Permet de gérer les clics du type "Modifier"
+	 */
 	public class EcouteurModif implements ActionListener { // Action du modifier
 
 		public void actionPerformed(ActionEvent arg0) {
@@ -228,8 +227,8 @@ public class Inte_Accueil {
 	}
 
 	/**
-     * Permet de gérer les clics du type "Supprimer".
-     */
+	 * Permet de gérer les clics du type "Supprimer".
+	 */
 	public class EcouteurSupp implements ActionListener { // Action du supprimer
 
 		public void actionPerformed(ActionEvent arg0) {
@@ -263,8 +262,9 @@ public class Inte_Accueil {
 	}
 
 	/**
-     * Permet de gérer les clics du type "Quitter".
-     */
+	 * Permet de gérer les clics du type "Quitter"
+	 * Ferme la fenêtre
+	 */
 	public class EcouteurQ implements ActionListener { // Action du quitter
 
 		public void actionPerformed(ActionEvent arg0) {
@@ -282,11 +282,12 @@ public class Inte_Accueil {
 	}
 
 	/**
-     * Met à jour la comboBox pour la remplir avec les compétitions présentes dans la BDD.
-     * 
-     * @param combo
-     * 			La comboBox à mettre à jour
-     */
+	 * Met à jour la comboBox pour la remplir avec les compétitions présentes
+	 * dans la BDD.
+	 * 
+	 * @param combo
+	 *            La comboBox à mettre à jour
+	 */
 	public void updateCombo(JComboBox<Object> combo) {
 
 		combo.removeAllItems();
@@ -320,11 +321,11 @@ public class Inte_Accueil {
 		}
 
 		System.out.println("MAJ Combo");
-		if(combo.getItemCount()==0){
+		if (combo.getItemCount() == 0) {
 			entrerCompet.setEnabled(false);
 			modifCompet.setEnabled(false);
 			suppCompet.setEnabled(false);
-		}else{
+		} else {
 			entrerCompet.setEnabled(true);
 			modifCompet.setEnabled(true);
 			suppCompet.setEnabled(true);
@@ -333,13 +334,15 @@ public class Inte_Accueil {
 	}
 
 	/**
-     * Indique le numéro de l'object sélectioné dans la ComboBox correspondre avec la ligne de la BDD.
-     * 
-     * @param combo
-     * 			La comboBox à inspecter
-     * 
-     * @return iDSelect, le numéro de la ligne BDD correspondant à la ligne de la comboBox sélectionnée
-     */
+	 * Indique le numéro de l'object sélectioné dans la ComboBox correspondre
+	 * avec la ligne de la BDD.
+	 * 
+	 * @param combo
+	 *            La comboBox à inspecter
+	 * 
+	 * @return iDSelect, le numéro de la ligne BDD correspondant à la ligne de
+	 *         la comboBox sélectionnée
+	 */
 	public int getSelectID(JComboBox<Object> combo) {
 		String nom = (String) combo.getSelectedItem();
 		int iDSelect = -1;
@@ -367,13 +370,13 @@ public class Inte_Accueil {
 		}
 		return iDSelect;
 	}
-	
+
 	/**
-     * Effectue une requête de mise à jour et de gestion dans la BDD.
-     * 
-     * @param requeteSQL
-     * 			La requête SQL à saisir dans la BDD
-     */
+	 * Effectue une requête de mise à jour et de gestion dans la BDD.
+	 * 
+	 * @param requeteSQL
+	 *            La requête SQL à saisir dans la BDD
+	 */
 	public void BDDupdate(String requeteSQL) {
 		try {
 

@@ -30,6 +30,14 @@ import Interface.Inte_Equipe.EcouteurModif;
 import Interface.Inte_Equipe.EcouteurSupp;
 import Models.TabModel;
 
+/**
+ * Onglet de gestion des Epreuves : permet d'en créer, d'en modifier et d'en
+ * supprimer Permet également de lancer la page d'acquisition de données par
+ * épreuve
+ * 
+ * @author Margaux
+ * 
+ */
 public class Inte_Epreuves extends JPanel {
 
 	/* Panels */
@@ -67,10 +75,11 @@ public class Inte_Epreuves extends JPanel {
 	private int idc;
 
 	/**
-     * Classe principale.
-     * 
-     * @param idC, l'id de la compétition étudiée
-     */
+	 * Classe principale
+	 * 
+	 * @param idC
+	 *            , l'id de la compétition étudiée
+	 */
 	public Inte_Epreuves(int idC) {
 
 		thePanel = this;
@@ -86,6 +95,9 @@ public class Inte_Epreuves extends JPanel {
 
 		EcouteurSupp ecoutSupp = new EcouteurSupp();
 		supp.addActionListener(ecoutSupp);
+
+		EcouteurA ecoutA = new EcouteurA();
+		aquis.addActionListener(ecoutA);
 
 	}
 
@@ -146,6 +158,10 @@ public class Inte_Epreuves extends JPanel {
 		thePanel.add(panMega);
 	}
 
+	/**
+	 * Permet de gérer les clics du type "Créer" Lancement du formulaire associé
+	 * mise à jour du tableau lors de la fermeture du formulaire
+	 */
 	public class EcouteurCreer implements ActionListener, WindowListener { // Action
 																			// du
 																			// creer
@@ -186,6 +202,10 @@ public class Inte_Epreuves extends JPanel {
 		}
 	}
 
+	/**
+	 * Permet de gérer les clics du type "Modifier" pour une épreuve
+	 * Recupérations des données entrées et insertion dans la BDD
+	 */
 	public class EcouteurModif implements ActionListener, WindowListener { // Action
 		// du
 		// modif
@@ -201,8 +221,8 @@ public class Inte_Epreuves extends JPanel {
 			}
 			for (int i = 0; i < tab.length; i++) {
 
-				Inte_Epreuve_Modif formulaire = new Inte_Epreuve_Modif(
-						idc, tab[i]);
+				Inte_Epreuve_Modif formulaire = new Inte_Epreuve_Modif(idc,
+						tab[i]);
 
 				formulaire.addWindowListener(this);
 			}
@@ -238,6 +258,10 @@ public class Inte_Epreuves extends JPanel {
 		}
 	}
 
+	/**
+	 * Permet de gérer les clics du type "Supprimer" pour une épreuve
+	 * Suppression de la BDD
+	 */
 	public class EcouteurSupp implements ActionListener { // Action du supprimer
 
 		public void actionPerformed(ActionEvent arg0) {
@@ -274,6 +298,50 @@ public class Inte_Epreuves extends JPanel {
 		}
 	}
 
+	/**
+	 * Permet de gérer les clics du type "Acquisition" pour une épreuve
+	 * Récupération de l'épreuve séléctionnée et lancement du formulaire associé
+	 */
+	public class EcouteurA implements ActionListener { // Action
+		// du
+		// creer
+		public void actionPerformed(ActionEvent arg0) {
+			int idEp=-1;
+			String nomEp = (String) comboEpreuv.getSelectedItem();
+			
+			String requeteSQL = "SELECT idEpreuve FROM epreuve WHERE idCompetition = '"
+					+ idc + "' && nomEpreuve = '"+nomEp+"'";
+
+			try {
+				Class.forName("com.mysql.jdbc.Driver");
+				System.out.println("Driver O.K.");
+
+				Connection conn = DataSourceProvider.getDataSource()
+						.getConnection();
+				System.out.println("Connexion effective !");
+				Statement stm = conn.createStatement();
+				ResultSet res = stm.executeQuery(requeteSQL);
+
+				while (res.next()) {
+					idEp = res.getInt(1);
+					System.out.println("Id : " + res.getInt(1));
+				}
+
+				conn.close();
+				res.close();
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+		Inte_Acquisition formulaire = new Inte_Acquisition(idc, idEp, nomEp );
+		}
+	}
+
+	/**
+	 * Met à jour du tableau pour le remplir avec les épreuves de la compétition
+	 * à partir de la BDD.
+	 */
 	public void updateTable() {
 
 		ArrayList<Object[]> ArrayData = new ArrayList<>();
@@ -292,9 +360,9 @@ public class Inte_Epreuves extends JPanel {
 			ResultSet res = stm.executeQuery(requeteSQL);
 
 			while (res.next()) {
-				ArrayData.add(new Object[] { new Boolean(false),
-						res.getInt(1), res.getString(2), res.getString(3),
-						res.getString(4), res.getString(5), res.getString(6) });
+				ArrayData.add(new Object[] { new Boolean(false), res.getInt(1),
+						res.getString(2), res.getString(3), res.getString(4),
+						res.getString(5), res.getString(6) });
 				System.out.println("Id : " + res.getInt(1) + " nom : "
 						+ res.getString(2) + " Type : " + res.getString(3)
 						+ " Diff : " + res.getString(4) + " Date : "
@@ -321,6 +389,13 @@ public class Inte_Epreuves extends JPanel {
 		System.out.println("MAJ Table");
 	}
 
+	/**
+	 * Met à jour la comboBox pour la remplir avec les épreuves de la
+	 * competition à partir de la BDD.
+	 * 
+	 * @param combo
+	 *            La comboBox à mettre à jour
+	 */
 	public void updateCombo(JComboBox<Object> combo) {
 		combo.removeAllItems();
 		String requeteSQL = "SELECT nomEpreuve FROM epreuve WHERE idCompetition = '"
@@ -347,14 +422,23 @@ public class Inte_Epreuves extends JPanel {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		if(combo.getItemCount()==0){
+		if (combo.getItemCount() == 0) {
 			aquis.setEnabled(false);
-		}else{
+		} else {
 			aquis.setEnabled(true);
 		}
 		System.out.println("MAJ Combo");
 	}
 
+	/**
+	 * Fonction transformant une ArrayList en tableau
+	 * 
+	 * @param array
+	 *            , l'arrayList à transformer
+	 * 
+	 * @return tab, le tableau correspondant à l'arrayList prise en parametre
+	 * 
+	 */
 	public Object[][] ArrayToTab(ArrayList<Object[]> array) {
 
 		int lengthLig = array.size();
@@ -371,36 +455,54 @@ public class Inte_Epreuves extends JPanel {
 		return tab;
 	}
 
+	/**
+	 * Fonction permettant de renvoyer les différentes lignes cochées dans un
+	 * tableau
+	 * 
+	 * @param table
+	 *            , le tableau à analyser
+	 * 
+	 * @return ArrayDataSelect, l'arrayList contenant les indices de chaque
+	 *         ligne cochée
+	 * 
+	 */
 	public int[] getIndexSelectTab(Object[][] table) {
 		ArrayList<Integer> ArrayDataSelect = new ArrayList<Integer>();
 		int lig = table.length;
 		int col;
-		
-		if(lig>0){
-		col = table[0].length;
-		}else{col=0;}
 
+		if (lig > 0) {
+			col = table[0].length;
+		} else {
+			col = 0;
+		}
 
 		System.out.println(lig);
 		System.out.println(col);
-		
+
 		for (int i = 0; i < lig; i++) {
 			if ((boolean) table[i][0] == (true)) {
 				System.out.println(ArrayDataSelect);
-				ArrayDataSelect.add( (Integer) table[i][1]);
+				ArrayDataSelect.add((Integer) table[i][1]);
 			}
 
 		}
-		
+
 		System.out.println(ArrayDataSelect);
 		int[] tab = new int[ArrayDataSelect.size()];
-		for (int i = 0; i <ArrayDataSelect.size(); i++) {
+		for (int i = 0; i < ArrayDataSelect.size(); i++) {
 			tab[i] = ArrayDataSelect.get(i);
 		}
 
 		return tab;
 	}
 
+	/**
+	 * Effectue une requête de mise à jour et de gestion dans la BDD.
+	 * 
+	 * @param requeteSQL
+	 *            La requête SQL à saisir dans la BDD
+	 */
 	public void BDDupdate(String requeteSQL) {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");

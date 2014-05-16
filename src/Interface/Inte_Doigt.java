@@ -23,8 +23,8 @@ import BDD.DataSourceProvider;
 import Models.TabModel;
 
 /**
- * Onglet de gestion des doigts : permet le permet
- * de créer, modifier et supprimer des doigts
+ * Onglet de gestion des doigts : permet le permet de créer, modifier et
+ * supprimer des doigts
  * 
  * @author Margaux
  * 
@@ -55,7 +55,7 @@ public class Inte_Doigt extends JPanel {
 	int idc;
 
 	/**
-	 * Classe principale.
+	 * Classe principale
 	 * 
 	 * @param idC
 	 *            , l'id de la compétition étudiée
@@ -119,8 +119,10 @@ public class Inte_Doigt extends JPanel {
 	}
 
 	/**
-     * Permet de gérer les clics du type "Créer".
-     */
+	 * Permet de gérer les clics du type "Créer"
+	 * Recupération de la saisie
+	 * Insertion dans la BDD
+	 */
 	public class EcouteurCreer implements ActionListener { // Action du creer
 
 		public void actionPerformed(ActionEvent arg0) {
@@ -133,7 +135,7 @@ public class Inte_Doigt extends JPanel {
 				while (nb.equals("")) {
 					JOptionPane.showMessageDialog(null,
 							"Veuillez entrer un numéro", "Doigt non créé!",
-							JOptionPane.INFORMATION_MESSAGE);
+							JOptionPane.WARNING_MESSAGE);
 					nb = JOptionPane.showInputDialog(null,
 							"Donner le numéro de votre doigt !",
 							"Nouveau doigt ?", JOptionPane.QUESTION_MESSAGE);
@@ -180,8 +182,10 @@ public class Inte_Doigt extends JPanel {
 	}
 
 	/**
-     * Permet de gérer les clics du type "Modifier".
-     */
+	 * Permet de gérer les clics du type "Modifier"	 
+	 * Recupération de la saisie
+	 * modification dans la BDD
+	 */
 	public class EcouteurModif implements ActionListener { // Action du modif
 
 		public void actionPerformed(ActionEvent arg0) {
@@ -246,8 +250,9 @@ public class Inte_Doigt extends JPanel {
 	}
 
 	/**
-     * Permet de gérer les clics du type "Supprimer".
-     */
+	 * Permet de gérer les clics du type "Supprimer"
+	 * suppression dans la BDD
+	 */
 	public class EcouteurSupp implements ActionListener { // Action du supprimer
 
 		public void actionPerformed(ActionEvent arg0) {
@@ -288,8 +293,8 @@ public class Inte_Doigt extends JPanel {
 	}
 
 	/**
-     * Fonction mettant à jour le tableau
-     */
+	 * Fonction mettant à jour le tableau
+	 */
 	public void updateTable() {
 
 		ArrayList<Object[]> ArrayData = new ArrayList<>();
@@ -333,13 +338,14 @@ public class Inte_Doigt extends JPanel {
 	}
 
 	/**
-     * Fonction transformant une ArrayList en tableau
-     * 
-     * @param array, l'arrayList à transformer
-     * 
-     * @return tab, le tableau correspondant à l'arrayList prise en parametre
-     * 
-     */
+	 * Fonction transformant une ArrayList en tableau
+	 * 
+	 * @param array
+	 *            , l'arrayList à transformer
+	 * 
+	 * @return tab, le tableau correspondant à l'arrayList prise en parametre
+	 * 
+	 */
 	public Object[][] ArrayToTab(ArrayList<Object[]> array) {
 
 		int lengthLig = array.size();
@@ -360,13 +366,16 @@ public class Inte_Doigt extends JPanel {
 	}
 
 	/**
-     * Fonction permettant de renvoyer les différentes lignes cochées dans un tableau
-     * 
-     * @param table, le tableau à analyser
-     * 
-     * @return ArrayDataSelect, l'arrayList contenant les indices de chaque ligne cochée
-     * 
-     */
+	 * Fonction permettant de renvoyer les différentes lignes cochées dans un
+	 * tableau
+	 * 
+	 * @param table
+	 *            , le tableau à analyser
+	 * 
+	 * @return ArrayDataSelect, l'arrayList contenant les indices de chaque
+	 *         ligne cochée
+	 * 
+	 */
 	public ArrayList<Object> getIndexSelectTab(Object[][] table) {
 		ArrayList<Object> ArrayDataSelect = new ArrayList<Object>();
 		int lig = table.length;
@@ -393,11 +402,11 @@ public class Inte_Doigt extends JPanel {
 	}
 
 	/**
-     * Effectue une requête de mise à jour et de gestion dans la BDD.
-     * 
-     * @param requeteSQL
-     * 			La requête SQL à saisir dans la BDD
-     */
+	 * Effectue une requête de mise à jour et de gestion dans la BDD.
+	 * 
+	 * @param requeteSQL
+	 *            La requête SQL à saisir dans la BDD
+	 */
 	public void BDDupdate(String requeteSQL) {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
