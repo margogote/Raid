@@ -119,8 +119,7 @@ public class Inte_Doigt extends JPanel {
 	}
 
 	/**
-	 * Permet de gérer les clics du type "Créer"
-	 * Recupération de la saisie
+	 * Permet de gérer les clics du type "Créer" Recupération de la saisie
 	 * Insertion dans la BDD
 	 */
 	public class EcouteurCreer implements ActionListener { // Action du creer
@@ -134,8 +133,8 @@ public class Inte_Doigt extends JPanel {
 			if (nb != null) {
 				while (nb.equals("")) {
 					JOptionPane.showMessageDialog(null,
-							"Veuillez entrer un numéro", "Doigt non créé!",
-							JOptionPane.WARNING_MESSAGE);
+							"Veuillez entrer un numéro positif",
+							"Doigt non créé!", JOptionPane.WARNING_MESSAGE);
 					nb = JOptionPane.showInputDialog(null,
 							"Donner le numéro de votre doigt !",
 							"Nouveau doigt ?", JOptionPane.QUESTION_MESSAGE);
@@ -159,13 +158,24 @@ public class Inte_Doigt extends JPanel {
 							Integer.parseInt(nb);
 							System.out.println("C'est un entier");
 
-							String requeteSQL = "INSERT INTO `doigt` (`idDoigt`,`idCompetition`) VALUES ( "
-									+ nb + "," + idc + ")";
-							BDDupdate(requeteSQL);
+							if (Integer.parseInt(nb) > 0) {
 
-							JOptionPane.showMessageDialog(null, "Le doigt est "
-									+ nb + ".", "Nouvelle compétition !",
-									JOptionPane.INFORMATION_MESSAGE);
+								String requeteSQL = "INSERT INTO `doigt` (`idDoigt`,`idCompetition`) VALUES ( "
+										+ nb + "," + idc + ")";
+								BDDupdate(requeteSQL);
+
+								JOptionPane.showMessageDialog(null,
+										"Le doigt est " + nb + ".",
+										"Nouveau doigt !",
+										JOptionPane.INFORMATION_MESSAGE);
+
+							} else {
+								JOptionPane.showMessageDialog(null,
+										"Ce nombre doit être positif",
+										"Doigt non créé!",
+										JOptionPane.INFORMATION_MESSAGE);
+							}
+
 						} catch (Exception e) {
 							System.out.println("Je ne suis pas un entier");
 							JOptionPane
@@ -182,8 +192,7 @@ public class Inte_Doigt extends JPanel {
 	}
 
 	/**
-	 * Permet de gérer les clics du type "Modifier"	 
-	 * Recupération de la saisie
+	 * Permet de gérer les clics du type "Modifier" Recupération de la saisie
 	 * modification dans la BDD
 	 */
 	public class EcouteurModif implements ActionListener { // Action du modif
@@ -207,7 +216,7 @@ public class Inte_Doigt extends JPanel {
 				if (nb != null) {
 					while (nb.equals("")) {
 						JOptionPane.showMessageDialog(null,
-								"Veuillez entrer un numéro",
+								"Veuillez entrer un numéro positif",
 								"Doigt " + tab.get(i) + " non modifié!",
 								JOptionPane.INFORMATION_MESSAGE);
 						System.out.println("chaîne vide");
@@ -230,18 +239,43 @@ public class Inte_Doigt extends JPanel {
 									"Doigt non modifié!",
 									JOptionPane.INFORMATION_MESSAGE);
 						} else {
-							String requeteSQL = "UPDATE `doigt` SET  `idDoigt` = '"
-									+ nb
-									+ "' WHERE CONCAT(`doigt`.`idDoigt`) = '"
-									+ tab.get(i)
-									+ "' && `idCompetition` = '"
-									+ idc + "'";
-							BDDupdate(requeteSQL);
+							try {
+								Integer.parseInt(nb);
+								System.out.println("C'est un entier");
 
-							JOptionPane.showMessageDialog(null,
-									"Le doigt est maintenant : " + nb, "Doigt "
-											+ tab.get(i) + " modifié!",
-									JOptionPane.INFORMATION_MESSAGE);
+								if (Integer.parseInt(nb) > 0) {
+									String requeteSQL = "UPDATE `doigt` SET  `idDoigt` = '"
+											+ nb
+											+ "' WHERE CONCAT(`doigt`.`idDoigt`) = '"
+											+ tab.get(i)
+											+ "' && `idCompetition` = '"
+											+ idc
+											+ "'";
+									BDDupdate(requeteSQL);
+
+									JOptionPane
+											.showMessageDialog(
+													null,
+													"Le doigt est maintenant : "
+															+ nb,
+													"Doigt " + tab.get(i)
+															+ " modifié!",
+													JOptionPane.INFORMATION_MESSAGE);
+								} else {
+									JOptionPane.showMessageDialog(null,
+											"Ce nombre doit être positif",
+											"Doigt non modifié!",
+											JOptionPane.INFORMATION_MESSAGE);
+								}
+							} catch (Exception e) {
+								System.out.println("Je ne suis pas un entier");
+								JOptionPane
+										.showMessageDialog(
+												null,
+												"Attention entrer un entier positif comme numéro de doigt",
+												"Doigt non modifié!",
+												JOptionPane.WARNING_MESSAGE);
+							}
 						}
 					}
 				}
@@ -250,8 +284,7 @@ public class Inte_Doigt extends JPanel {
 	}
 
 	/**
-	 * Permet de gérer les clics du type "Supprimer"
-	 * suppression dans la BDD
+	 * Permet de gérer les clics du type "Supprimer" suppression dans la BDD
 	 */
 	public class EcouteurSupp implements ActionListener { // Action du supprimer
 
@@ -329,12 +362,19 @@ public class Inte_Doigt extends JPanel {
 			e.printStackTrace();
 		}
 
-		data = ArrayToTab(ArrayData/* , title.length - 1 */);
+		data = ArrayToTab(ArrayData);
 
 		Interface();
 
+		if (data.length == 0) {
+			modif.setEnabled(false);
+			supp.setEnabled(false);
+		} else {
+			modif.setEnabled(true);
+			supp.setEnabled(true);
+		}
+
 		System.out.println("MAJ Table");
-		// return data;
 	}
 
 	/**

@@ -154,14 +154,21 @@ public class Inte_Balise extends JPanel {
 							Integer.parseInt(nb);
 							System.out.println("C'est un entier");
 
-							String requeteSQL = "INSERT INTO `balise` (`idBalise`,`idCompetition`) VALUES ( "
-									+ nb + "," + idc + ")";
-							BDDupdate(requeteSQL);
+							if (Integer.parseInt(nb) > 0) {
+								String requeteSQL = "INSERT INTO `balise` (`idBalise`,`idCompetition`) VALUES ( "
+										+ nb + "," + idc + ")";
+								BDDupdate(requeteSQL);
 
-							JOptionPane.showMessageDialog(null,
-									"La balise est " + nb + ".",
-									"Nouvelle balise !",
-									JOptionPane.INFORMATION_MESSAGE);
+								JOptionPane.showMessageDialog(null,
+										"La balise est " + nb + ".",
+										"Nouvelle balise !",
+										JOptionPane.INFORMATION_MESSAGE);
+							} else {
+								JOptionPane.showMessageDialog(null,
+										"Ce nombre doit être positif",
+										"Balise non créée!",
+										JOptionPane.INFORMATION_MESSAGE);
+							}
 						} catch (Exception e) {
 							System.out.println("Je ne suis pas un entier");
 							JOptionPane
@@ -201,8 +208,8 @@ public class Inte_Balise extends JPanel {
 				if (nb != null) {
 					while (nb.equals("")) {
 						JOptionPane.showMessageDialog(null,
-								"Veuillez entrer un numéro",
-								"Balise " + tab.get(i) + " non modifiée!",
+								"Veuillez entrer un numéro positif", "Balise "
+										+ tab.get(i) + " non modifiée!",
 								JOptionPane.INFORMATION_MESSAGE);
 						nb = JOptionPane.showInputDialog(null,
 								"Donner le numéro de votre balise !",
@@ -221,18 +228,40 @@ public class Inte_Balise extends JPanel {
 									"Balise non modifiée!",
 									JOptionPane.INFORMATION_MESSAGE);
 						} else {
-							String requeteSQL = "UPDATE `balise` SET  `idBalise` = '"
-									+ nb
-									+ "' WHERE CONCAT(`balise`.`idBalise`) = '"
-									+ tab.get(i)
-									+ "' && `idCompetition` = '"
-									+ idc + "'";
-							BDDupdate(requeteSQL);
+							try {
+								Integer.parseInt(nb);
+								System.out.println("C'est un entier");
 
-							JOptionPane.showMessageDialog(null,
-									"La balise est maintenant : " + nb,
-									"Balise " + tab.get(i) + " modifiée!",
-									JOptionPane.INFORMATION_MESSAGE);
+								if (Integer.parseInt(nb) > 0) {
+									String requeteSQL = "UPDATE `balise` SET  `idBalise` = '"
+											+ nb
+											+ "' WHERE CONCAT(`balise`.`idBalise`) = '"
+											+ tab.get(i)
+											+ "' && `idCompetition` = '"
+											+ idc
+											+ "'";
+									BDDupdate(requeteSQL);
+
+									JOptionPane.showMessageDialog(null,
+											"La balise est maintenant : " + nb,
+											"Balise " + tab.get(i)
+													+ " modifiée!",
+											JOptionPane.INFORMATION_MESSAGE);
+								} else {
+									JOptionPane.showMessageDialog(null,
+											"Ce nombre doit être positif",
+											"Balise non modifiée!",
+											JOptionPane.INFORMATION_MESSAGE);
+								}
+							} catch (Exception e) {
+								System.out.println("Je ne suis pas un entier");
+								JOptionPane
+										.showMessageDialog(
+												null,
+												"Attention entrer un entier positif",
+												"Balise non modifiée!",
+												JOptionPane.WARNING_MESSAGE);
+							}
 						}
 					}
 				}
@@ -321,6 +350,14 @@ public class Inte_Balise extends JPanel {
 		data = ArrayToTab(ArrayData);
 
 		Interface();
+
+		if (data.length == 0) {
+			modif.setEnabled(false);
+			supp.setEnabled(false);
+		} else {
+			modif.setEnabled(true);
+			supp.setEnabled(true);
+		}
 
 		System.out.println("MAJ Table");
 	}

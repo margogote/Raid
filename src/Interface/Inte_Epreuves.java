@@ -384,8 +384,15 @@ public class Inte_Epreuves extends JPanel {
 		data = ArrayToTab(ArrayData);
 
 		Interface();
+		
+		if (data.length == 0) {
+			modif.setEnabled(false);
+			supp.setEnabled(false);
+		} else {
+			modif.setEnabled(true);
+			supp.setEnabled(true);
+		}
 
-		System.out.println(data);
 		System.out.println("MAJ Table");
 	}
 

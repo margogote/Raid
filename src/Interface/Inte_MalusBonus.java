@@ -308,6 +308,14 @@ public class Inte_MalusBonus extends JPanel {
 		data = ArrayToTab(ArrayData);
 
 		Interface();
+		
+		if (data.length == 0) {
+			modif.setEnabled(false);
+			supp.setEnabled(false);
+		} else {
+			modif.setEnabled(true);
+			supp.setEnabled(true);
+		}
 
 		System.out.println("MAJ Table equipe");
 	}

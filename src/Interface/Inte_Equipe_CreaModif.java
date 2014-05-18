@@ -211,57 +211,11 @@ public class Inte_Equipe_CreaModif extends JFrame {
 					Integer.parseInt(dossard);
 					System.out.println("C'est un entier");
 
-					try {
-						String requeteSQL0 = "SELECT `dossard` FROM `equipe` WHERE `idCompetition`='"
-								+ idc + "'";
-						Class.forName("com.mysql.jdbc.Driver");
-						System.out.println("Driver O.K.");
-
-						Connection conn = DataSourceProvider.getDataSource()
-								.getConnection();
-						System.out.println("Connexion effective !");
-						Statement stm = conn.createStatement();
-						ResultSet res = stm.executeQuery(requeteSQL0);
-
-						while (res.next()) {
-							if (dossard.equals(res.getString(1))) {
-								flagExiste = 1;
-							}
-							System.out.println("num dossard:! !"
-									+ res.getInt(1));
-							System.out.println("FLAGGGGG : " + flagExiste);
-						}
-
-						conn.close();
-						res.close();
-
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-					if (flagExiste == 1) {
-						JOptionPane.showMessageDialog(null,
-								"Ce dossard existe déjà", "Equipe non créée!",
-								JOptionPane.INFORMATION_MESSAGE);
-					} else {
-						String requeteSQL = "INSERT INTO `equipe` (`idEquipe`, `nomEquipe`, `nomGroupe`, `typeDifficulte`, `typeEquipe`,`dossard`, `idCompetition`) VALUES (NULL, '"
-								+ nom
-								+ "', '"
-								+ groupe
-								+ "', '"
-								+ difficulte
-								+ "', '"
-								+ categorie
-								+ "', '"
-								+ dossard
-								+ "', '" + idc + "')";
-						BDDupdate(requeteSQL);
+					if (Integer.parseInt(dossard) > 0) {
 
 						try {
-							String requeteSQL2 = "SELECT `idEquipe` FROM `equipe` WHERE `nomEquipe`= '"
-									+ nom
-									+ "' && `idCompetition`='"
-									+ idc
-									+ "'";
+							String requeteSQL0 = "SELECT `dossard` FROM `equipe` WHERE `idCompetition`='"
+									+ idc + "'";
 							Class.forName("com.mysql.jdbc.Driver");
 							System.out.println("Driver O.K.");
 
@@ -269,39 +223,96 @@ public class Inte_Equipe_CreaModif extends JFrame {
 									.getDataSource().getConnection();
 							System.out.println("Connexion effective !");
 							Statement stm = conn.createStatement();
-							ResultSet res = stm.executeQuery(requeteSQL2);
+							ResultSet res = stm.executeQuery(requeteSQL0);
 
 							while (res.next()) {
-								idE = res.getInt(1);
-								System.out.println("Num Equipe : "
+								if (dossard.equals(res.getString(1))) {
+									flagExiste = 1;
+								}
+								System.out.println("num dossard:! !"
 										+ res.getInt(1));
+								System.out.println("FLAGGGGG : " + flagExiste);
 							}
 
 							conn.close();
 							res.close();
 
-						} catch (CommunicationsException com) {
-							JOptionPane
-									.showMessageDialog(
-											null,
-											"Pas de connection avec la Base de Données",
-											"Attention",
-											JOptionPane.INFORMATION_MESSAGE);
-
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
+						if (flagExiste == 1) {
+							JOptionPane.showMessageDialog(null,
+									"Ce dossard existe déjà",
+									"Equipe non créée!",
+									JOptionPane.INFORMATION_MESSAGE);
+						} else {
+							String requeteSQL = "INSERT INTO `equipe` (`idEquipe`, `nomEquipe`, `nomGroupe`, `typeDifficulte`, `typeEquipe`,`dossard`, `idCompetition`) VALUES (NULL, '"
+									+ nom
+									+ "', '"
+									+ groupe
+									+ "', '"
+									+ difficulte
+									+ "', '"
+									+ categorie
+									+ "', '"
+									+ dossard + "', '" + idc + "')";
+							BDDupdate(requeteSQL);
 
-						String requeteSQL3 = "INSERT INTO `posséder` (`idDoigt`, `idEquipe`, `dateHeureAttribution`,`idCompetition`) VALUES ('"
-								+ doigt
-								+ "', '"
-								+ idE
-								+ "', NULL,'"
-								+ idc
-								+ "')";
-						BDDupdate(requeteSQL3);
+							try {
+								String requeteSQL2 = "SELECT `idEquipe` FROM `equipe` WHERE `nomEquipe`= '"
+										+ nom
+										+ "' && `idCompetition`='"
+										+ idc
+										+ "'";
+								Class.forName("com.mysql.jdbc.Driver");
+								System.out.println("Driver O.K.");
 
-						thePanel.dispose();
+								Connection conn = DataSourceProvider
+										.getDataSource().getConnection();
+								System.out.println("Connexion effective !");
+								Statement stm = conn.createStatement();
+								ResultSet res = stm.executeQuery(requeteSQL2);
+
+								while (res.next()) {
+									idE = res.getInt(1);
+									System.out.println("Num Equipe : "
+											+ res.getInt(1));
+								}
+
+								conn.close();
+								res.close();
+
+							} catch (CommunicationsException com) {
+								JOptionPane
+										.showMessageDialog(
+												null,
+												"Pas de connection avec la Base de Données",
+												"Attention",
+												JOptionPane.INFORMATION_MESSAGE);
+
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+
+							String requeteSQL3 = "INSERT INTO `posséder` (`idDoigt`, `idEquipe`, `dateHeureAttribution`,`idCompetition`) VALUES ('"
+									+ doigt
+									+ "', '"
+									+ idE
+									+ "', NULL,'"
+									+ idc
+									+ "')";
+							BDDupdate(requeteSQL3);
+
+							thePanel.dispose();
+						}
+					} else {
+						JOptionPane
+								.showMessageDialog(
+										null,
+										"Le dossard doit être un nombre entier positif",
+										"Equipe non créée!",
+										JOptionPane.INFORMATION_MESSAGE);
+
 					}
 				} catch (Exception e) {
 					System.out.println("Je ne suis pas un entier");
@@ -347,32 +358,43 @@ public class Inte_Equipe_CreaModif extends JFrame {
 					try {
 						Integer.parseInt(dossard);
 						System.out.println("C'est un entier");
-						String requeteSQL = "UPDATE `equipe` SET `nomEquipe` = '"
-								+ nom
-								+ "',`nomGroupe` = '"
-								+ groupe
-								+ "', `typeDifficulte`='"
-								+ difficulte
-								+ "', `typeEquipe`='"
-								+ categorie
-								+ "',`dossard`=  '"
-								+ dossard
-								+ "' WHERE idEquipe = '"
-								+ modif
-								+ "' && `idCompetition`='" + idc + "'";
 
-						BDDupdate(requeteSQL);
+						if (Integer.parseInt(dossard) > 0) {
+							String requeteSQL = "UPDATE `equipe` SET `nomEquipe` = '"
+									+ nom
+									+ "',`nomGroupe` = '"
+									+ groupe
+									+ "', `typeDifficulte`='"
+									+ difficulte
+									+ "', `typeEquipe`='"
+									+ categorie
+									+ "',`dossard`=  '"
+									+ dossard
+									+ "' WHERE idEquipe = '"
+									+ modif
+									+ "' && `idCompetition`='" + idc + "'";
 
-						String requeteSQL3 = "UPDATE `posséder` SET `idDoigt` = '"
-								+ doigt
-								+ "', `dateHeureAttribution`= NULL WHERE idEquipe = '"
-								+ modif + "' && `idCompetition`='" + idc + "'";
-						BDDupdate(requeteSQL3);
+							BDDupdate(requeteSQL);
 
-						thePanel.dispose();
-					}
+							String requeteSQL3 = "UPDATE `posséder` SET `idDoigt` = '"
+									+ doigt
+									+ "', `dateHeureAttribution`= NULL WHERE idEquipe = '"
+									+ modif
+									+ "' && `idCompetition`='"
+									+ idc
+									+ "'";
+							BDDupdate(requeteSQL3);
 
-					catch (Exception e) {
+							thePanel.dispose();
+						} else {
+							JOptionPane
+									.showMessageDialog(
+											null,
+											"Le dossard doit être un nombre entier positif",
+											"Equipe non créée!",
+											JOptionPane.INFORMATION_MESSAGE);
+						}
+					} catch (Exception e) {
 						System.out.println("Je ne suis pas un entier");
 						JOptionPane
 								.showMessageDialog(

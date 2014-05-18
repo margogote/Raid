@@ -19,6 +19,7 @@ import javax.swing.JPanel;
 import BDD.DataSourceProvider;
 
 import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
+import com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException;
 
 /**
  * Splash page d'accueil : permet le choix de la competition, permet aussi d'en
@@ -29,9 +30,7 @@ import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
  */
 public class Inte_Accueil {
 
-	JFrame fen = new JFrame();
-
-	private static final long serialVersionUID = 1L;
+	private JFrame fen = new JFrame();
 
 	/* --- Panels */
 	private JPanel panMega = new JPanel(); // Panel qui contient tous
@@ -44,7 +43,6 @@ public class Inte_Accueil {
 	private JButton suppCompet = new JButton("Supprimer la compétition");
 	private JButton creerCompet = new JButton("Créer une compétition");
 	private JButton quitter = new JButton("Quitter");
-	private JButton bdd = new JButton("Créer la Base de données");
 
 	private JComboBox<Object> compets = new JComboBox<Object>();
 
@@ -52,8 +50,7 @@ public class Inte_Accueil {
 			"Bienvenu(e) sur Raidzultats, l'application qui permet de gérer le classement d'un Raid");
 
 	/**
-	 * Classe principale
-	 * Permet la mise en place de l'interface
+	 * Classe principale Permet la mise en place de l'interface
 	 */
 	public Inte_Accueil() {
 
@@ -71,7 +68,6 @@ public class Inte_Accueil {
 		suppCompet.setPreferredSize(new Dimension(200, 30));
 		creerCompet.setPreferredSize(new Dimension(200, 30));
 		quitter.setPreferredSize(new Dimension(200, 30));
-		bdd.setPreferredSize(new Dimension(200, 30));
 
 		JPanel panCompet = new JPanel();
 		JPanel panBoutEntrer = new JPanel();
@@ -79,7 +75,6 @@ public class Inte_Accueil {
 		JPanel panBoutSupp = new JPanel();
 		JPanel panBoutCreer = new JPanel();
 		JPanel panBoutQ = new JPanel();
-		JPanel panBoutBDD = new JPanel();
 
 		panCompet.add(compets);
 		panBoutEntrer.add(entrerCompet);
@@ -87,7 +82,6 @@ public class Inte_Accueil {
 		panBoutSupp.add(suppCompet);
 		panBoutCreer.add(creerCompet);
 		panBoutQ.add(quitter);
-		panBoutBDD.add(bdd);
 
 		panBoutonsListe.setLayout(new BoxLayout(panBoutonsListe,
 				BoxLayout.PAGE_AXIS));
@@ -98,7 +92,6 @@ public class Inte_Accueil {
 		panBoutonsListe.add(panBoutModif);
 		panBoutonsListe.add(panBoutSupp);
 		panBoutonsListe.add(panBoutQ);
-		panBoutonsListe.add(panBoutBDD);
 
 		panAccueil.setLayout(new BoxLayout(panAccueil, BoxLayout.PAGE_AXIS));
 		panAccueil.setLayout(new BorderLayout());
@@ -127,7 +120,6 @@ public class Inte_Accueil {
 
 		EcouteurQ ecoutQ = new EcouteurQ();
 		quitter.addActionListener(ecoutQ);
-
 	}
 
 	/**
@@ -226,6 +218,7 @@ public class Inte_Accueil {
 							JOptionPane.INFORMATION_MESSAGE);
 
 					updateCombo(compets);
+					compets.setSelectedItem(nom);
 				}
 			}
 		}
@@ -267,8 +260,7 @@ public class Inte_Accueil {
 	}
 
 	/**
-	 * Permet de gérer les clics du type "Quitter"
-	 * Ferme la fenêtre
+	 * Permet de gérer les clics du type "Quitter" Ferme la fenêtre
 	 */
 	public class EcouteurQ implements ActionListener { // Action du quitter
 
@@ -317,12 +309,24 @@ public class Inte_Accueil {
 			res.close();
 
 		} catch (CommunicationsException com) {
-			JOptionPane.showMessageDialog(null,
-					"Pas de connection avec la Base de Données/n Si c'est votre première venue, veuillez cliquer sur [Création de la base de données]", "Attention",
-					JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane
+					.showMessageDialog(
+							null,
+							"Pas de connection avec la Base de Données\n Veuillez vérifier que EasyPHP fonctionne bien puis redémarrez Raidzultats",
+							"Attention", JOptionPane.INFORMATION_MESSAGE);
 			creerCompet.setEnabled(false);
 
-		} catch (Exception e) {
+		} catch (MySQLSyntaxErrorException sql) {
+			JOptionPane
+					.showMessageDialog(
+							null,
+							"Base de Données non créée \nSi c'est votre première venue, veuillez vous référer au manuel utilisateur pour sa création",
+							"Attention", JOptionPane.INFORMATION_MESSAGE);
+			creerCompet.setEnabled(false);
+
+		}
+
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 
