@@ -155,7 +155,7 @@ public class Inte_MalusBonus_CreaModif extends JFrame {
 						"Malus/Bonus non créée!", JOptionPane.WARNING_MESSAGE);
 
 			} else if (modif == -1) {
-				String requeteSQL = "INSERT INTO `raidzultat`.`malusbonus` (`nomMalusBonus`, `malus`, `tempsMalusBonus`, `idCompetition`) VALUES ('"
+				String requeteSQL = "INSERT INTO `malusbonus` (`nomMalusBonus`, `malus`, `tempsMalusBonus`, `idCompetition`) VALUES ('"
 						+ nom
 						+ "', '"
 						+ type
@@ -168,7 +168,7 @@ public class Inte_MalusBonus_CreaModif extends JFrame {
 
 				thePanel.dispose();
 			} else {
-				String requeteSQL = "UPDATE`raidzultat`.`malusbonus` SET `nomMalusBonus` = '"
+				String requeteSQL = "UPDATE `malusbonus` SET `nomMalusBonus` = '"
 						+ nom
 						+ "',`malus` = '"
 						+ type

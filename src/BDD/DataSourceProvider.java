@@ -25,7 +25,7 @@ public class DataSourceProvider {
 			dataSource = new MysqlDataSource();
 			dataSource.setServerName("localhost");
 			dataSource.setPort(3306);
-			dataSource.setDatabaseName("raidzultat");
+			dataSource.setDatabaseName("raidzultats");
 			dataSource.setUser("root");
 			dataSource.setPassword("root");
 		}

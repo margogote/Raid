@@ -21,6 +21,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
 import BDD.DataSourceProvider;
+import Interface.Inte_Acquisition_Crea.EcouteurQ;
 import Models.TabModel;
 
 import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
@@ -39,12 +40,14 @@ public class Inte_Acquisition extends JFrame {
 	private JPanel panBoutModif = new JPanel();
 
 	private JPanel panBoutAcq = new JPanel();
+	private JPanel panBoutQ = new JPanel();
 
 	/* Boutons */
 	private JButton modif = new JButton("Modifier");
 	private JButton supp = new JButton("Supprimer");
 	private JButton creer = new JButton("Créer");
 	private JButton acqA = new JButton("Acquisition Auto");
+	private JButton quit = new JButton("J'ai fini !");
 
 	/* Tableau */
 	private TabModel tabModel;
@@ -54,7 +57,7 @@ public class Inte_Acquisition extends JFrame {
 			"Heure pointage", "Balise" };
 
 	int idc;
-	int ide;
+	int idep;
 	String nomEp;
 
 	/**
@@ -71,8 +74,8 @@ public class Inte_Acquisition extends JFrame {
 
 		theFrame = this;
 		idc = idC;
-		ide = idEpreuve;
-		nomEp=nomEpreuve;
+		idep = idEpreuve;
+		nomEp = nomEpreuve;
 
 		updateTable();
 
@@ -87,13 +90,16 @@ public class Inte_Acquisition extends JFrame {
 
 		EcouteurA ecoutA = new EcouteurA();
 		acqA.addActionListener(ecoutA);
+
+		EcouteurQ ecoutQ = new EcouteurQ();
+		quit.addActionListener(ecoutQ);
 	}
 
 	/**
 	 * Fonction gérant l'interface du panel
 	 */
 	public void Interface() {
-		theFrame.setTitle("Raidzultats - Acquisition - "+nomEp); // titre
+		theFrame.setTitle("Raidzultats - Acquisition - " + nomEp); // titre
 		theFrame.setSize(800, 550); // taille de la fenetre
 		theFrame.setLocationRelativeTo(null); // centre la fenetre
 		theFrame.setResizable(false);
@@ -107,11 +113,13 @@ public class Inte_Acquisition extends JFrame {
 		creer.setPreferredSize(new Dimension(100, 30));
 		supp.setPreferredSize(new Dimension(100, 30));
 		acqA.setPreferredSize(new Dimension(140, 50));
+		quit.setPreferredSize(new Dimension(140, 50));
 
 		panBoutAcq.add(acqA);
 		panBoutCreer.add(creer);
 		panBoutSupp.add(supp);
 		panBoutModif.add(modif);
+		panBoutQ.add(quit);
 
 		panBoutonsListe.setLayout(new BoxLayout(panBoutonsListe,
 				BoxLayout.PAGE_AXIS));
@@ -119,6 +127,7 @@ public class Inte_Acquisition extends JFrame {
 		panBoutonsListe.add(panBoutCreer);
 		panBoutonsListe.add(panBoutModif);
 		panBoutonsListe.add(panBoutSupp);
+		panBoutonsListe.add(panBoutQ);
 
 		// Nous ajoutons notre tableau à notre contentPane dans un scroll
 		// Sinon les titres des colonnes ne s'afficheront pas !
@@ -135,8 +144,8 @@ public class Inte_Acquisition extends JFrame {
 		panMega.setBorder(BorderFactory
 				.createTitledBorder("Ici vous pouvez gérer les acquisitions pour cette epreuve"));
 		panMega.setLayout(new BoxLayout(panMega, BoxLayout.PAGE_AXIS));
-		// panMega.add(acqA);
 		panMega.add(panTitre);
+		panMega.add(panBoutQ);
 
 		theFrame.add(panMega);
 
@@ -153,7 +162,7 @@ public class Inte_Acquisition extends JFrame {
 		public void actionPerformed(ActionEvent arg0) {
 
 			Inte_Acquisition_Crea formulaire = new Inte_Acquisition_Crea(idc,
-					ide);
+					idep);
 			formulaire.addWindowListener(this);
 		}
 
@@ -196,19 +205,20 @@ public class Inte_Acquisition extends JFrame {
 																			// modif
 		public void actionPerformed(ActionEvent arg0) {
 			int flagExiste = 0;
-			int[] tab = getIndexSelectTab(data);
+			int[][] tab = getIndexSelectTab(data);
 
-			if (tab.length == 0) {
+			if (tab[0].length == 0) {
 				JOptionPane.showMessageDialog(null, "Veuillez cochez une case",
-						"Pas d'équipe à modifier!",
+						"Pas d'acquisition à modifier!",
 						JOptionPane.INFORMATION_MESSAGE);
-			}
-			for (int i = 0; i < tab.length; i++) {
+			} else {
+				for (int i = 0; i < tab.length; i++) {
 
-				Inte_Equipe_CreaModif formulaire = new Inte_Equipe_CreaModif(
-						idc, tab[i]);
+					Inte_Acquisition_Modif formulaire = new Inte_Acquisition_Modif(
+							idc, idep, tab[i][0], tab[i][1]);
 
-				formulaire.addWindowListener(this);
+					formulaire.addWindowListener(this);
+				}
 			}
 		}
 
@@ -252,31 +262,41 @@ public class Inte_Acquisition extends JFrame {
 			// on prend le num de la compet , on le stock
 			// on demande confirmation, si oui on la supprime
 
-			int[] tab = getIndexSelectTab(data);
+			int[][] tab = getIndexSelectTab(data);
 			int rep = 0;
 
-			if (tab.length == 0) {
+			if (tab[0].length == 0) {
 				JOptionPane.showMessageDialog(null, "Veuillez cochez une case",
-						"Pas d'équipe à supprimer!",
+						"Pas d'acquisition à supprimer!",
 						JOptionPane.INFORMATION_MESSAGE);
-			}
+			} else {
+				for (int i = 0; i < tab.length; i++) {
+					rep = JOptionPane.showConfirmDialog(null,
+							"Voulez vous vraiment supprimer l'acquisition "
+									+ tab[i][0] + " ?", "Attention",
+							JOptionPane.YES_NO_OPTION);
 
-			for (int i = 0; i < tab.length; i++) {
-				rep = JOptionPane.showConfirmDialog(null,
-						"Voulez vous vraiment supprimer l'équipe " + tab[i]
-								+ " ?", "Attention", JOptionPane.YES_NO_OPTION);
+					if (rep == 0) {
+						String requeteSQL = "DELETE FROM `pointer` WHERE CONCAT(`pointer`.`idBalise`) ='"
+								+ tab[i][1]
+								+ "' AND `pointer`.`idEpreuve` = '"
+								+ idep
+								+ "' AND CONCAT(`pointer`.`idDoigt`) = (SELECT `idDoigt` FROM `posséder` WHERE `idEquipe`='"
+								+ tab[i][0]
+								+ "')  AND `pointer`.`idCompetition` = '"
+								+ idc
+								+ "'";
 
-				if (rep == 0) {
-					String requeteSQL = "DELETE FROM `raidzultat`.`equipe` WHERE CONCAT(`equipe`.`idEquipe`) = '"
-							+ tab[i] + "' && `idCompetition` = '" + idc + "'";
-					BDDupdate(requeteSQL);
+						BDDupdate(requeteSQL);
 
-					JOptionPane.showMessageDialog(null,
-							"L'équipe est maintenant supprimée", "Equipe "
-									+ tab[i] + " Supprimée!",
-							JOptionPane.INFORMATION_MESSAGE);
+						JOptionPane.showMessageDialog(null,
+								"L'acquisition est maintenant supprimée",
+								"Acquisition " + tab[i][0] + " Supprimée!",
+								JOptionPane.INFORMATION_MESSAGE);
 
-					System.out.println("Equipe " + tab[i] + " Supprimée");
+						System.out.println("Acquisition " + tab[i][0]
+								+ " Supprimée");
+					}
 				}
 			}
 		}
@@ -303,17 +323,13 @@ public class Inte_Acquisition extends JFrame {
 
 		ArrayList<Object[]> ArrayData = new ArrayList<>();
 
-		// String requeteSQL =
-		// "SELECT equipe.`idEquipe`, equipe.`nomEquipe`, equipe.`nomGroupe`, equipe.`typeDifficulte`, equipe.`typeEquipe`, equipe.`dossard`, posséder.`idDoigt` FROM equipe INNER JOIN posséder ON equipe.`idEquipe`=posséder.`idEquipe` WHERE equipe.`idCompetition` = '"
-		// + idc + "' && posséder.`idCompetition` = '" + idc + "'";
-
-		String requeteSQL = "SELECT `equipe`.nomEquipe, `equipe`.dossard, `pointer`.`dateHeurePointage`, `pointer`.`idBalise` FROM `pointer` INNER JOIN (`posséder` INNER JOIN `equipe` ON `posséder`.idEquipe = `equipe`.idEquipe) ON `pointer`.`idDoigt` = `posséder`.`idDoigt` WHERE `pointer`.`idCompetition` = '"
+		String requeteSQL = "SELECT `equipe`.idEquipe, `equipe`.nomEquipe, `equipe`.dossard, `pointer`.`dateHeurePointage`, `pointer`.`idBalise` FROM `pointer` INNER JOIN (`posséder` INNER JOIN `equipe` ON `posséder`.idEquipe = `equipe`.idEquipe) ON `pointer`.`idDoigt` = `posséder`.`idDoigt` WHERE `pointer`.`idCompetition` = '"
 				+ idc
 				+ "'&& `equipe`.`idCompetition` = '"
 				+ idc
 				+ "' && `posséder`.`idCompetition` = '"
 				+ idc
-				+ "' && `pointer`.`idEpreuve`='" + ide + "'";
+				+ "' && `pointer`.`idEpreuve`='" + idep + "'";
 		int i = 1;
 
 		try {
@@ -326,12 +342,12 @@ public class Inte_Acquisition extends JFrame {
 			Statement stm = conn.createStatement();
 			ResultSet res = stm.executeQuery(requeteSQL);
 			while (res.next()) {
-				ArrayData.add(new Object[] { new Boolean(false), i,
-						res.getString(1), res.getInt(2), res.getString(3),
-						res.getInt(4) });
-				System.out.println(" nom : " + res.getString(1) + " dossard : "
-						+ res.getInt(2) + " tps : " + res.getString(3)
-						+ " balise : " + res.getInt(4));
+				ArrayData.add(new Object[] { new Boolean(false), res.getInt(1),
+						res.getString(2), res.getInt(3), res.getString(4),
+						res.getInt(5) });
+				System.out.println(" nom : " + res.getString(2) + " dossard : "
+						+ res.getInt(3) + " tps : " + res.getString(4)
+						+ " balise : " + res.getInt(5));
 				i++;
 			}
 
@@ -352,6 +368,17 @@ public class Inte_Acquisition extends JFrame {
 		Interface();
 
 		System.out.println("MAJ Table equipe");
+	}
+
+	/**
+	 * Permet de gérer les clics du type "Quitter" Ferme la fenêtre
+	 */
+	public class EcouteurQ implements ActionListener { // Action du quitter
+
+		public void actionPerformed(ActionEvent arg0) {
+
+			theFrame.dispose();
+		}
 	}
 
 	/**
@@ -390,8 +417,8 @@ public class Inte_Acquisition extends JFrame {
 	 *         ligne cochée
 	 * 
 	 */
-	public int[] getIndexSelectTab(Object[][] table) {
-		ArrayList<Integer> ArrayDataSelect = new ArrayList<Integer>();
+	public int[][] getIndexSelectTab(Object[][] table) {
+		ArrayList<Integer[]> ArrayDataSelect = new ArrayList<Integer[]>();
 		int lig = table.length;
 		int col;
 
@@ -407,15 +434,20 @@ public class Inte_Acquisition extends JFrame {
 		for (int i = 0; i < lig; i++) {
 			if ((boolean) table[i][0] == (true)) {
 				System.out.println(ArrayDataSelect);
-				ArrayDataSelect.add((Integer) table[i][1]);
+				ArrayDataSelect.add(new Integer[] { (int) table[i][1],
+						(int) table[i][5] });
 			}
 
 		}
 
+		int[][] tab = { {} };
 		System.out.println(ArrayDataSelect);
-		int[] tab = new int[ArrayDataSelect.size()];
-		for (int i = 0; i < ArrayDataSelect.size(); i++) {
-			tab[i] = ArrayDataSelect.get(i);
+		if (ArrayDataSelect.size() != 0) {
+			tab = new int[ArrayDataSelect.size()][ArrayDataSelect.get(0).length];
+			for (int i = 0; i < ArrayDataSelect.size(); i++) {
+				tab[i][0] = ArrayDataSelect.get(i)[0];
+				tab[i][1] = ArrayDataSelect.get(i)[1];
+			}
 		}
 
 		return tab;

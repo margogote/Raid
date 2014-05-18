@@ -253,7 +253,7 @@ public class Inte_Equipe extends JPanel {
 								+ " ?", "Attention", JOptionPane.YES_NO_OPTION);
 
 				if (rep == 0) {
-					String requeteSQL = "DELETE FROM `raidzultat`.`equipe` WHERE CONCAT(`equipe`.`idEquipe`) = '"
+					String requeteSQL = "DELETE FROM `equipe` WHERE CONCAT(`equipe`.`idEquipe`) = '"
 							+ tab[i] + "' && `idCompetition` = '" + idc + "'";
 					BDDupdate(requeteSQL);
 

@@ -19,6 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 
 import BDD.DataSourceProvider;
 import Interface.Inte_Epreuve_Modif.EcouteurPlus;
@@ -53,7 +54,7 @@ public class Inte_Resultat extends JPanel {
 	private JLabel diffL = new JLabel("Difficulté");
 	private JLabel grpL = new JLabel("Groupe");
 	private JLabel catL = new JLabel("Catégorie");
-	private JLabel jourL = new JLabel("Date...");
+	private JTextField jourL= new JTextField("AAAA-MM-JJ hh:mm:ss");
 
 	/* Boutons */
 	private JButton print = new JButton("Imprimer");

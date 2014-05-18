@@ -44,6 +44,7 @@ public class Inte_Accueil {
 	private JButton suppCompet = new JButton("Supprimer la compétition");
 	private JButton creerCompet = new JButton("Créer une compétition");
 	private JButton quitter = new JButton("Quitter");
+	private JButton bdd = new JButton("Créer la Base de données");
 
 	private JComboBox<Object> compets = new JComboBox<Object>();
 
@@ -70,6 +71,7 @@ public class Inte_Accueil {
 		suppCompet.setPreferredSize(new Dimension(200, 30));
 		creerCompet.setPreferredSize(new Dimension(200, 30));
 		quitter.setPreferredSize(new Dimension(200, 30));
+		bdd.setPreferredSize(new Dimension(200, 30));
 
 		JPanel panCompet = new JPanel();
 		JPanel panBoutEntrer = new JPanel();
@@ -77,6 +79,7 @@ public class Inte_Accueil {
 		JPanel panBoutSupp = new JPanel();
 		JPanel panBoutCreer = new JPanel();
 		JPanel panBoutQ = new JPanel();
+		JPanel panBoutBDD = new JPanel();
 
 		panCompet.add(compets);
 		panBoutEntrer.add(entrerCompet);
@@ -84,6 +87,7 @@ public class Inte_Accueil {
 		panBoutSupp.add(suppCompet);
 		panBoutCreer.add(creerCompet);
 		panBoutQ.add(quitter);
+		panBoutBDD.add(bdd);
 
 		panBoutonsListe.setLayout(new BoxLayout(panBoutonsListe,
 				BoxLayout.PAGE_AXIS));
@@ -94,6 +98,7 @@ public class Inte_Accueil {
 		panBoutonsListe.add(panBoutModif);
 		panBoutonsListe.add(panBoutSupp);
 		panBoutonsListe.add(panBoutQ);
+		panBoutonsListe.add(panBoutBDD);
 
 		panAccueil.setLayout(new BoxLayout(panAccueil, BoxLayout.PAGE_AXIS));
 		panAccueil.setLayout(new BorderLayout());
@@ -208,7 +213,7 @@ public class Inte_Accueil {
 							JOptionPane.QUESTION_MESSAGE);
 				}
 				if (!nom.equals("")) {
-					String requeteSQL = "UPDATE `raidzultat`.`competition` SET `nomCompetition` = '"
+					String requeteSQL = "UPDATE `competition` SET `nomCompetition` = '"
 							+ nom
 							+ "' WHERE `nomCompetition` = '"
 							+ nomAv
@@ -246,7 +251,7 @@ public class Inte_Accueil {
 							+ " ?", "Attention", JOptionPane.YES_NO_OPTION);
 
 			if (rep == 0) {
-				String requeteSQL = "DELETE FROM `raidzultat`.`competition` WHERE `competition`.`nomCompetition` = '"
+				String requeteSQL = "DELETE FROM `competition` WHERE `competition`.`nomCompetition` = '"
 						+ nom + "'";
 				BDDupdate(requeteSQL);
 
@@ -313,8 +318,9 @@ public class Inte_Accueil {
 
 		} catch (CommunicationsException com) {
 			JOptionPane.showMessageDialog(null,
-					"Pas de connection avec la Base de Données", "Attention",
+					"Pas de connection avec la Base de Données/n Si c'est votre première venue, veuillez cliquer sur [Création de la base de données]", "Attention",
 					JOptionPane.INFORMATION_MESSAGE);
+			creerCompet.setEnabled(false);
 
 		} catch (Exception e) {
 			e.printStackTrace();

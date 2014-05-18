@@ -37,11 +37,12 @@ import Models.TabModel;
  */
 public class Inte_Acquisition_Crea extends JFrame {
 
-	JFrame thePanel = new JFrame();
+	private JFrame theFrame = new JFrame();
 
 	/* Champs */
 	private JLabel nomL = new JLabel("Nom de l'équipe");
 	private JComboBox<Object> nomC = new JComboBox<Object>();
+	private ArrayList<Integer> nomLis = new ArrayList<>();
 
 	private JLabel dateL = new JLabel("Date et heure de pointage");
 	private JTextField dateT = new JTextField("AAAA-MM-JJ hh:mm:ss");
@@ -63,15 +64,18 @@ public class Inte_Acquisition_Crea extends JFrame {
 	private JPanel panBoutModif = new JPanel();
 
 	private JPanel panTitre = new JPanel();
+	private JPanel panPan = new JPanel();
+	private JPanel ultraP = new JPanel();
 
 	/* Tableau */
 	private TabModel tabModel;
 	private JTable tableau;
 	private Object[][] data = {};
-	private String title[] = { "", "idBalise", "Type", "Valeur" };
+	private String title[] = { "", "id", "Nom Malus/Bonus", "Type", "Temps" };
 
 	private int idc;
-	private int ide;
+	private int idep;
+	private int ideq;
 
 	/**
 	 * Classe principale
@@ -82,11 +86,26 @@ public class Inte_Acquisition_Crea extends JFrame {
 	 *            , l'id de l' épreuve étudiée
 	 */
 	public Inte_Acquisition_Crea(int idC, int idEpreuve) {
+		theFrame = this;
 		idc = idC;
-		ide = idEpreuve;
+		idep = idEpreuve;
 
 		InterfaceAcq();
 
+		EcouteurOKAcq ecoutOK = new EcouteurOKAcq();
+		oK.addActionListener(ecoutOK);
+
+		EcouteurQ ecoutQ = new EcouteurQ();
+		annuler.addActionListener(ecoutQ);
+
+		EcouteurOKMB ecoutOKMB = new EcouteurOKMB();
+		oK2.addActionListener(ecoutOKMB);
+
+		EcouteurPlus plus = new EcouteurPlus();
+		creer.addActionListener(plus);
+
+		EcouteurMoins moins = new EcouteurMoins();
+		supp.addActionListener(moins);
 	}
 
 	/**
@@ -94,12 +113,12 @@ public class Inte_Acquisition_Crea extends JFrame {
 	 * l'epreuve
 	 */
 	public void InterfaceAcq() {
-		System.out.println("InterfaceEp");
-		thePanel.setTitle("Raidzultats - Ajout d'acquisition");
-		thePanel.setSize(450, 220);
-		thePanel.setLocationRelativeTo(null);
-		// centre la fenetre thePanel.setResizable(false);
-		thePanel.setLayout(new BorderLayout()); // Pour les placements
+		System.out.println("InterfaceAcq");
+		theFrame.setTitle("Raidzultats - Ajout d'acquisition");
+		theFrame.setSize(450, 220);
+		theFrame.setLocationRelativeTo(null);
+		// centre la fenetre theFrame.setResizable(false);
+		theFrame.setLayout(new BorderLayout()); // Pour les placements
 
 		oK.setPreferredSize(new Dimension(100, 30));
 		annuler.setPreferredSize(new Dimension(100, 30));
@@ -108,12 +127,12 @@ public class Inte_Acquisition_Crea extends JFrame {
 		btnP.add(oK);
 		btnP.add(annuler);
 
-		String requeteBalise = "SELECT idBalise FROM `valoir` WHERE `idCompetition` = '"
-				+ idc + "' && `idEpreuve`='" + ide + "'";
-		String requeteNom = "SELECT nomEquipe FROM `equipe` WHERE `idCompetition` = '"
+		String requeteBalise = "SELECT idBalise, idBalise FROM `valoir` WHERE `idCompetition` = '"
+				+ idc + "' && `idEpreuve`='" + idep + "'";
+		String requeteNom = "SELECT nomEquipe, idEquipe FROM `equipe` WHERE `idCompetition` = '"
 				+ idc + "'";
 		updateCombo(baliseC, requeteBalise);
-		updateCombo(nomC, requeteNom);
+		nomLis = updateCombo(nomC, requeteNom);
 
 		JPanel megaP = new JPanel();
 		megaP.setPreferredSize(new Dimension(400, 100));
@@ -132,18 +151,11 @@ public class Inte_Acquisition_Crea extends JFrame {
 		gigaP.add(megaP);
 		gigaP.add(btnP);
 
-		JPanel panPan = new JPanel();
 		panPan.add(gigaP);
 
-		thePanel.add(panPan);
+		theFrame.add(panPan);
 
-		thePanel.setVisible(true);
-
-		EcouteurOKAcq ecoutOK = new EcouteurOKAcq();
-		oK.addActionListener(ecoutOK);
-
-		EcouteurQ ecoutQ = new EcouteurQ();
-		annuler.addActionListener(ecoutQ);
+		theFrame.setVisible(true);
 	}
 
 	/**
@@ -151,14 +163,16 @@ public class Inte_Acquisition_Crea extends JFrame {
 	 * balises dans l'epreuve
 	 */
 	public void InterfaceMB() {
-		System.out.println("InterfaceBa");
-		thePanel.setTitle("Raidzultats Attribution de Malus ou Bonus");
-		thePanel.setSize(500, 500);
+		System.out.println("InterfaceMB");
+		theFrame.setTitle("Raidzultats Attribution de Malus ou Bonus");
+		theFrame.setLocationRelativeTo(null);
+		theFrame.setSize(500, 500);
 
+		ultraP.removeAll();
 		panTitre.removeAll();
+		panPan.removeAll();
 
 		oK2.setPreferredSize(new Dimension(100, 30));
-
 		creer.setPreferredSize(new Dimension(50, 30));
 		supp.setPreferredSize(new Dimension(50, 30));
 
@@ -168,7 +182,7 @@ public class Inte_Acquisition_Crea extends JFrame {
 		panBoutonsListe.setLayout(new BoxLayout(panBoutonsListe,
 				BoxLayout.PAGE_AXIS));
 		panBoutonsListe.add(panBoutCreer);
-		panBoutonsListe.add(panBoutModif);
+		// panBoutonsListe.add(panBoutModif);
 		panBoutonsListe.add(panBoutSupp);
 
 		// Nous ajoutons notre tableau à notre contentPane dans un scroll
@@ -189,30 +203,20 @@ public class Inte_Acquisition_Crea extends JFrame {
 		btnP.add(oK2);
 		btnP.add(annuler);
 
-		JPanel ultraP = new JPanel();
+		// JPanel ultraP = new JPanel();
 		ultraP.setLayout(new BoxLayout(ultraP, BoxLayout.PAGE_AXIS));
 		ultraP.add(panTitre);
 		ultraP.add(btnP);
 
-		JPanel panPan = new JPanel();
+		// JPanel panPan = new JPanel();
 		panPan.add(ultraP);
 
 		System.out.println("panpan");
-		thePanel.add(panPan);
+		theFrame.add(panPan);
 
-		thePanel.setContentPane(ultraP);
-		thePanel.revalidate();
-		thePanel.repaint();
-		thePanel.setVisible(true);
-
-		EcouteurOKMB ecoutOKMB = new EcouteurOKMB();
-		oK2.addActionListener(ecoutOKMB);
-
-		EcouteurPlus plus = new EcouteurPlus();
-		creer.addActionListener(plus);
-
-		EcouteurMoins moins = new EcouteurMoins();
-		supp.addActionListener(moins);
+		theFrame.revalidate();
+		theFrame.repaint();
+		theFrame.setVisible(true);
 	}
 
 	/**
@@ -222,45 +226,64 @@ public class Inte_Acquisition_Crea extends JFrame {
 	public class EcouteurOKAcq implements ActionListener { // Action du quitter
 
 		public void actionPerformed(ActionEvent arg0) {
-			System.out.println("Ok Ep");
+			System.out.println("Ok Acq");
 
 			String nom = (String) nomC.getSelectedItem();
 			String date = (String) dateT.getText();
 			String balise = (String) baliseC.getSelectedItem();
-			int idEquipe = -1;
 
-			updateTable();
-			/*
-			 * String requeteSQL =
-			 * "INSERT INTO `epreuve` (`nomEpreuve`, `typeEpreuve`, `difficulte`, `dateHeureEpreuve`, `dureeEpreuve`, `idCompetition`) VALUES ('"
-			 * + nom + "', '" + type + "', '" + difficulte + "', '" + date +
-			 * "', '" + duree + "', '" + idc + "')";
-			 * System.out.println(requeteSQL); BDDupdate(requeteSQL);
-			 * 
-			 * String requeteSQL2 =
-			 * "SELECT `epreuve`.`idEpreuve`  FROM `epreuve` WHERE `nomEpreuve` = '"
-			 * + nom + "'&& `typeEpreuve` = '" + type + "'&& `difficulte`='" +
-			 * difficulte + "'&& `dateHeureEpreuve`='" + date +
-			 * "'&& `dureeEpreuve`=  '" + duree + "'&& `idCompetition`='" + idc
-			 * + "'"; System.out.println(requeteSQL2);
-			 * 
-			 * try { Class.forName("com.mysql.jdbc.Driver");
-			 * System.out.println("Driver O.K.");
-			 * 
-			 * Connection conn = DataSourceProvider.getDataSource()
-			 * .getConnection(); System.out.println("Connexion effective !");
-			 * Statement stm = conn.createStatement(); ResultSet res =
-			 * stm.executeQuery(requeteSQL2);
-			 * 
-			 * while (res.next()) { modif = res.getInt(1);
-			 * System.out.println("Num Epreuve : " + res.getString(1));
-			 * 
-			 * } System.out.println("Num Epreuve+ : " +modif);
-			 * 
-			 * conn.close(); res.close();
-			 * 
-			 * } catch (Exception e) { e.printStackTrace(); }
-			 */
+
+			if (nom.equals("CHOISIR") || date.equals("")
+					|| balise.equals("CHOISIR")
+					|| date.equals("AAAA-MM-JJ hh:mm:ss")) {
+				JOptionPane.showMessageDialog(null,
+						"Veuillez remplir tous les champs",
+						"Acquisition non créée!", JOptionPane.WARNING_MESSAGE);
+
+			} else {
+				
+				ideq = nomLis.get(nomC.getSelectedIndex() - 1);
+				System.out.println("Equipe choisie : " + ideq);
+				int doigt = 0;
+				
+				updateTable();
+				String requeteSQL = "SELECT `idDoigt` FROM `posséder` WHERE `idEquipe`='"
+						+ ideq + "'";
+
+				System.out.println(requeteSQL);
+				try {
+					Class.forName("com.mysql.jdbc.Driver");
+					System.out.println("Driver O.K.");
+
+					Connection conn = DataSourceProvider.getDataSource()
+							.getConnection();
+					System.out.println("Connexion effective !");
+					Statement stm = conn.createStatement();
+					ResultSet res = stm.executeQuery(requeteSQL);
+
+					while (res.next()) {
+						doigt = res.getInt(1);
+						System.out.println("doigt : " + res.getString(1));
+
+					}
+					conn.close();
+					res.close();
+
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+				String requeteSQL2 = "INSERT INTO `pointer`(`idBalise`, `idEpreuve`, `idDoigt`, `dateHeurePointage`, `idCompetition`) VALUES ('"
+						+ balise
+						+ "', '"
+						+ idep
+						+ "', '"
+						+ doigt
+						+ "', '"
+						+ date + "', '" + idc + "')";
+				System.out.println(requeteSQL2);
+				BDDupdate(requeteSQL2);
+			}
 		}
 	}
 
@@ -274,8 +297,10 @@ public class Inte_Acquisition_Crea extends JFrame {
 																			// +
 		public void actionPerformed(ActionEvent arg0) {
 
-			Inte_Acquisition_MB formulaire = new Inte_Acquisition_MB(idc, ide);
-			formulaire.addWindowListener(this);
+			Inte_Acquisition_MB formulaireMB = new Inte_Acquisition_MB(idc,
+					idep, ideq);
+			System.out.println("Fenetre ajout MB ouverte");
+			formulaireMB.addWindowListener(this);
 		}
 
 		@Override
@@ -284,6 +309,7 @@ public class Inte_Acquisition_Crea extends JFrame {
 
 		@Override
 		public void windowClosed(WindowEvent arg0) {
+			System.out.println("Fenetre ajout MB fermée");
 			updateTable();
 		}
 
@@ -321,32 +347,32 @@ public class Inte_Acquisition_Crea extends JFrame {
 
 			if (tab.length == 0) {
 				JOptionPane.showMessageDialog(null, "Veuillez cochez une case",
-						"Pas de balise à supprimer!",
+						"Pas de Malus/Bonus à supprimer!",
 						JOptionPane.INFORMATION_MESSAGE);
 			}
 
 			for (int i = 0; i < tab.length; i++) {
 				rep = JOptionPane.showConfirmDialog(null,
-						"Voulez vous vraiment supprimer la balise " + tab[i]
-								+ " de cette épreuve ?", "Attention",
+						"Voulez vous vraiment supprimer le Malus/Bonus "
+								+ tab[i] + " de cette épreuve ?", "Attention",
 						JOptionPane.YES_NO_OPTION);
 
 				if (rep == 0) {
-					String requeteSQL = "DELETE FROM `valoir` WHERE CONCAT(`valoir`.`idBalise`) = '"
+					String requeteSQL = "DELETE FROM `avoir` WHERE `avoir`.`idMB` = '"
 							+ tab[i]
-							+ "' && `idEpreuve` = '"
-							+ ide
+							+ "' && `avoir`.`idEquipe` ='"
+							+ ideq
 							+ "' && `idCompetition` = '" + idc + "'";
 					BDDupdate(requeteSQL);
 
 					JOptionPane
 							.showMessageDialog(
 									null,
-									"La balise est maintenant supprimée de cette épreuve",
-									"Balise " + tab[i] + " Supprimée!",
+									"Le Malus/Bonus est maintenant supprimé de cette épreuve",
+									"Malus/Bonus " + tab[i] + " Supprimé!",
 									JOptionPane.INFORMATION_MESSAGE);
 
-					System.out.println("Balise " + tab[i] + " Supprimée");
+					System.out.println("Malus/Bonus " + tab[i] + " Supprimé");
 
 					updateTable();
 				}
@@ -361,7 +387,7 @@ public class Inte_Acquisition_Crea extends JFrame {
 	public class EcouteurOKMB implements ActionListener { // Action du quitter
 
 		public void actionPerformed(ActionEvent arg0) {
-			thePanel.dispose();
+			theFrame.dispose();
 		}
 	}
 
@@ -372,20 +398,23 @@ public class Inte_Acquisition_Crea extends JFrame {
 
 		public void actionPerformed(ActionEvent arg0) {
 
-			thePanel.dispose();
+			theFrame.dispose();
 		}
 	}
 
 	/**
-	 * Met à jour du tableau pour le remplir avec les épreuves de la compétition
-	 * à partir de la BDD.
+	 * Met à jour du tableau pour le remplir avec les malus/bonus des equipes de
+	 * la compétition à partir de la BDD.
 	 */
 	public void updateTable() {
 
 		ArrayList<Object[]> ArrayData = new ArrayList<>();
 
-		String requeteSQL = "SELECT * FROM malusbonus WHERE idCompetition = '"
-				+ idc + "'";
+		String requeteSQL = "SELECT `malusbonus`.`idMB`,`malusbonus`.`nomMalusBonus`, `malusbonus`.`malus`, `malusbonus`.`tempsMalusBonus` FROM `malusbonus` INNER JOIN `avoir` ON `malusbonus`.`idMB`=`avoir`.`idMB` WHERE `malusbonus`.`idCompetition` = '"
+				+ idc
+				+ "' && `avoir`.`idCompetition`='"
+				+ idc
+				+ "' && `avoir`.`idEquipe`='" + ideq + "'";
 
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -431,9 +460,13 @@ public class Inte_Acquisition_Crea extends JFrame {
 	 *            , La comboBox à mettre à jour
 	 * @param requeteSQL
 	 *            , la requete SQL à effectuer
+	 * @return comboList , la liste des id associés aux noms dans la combo dans
+	 *         la BDD
 	 */
-	public void updateCombo(JComboBox<Object> combo, String requeteSQL) {
+	public ArrayList<Integer> updateCombo(JComboBox<Object> combo,
+			String requeteSQL) {
 		combo.removeAllItems();
+		ArrayList<Integer> comboList = new ArrayList<Integer>();
 
 		combo.addItem("CHOISIR");
 
@@ -449,7 +482,9 @@ public class Inte_Acquisition_Crea extends JFrame {
 
 			while (res.next()) {
 				combo.addItem(res.getString(1));
-				System.out.println("Nom : " + res.getString(1));
+				comboList.add(res.getInt(2));
+				System.out.println("Nom : " + res.getString(1) + " Id : "
+						+ res.getInt(2));
 			}
 
 			conn.close();
@@ -464,6 +499,7 @@ public class Inte_Acquisition_Crea extends JFrame {
 			oK.setEnabled(true);
 		}
 		System.out.println("MAJ Combo");
+		return (comboList);
 	}
 
 	/**

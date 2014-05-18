@@ -247,7 +247,7 @@ public class Inte_MalusBonus extends JPanel {
 						JOptionPane.YES_NO_OPTION);
 
 				if (rep == 0) {
-					String requeteSQL = "DELETE FROM `raidzultat`.`malusbonus` WHERE CONCAT(`malusbonus`.`idMB`) = '"
+					String requeteSQL = "DELETE FROM `malusbonus` WHERE CONCAT(`malusbonus`.`idMB`) = '"
 							+ tab[i] + "' && `idCompetition` = '" + idc + "'";
 					BDDupdate(requeteSQL);
 

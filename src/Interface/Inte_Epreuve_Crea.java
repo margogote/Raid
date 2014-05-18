@@ -165,7 +165,6 @@ public class Inte_Epreuve_Crea extends JFrame {
 		panTitre.removeAll();
 
 		oK2.setPreferredSize(new Dimension(100, 30));
-
 		creer.setPreferredSize(new Dimension(50, 30));
 		supp.setPreferredSize(new Dimension(50, 30));
 

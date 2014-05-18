@@ -36,7 +36,7 @@ import Models.TabModel;
  */
 public class Inte_Epreuve_Modif extends JFrame {
 
-	JFrame thePanel = new JFrame();
+	private JFrame theFrame = new JFrame();
 
 	/* Champs */
 	private JLabel nomL = new JLabel("Nom");
@@ -90,14 +90,14 @@ public class Inte_Epreuve_Modif extends JFrame {
 	 *            , l'id de l'épreuve à modifier
 	 */
 	public Inte_Epreuve_Modif(int idC, int idModif) {
-		thePanel = this;
+		theFrame = this;
 		idc = idC;
 		modif = idModif;
 
 		updateTable();
 
 		if (idModif != -1) {
-			thePanel.setTitle("Raidzultats - Modification épreuve " + idModif);
+			theFrame.setTitle("Raidzultats - Modification épreuve " + idModif);
 
 			String requeteSQL = "SELECT epreuve.`nomEpreuve`, epreuve.`typeEpreuve`, epreuve.`difficulte`, epreuve.`dateHeureEpreuve`, epreuve.`dureeEpreuve` FROM epreuve WHERE epreuve.`idCompetition` = '"
 					+ idc + "' && epreuve.`idEpreuve` = '" + idModif + "'";
@@ -144,10 +144,10 @@ public class Inte_Epreuve_Modif extends JFrame {
 	 * Fonction gérant l'interface de la fenetre
 	 */
 	public void Interface() {
-		thePanel.setTitle("Raidzultats Modification d'épreuve");
-		thePanel.setSize(850, 600);
-		thePanel.setLocationRelativeTo(null);
-		thePanel.setLayout(new BorderLayout()); // Pour les placements
+		theFrame.setTitle("Raidzultats Modification d'épreuve");
+		theFrame.setSize(850, 600);
+		theFrame.setLocationRelativeTo(null);
+		theFrame.setLayout(new BorderLayout()); // Pour les placements
 
 		panTitre.removeAll();
 		panPan.removeAll();
@@ -215,9 +215,9 @@ public class Inte_Epreuve_Modif extends JFrame {
 
 		panPan.add(ultraP);
 
-		thePanel.add(panPan);
+		theFrame.add(panPan);
 
-		thePanel.setVisible(true);
+		theFrame.setVisible(true);
 	}
 
 	/**
@@ -329,7 +329,7 @@ public class Inte_Epreuve_Modif extends JFrame {
 			try {
 				// Integer.parseInt(dossard);
 
-				String requeteSQL = "UPDATE`raidzultat`.`epreuve` SET `nomEpreuve` = '"
+				String requeteSQL = "UPDATE `epreuve` SET `nomEpreuve` = '"
 						+ nom
 						+ "', `typeEpreuve` = '"
 						+ type
@@ -347,7 +347,7 @@ public class Inte_Epreuve_Modif extends JFrame {
 
 				BDDupdate(requeteSQL);
 
-				thePanel.dispose();
+				theFrame.dispose();
 			}
 
 			catch (Exception e) {
@@ -367,7 +367,7 @@ public class Inte_Epreuve_Modif extends JFrame {
 
 		public void actionPerformed(ActionEvent arg0) {
 
-			thePanel.dispose();
+			theFrame.dispose();
 		}
 	}
 

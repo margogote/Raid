@@ -266,7 +266,7 @@ public class Inte_Balise extends JPanel {
 						JOptionPane.YES_NO_OPTION);
 
 				if (rep == 0) {
-					String requeteSQL = "DELETE FROM `raidzultat`.`balise` WHERE CONCAT(`balise`.`idBalise`) = '"
+					String requeteSQL = "DELETE FROM `balise` WHERE CONCAT(`balise`.`idBalise`) = '"
 							+ tab.get(i)
 							+ "' && `idCompetition` = '"
 							+ idc

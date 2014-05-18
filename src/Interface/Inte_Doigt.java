@@ -274,7 +274,7 @@ public class Inte_Doigt extends JPanel {
 								+ " ?", "Attention", JOptionPane.YES_NO_OPTION);
 
 				if (rep == 0) {
-					String requeteSQL = "DELETE FROM `raidzultat`.`doigt` WHERE CONCAT(`doigt`.`idDoigt`) = '"
+					String requeteSQL = "DELETE FROM `doigt` WHERE CONCAT(`doigt`.`idDoigt`) = '"
 							+ tab.get(i)
 							+ "' && `idCompetition` = '"
 							+ idc

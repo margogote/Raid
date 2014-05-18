@@ -243,7 +243,7 @@ public class Inte_Equipe_CreaModif extends JFrame {
 								"Ce dossard existe déjà", "Equipe non créée!",
 								JOptionPane.INFORMATION_MESSAGE);
 					} else {
-						String requeteSQL = "INSERT INTO `raidzultat`.`equipe` (`idEquipe`, `nomEquipe`, `nomGroupe`, `typeDifficulte`, `typeEquipe`,`dossard`, `idCompetition`) VALUES (NULL, '"
+						String requeteSQL = "INSERT INTO `equipe` (`idEquipe`, `nomEquipe`, `nomGroupe`, `typeDifficulte`, `typeEquipe`,`dossard`, `idCompetition`) VALUES (NULL, '"
 								+ nom
 								+ "', '"
 								+ groupe
@@ -292,7 +292,7 @@ public class Inte_Equipe_CreaModif extends JFrame {
 							e.printStackTrace();
 						}
 
-						String requeteSQL3 = "INSERT INTO `raidzultat`.`posséder` (`idDoigt`, `idEquipe`, `dateHeureAttribution`,`idCompetition`) VALUES ('"
+						String requeteSQL3 = "INSERT INTO `posséder` (`idDoigt`, `idEquipe`, `dateHeureAttribution`,`idCompetition`) VALUES ('"
 								+ doigt
 								+ "', '"
 								+ idE
@@ -347,7 +347,7 @@ public class Inte_Equipe_CreaModif extends JFrame {
 					try {
 						Integer.parseInt(dossard);
 						System.out.println("C'est un entier");
-						String requeteSQL = "UPDATE`raidzultat`.`equipe` SET `nomEquipe` = '"
+						String requeteSQL = "UPDATE `equipe` SET `nomEquipe` = '"
 								+ nom
 								+ "',`nomGroupe` = '"
 								+ groupe
@@ -363,7 +363,7 @@ public class Inte_Equipe_CreaModif extends JFrame {
 
 						BDDupdate(requeteSQL);
 
-						String requeteSQL3 = "UPDATE `raidzultat`.`posséder` SET `idDoigt` = '"
+						String requeteSQL3 = "UPDATE `posséder` SET `idDoigt` = '"
 								+ doigt
 								+ "', `dateHeureAttribution`= NULL WHERE idEquipe = '"
 								+ modif + "' && `idCompetition`='" + idc + "'";
