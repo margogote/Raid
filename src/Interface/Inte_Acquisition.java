@@ -9,7 +9,12 @@ import java.awt.event.WindowListener;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -91,8 +96,8 @@ public class Inte_Acquisition extends JFrame {
 		EcouteurA ecoutA = new EcouteurA();
 		acqA.addActionListener(ecoutA);
 
-		EcouteurQ ecoutQ = new EcouteurQ();
-		quit.addActionListener(ecoutQ);
+		EcouteurFin ecoutFin = new EcouteurFin();
+		quit.addActionListener(ecoutFin);
 	}
 
 	/**
@@ -373,9 +378,122 @@ public class Inte_Acquisition extends JFrame {
 	/**
 	 * Permet de gérer les clics du type "Quitter" Ferme la fenêtre
 	 */
-	public class EcouteurQ implements ActionListener { // Action du quitter
+	public class EcouteurFin implements ActionListener { // Action du quitter
 
 		public void actionPerformed(ActionEvent arg0) {
+
+			// Calcul des MB supplémentaires par balises non pointées
+			String type = "", date = "", duree = "";
+
+			try {
+				String requeteSQL = "SELECT `typeEpreuve`, `dateHeureEpreuve`, `dureeEpreuve` FROM `epreuve` WHERE `idEpreuve` = '"
+						+ idep + "' && `idCompetition` = '" + idc + "'";
+				Class.forName("com.mysql.jdbc.Driver");
+				System.out.println("Driver O.K.");
+
+				Connection conn = DataSourceProvider.getDataSource()
+						.getConnection();
+				System.out.println("Connexion effective !");
+				Statement stm = conn.createStatement();
+				ResultSet res = stm.executeQuery(requeteSQL);
+
+				while (res.next()) {
+					type = res.getString(1);
+					date = res.getString(2);
+					duree = res.getString(3);
+					System.out.println("type: " + type + " date : " + date
+							+ " durée : " + duree);
+				}
+
+				conn.close();
+				res.close();
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			try {
+				String requeteDoigt = "SELECT DISTINCT `idDoigt` FROM `pointer` WHERE `pointer`.`idCompetition`='"
+						+ idc + "' && `pointer`.`idEpreuve` = '" + idep + "'";
+
+				Class.forName("com.mysql.jdbc.Driver");
+				System.out.println("Driver O.K.");
+
+				Connection connType = DataSourceProvider.getDataSource()
+						.getConnection();
+				System.out.println("Connexion effective !");
+				Statement stmType = connType.createStatement();
+				ResultSet resType = stmType.executeQuery(requeteDoigt);
+
+				while (resType.next()) {
+					if (type.equals("Course")) {
+						String dateHDeb = "";
+						String dateHFin = "";
+
+						String requeteBalDeb = "SELECT `pointer`.`dateHeurePointage` FROM `pointer` INNER JOIN `valoir` ON `pointer`.`idBalise` = `valoir`.`idBalise` && `pointer`.`idEpreuve` = `valoir`.`idEpreuve` WHERE `valoir`.`type`= 'Debut' && `pointer`.`idCompetition`='"
+								+ idc
+								+ "' && `valoir`.`idCompetition`='"
+								+ idc
+								+ "' && `pointer`.`idEpreuve` = '"
+								+ idep
+								+ "' && `pointer`.`idDoigt`='"
+								+ resType.getInt(1) + "'";
+						// `pointer`.`idBalise`, `pointer`.`idEpreuve`,
+						// `pointer`.`idDoigt`,
+
+						String requeteBalFin = "SELECT `pointer`.`dateHeurePointage` FROM `pointer` INNER JOIN `valoir` ON `pointer`.`idBalise` = `valoir`.`idBalise` && `pointer`.`idEpreuve` = `valoir`.`idEpreuve` WHERE `valoir`.`type`= 'Arrivé' && `pointer`.`idCompetition`='"
+								+ idc
+								+ "' && `valoir`.`idCompetition`='"
+								+ idc
+								+ "' && `pointer`.`idEpreuve` = '"
+								+ idep
+								+ "' && `pointer`.`idDoigt`='"
+								+ resType.getInt(1) + "'";
+						System.out.println(requeteBalDeb);
+						System.out.println(requeteBalFin);
+
+						ResultSet res2 = stmType.executeQuery(requeteBalDeb);
+						while (res2.next()) {
+							dateHDeb = res2.getString(1);
+							System.out.println(dateHDeb);
+						}
+
+						ResultSet res3 = stmType.executeQuery(requeteBalFin);
+						while (res3.next()) {
+							dateHFin = res3.getString(1);
+							System.out.println(dateHFin);
+						}
+
+						Date temps = substractTwoDates(stringToDate(dateHFin),
+								stringToDate(dateHDeb));
+
+						System.out.println(temps);
+
+						String tempsStr = dateToString(temps);
+						System.out.println(tempsStr);
+						
+						String requeteScorer = "INSERT INTO `scorer`(`idEquipe`, `idEpreuve`, `tempsRealise`, `idCompetition`) VALUES ((SELECT `idEquipe` FROM `posséder` WHERE `idDoigt`='"+resType.getInt(1)+"'),'"+idep+"','"+tempsStr+"','"+idc+"')";
+						
+
+						res2.close();
+						res3.close();
+
+					} else if (type.equals("MassStart")) {
+
+					} else if (type.equals("Course d`orientation")) {
+
+					} else {
+						System.out.println("Problèèèèèèèèèèèèèèèèèèèèèèèème");
+					}
+
+				}
+
+				connType.close();
+				resType.close();
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 
 			theFrame.dispose();
 		}
@@ -480,4 +598,132 @@ public class Inte_Acquisition extends JFrame {
 		}
 	}
 
+	/**
+	 * Permet d'extraire de la base de donees un temps au format de chaine de
+	 * caractere pour pouvoir en simplifier le traitement et l'interpretation
+	 * 
+	 * @param HHmmss
+	 *            chaine de characteres extraites au format HH:mm:ss
+	 * @return temps
+	 */
+	public static Date stringToDate(String HHmmss) {
+		Date temps = new Date();
+		DateFormat dateformat = new SimpleDateFormat("YYYY-MM-DD HH:mm:ss");
+		try {
+			temps = dateformat.parse(HHmmss);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return temps;
+	}
+
+	/**
+	 * Permet d'inserer dans la base de donees un temps au format de chaÃ®ne de
+	 * caractere en renseignant un temps au format Date de Java pour pouvoir en
+	 * simplifier le traitement et l'insertion.
+	 * 
+	 * @param temps
+	 *            date a convertir au format `hh:mm:ss pour insertion plus
+	 *            simple dans BDD
+	 * @return HHmmss
+	 */
+	public static String dateToString(Date temps) {
+		String HHmmss = "";
+
+		Calendar calTemps = Calendar.getInstance();
+		calTemps.setTime(temps);
+
+		int h, m, s;
+		h = m = s = 0;
+		if (calTemps.get(Calendar.DAY_OF_MONTH) != 1) {
+			h += 24 * (calTemps.get(Calendar.DAY_OF_MONTH) - 1);
+		}
+		h += calTemps.get(Calendar.HOUR);
+		m += calTemps.get(Calendar.MINUTE);
+		s += calTemps.get(Calendar.SECOND);
+
+		String hh, mm, ss = "";
+
+		if (h < 10) {
+			hh = "0" + h;
+		} else {
+			hh = "" + h;
+		}
+		if (m < 10) {
+			mm = "0" + m;
+		} else {
+			mm = "" + m;
+		}
+		if (s < 10) {
+			ss = "0" + s;
+		} else {
+			ss = "" + s;
+		}
+
+		HHmmss += hh + ":" + mm + ":" + ss;
+
+		return HHmmss;
+	}
+
+	/**
+	 * Manipulation (addition) de Calendrier
+	 * 
+	 * @param c1
+	 *            , un calandrier Ã  ajouter
+	 * @param c2
+	 *            , un autre calandrier Ã  ajouter
+	 * @return
+	 */
+	public static Calendar addTwoCal(Calendar c1, Calendar c2) {
+		long sum = c1.getTimeInMillis() + c2.getTimeInMillis();
+		Calendar sumCalendar = (Calendar) c1.clone();
+		sumCalendar.setTimeInMillis(sum);
+		sumCalendar.add(Calendar.HOUR, 1);
+
+		return sumCalendar;
+	}
+
+	public Date addTwoDates(Date d1, Date d2) {
+		Calendar c1 = Calendar.getInstance();
+		Calendar c2 = Calendar.getInstance();
+
+		c1.setTime(d1);
+		c2.setTime(d2);
+
+		return addTwoCal(c1, c2).getTime();
+	}
+
+	public Date substractTwoDates(Date d1, Date d2) {
+		Calendar c1 = Calendar.getInstance();
+		Calendar c2 = Calendar.getInstance();
+
+		c1.setTime(d1);
+		c2.setTime(d2);
+
+		return substractTwoCal(c1, c2).getTime();
+	}
+
+	/**
+	 * Manipulation (soustraction) de Calendrier
+	 * 
+	 * @param c1
+	 *            , un calendrier
+	 * @param c2
+	 *            , un autre calandrier a soustraire
+	 * @return
+	 */
+	public static Calendar substractTwoCal(Calendar c1, Calendar c2) {
+
+		Calendar subCalendar = Calendar.getInstance();
+		subCalendar.setTimeZone(c1.getTimeZone());
+
+		long sub = c1.getTimeInMillis() - c2.getTimeInMillis();
+		if (sub < 0)
+			subCalendar.setTimeInMillis(0);
+		else
+			subCalendar.setTimeInMillis(sub);
+		subCalendar.add(Calendar.HOUR, -1);
+
+		return subCalendar;
+	}
 }

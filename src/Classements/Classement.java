@@ -597,7 +597,7 @@ public class Classement {
 	}
 
 	/**
-	 * Manipulation (addittion) de de Calendrier
+	 * Manipulation (addittion) de Calendrier
 	 * 
 	 * @param c1
 	 *            , un calandrier à ajouter

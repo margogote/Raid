@@ -39,7 +39,7 @@ import Models.TabModel;
  */
 public class Inte_Epreuve_Crea extends JFrame {
 
-	JFrame thePanel = new JFrame();
+	private JFrame thePanel = new JFrame();
 
 	/* Champs */
 	private JLabel nomL = new JLabel("Nom");
@@ -47,7 +47,7 @@ public class Inte_Epreuve_Crea extends JFrame {
 
 	private JLabel typeL = new JLabel("Type");
 	private String[] typeS = { "CHOISIR", "Course d`orientation", "Course",
-			"Orientshow" };
+			"MassStart" };
 	private JComboBox<Object> typeC = new JComboBox<Object>(typeS);
 
 	private JLabel dateL = new JLabel("Date de début");
@@ -82,7 +82,7 @@ public class Inte_Epreuve_Crea extends JFrame {
 	private String title[] = { "", "idBalise", "Type", "Valeur" };
 
 	private int idc;
-	private int modif;
+	private int idEp;
 
 	/**
 	 * Classe principale
@@ -236,8 +236,6 @@ public class Inte_Epreuve_Crea extends JFrame {
 			String date = (String) dateT.getText();
 			String duree = (String) dureeT.getText();
 
-			InterfaceBa();
-			
 			String requeteSQL = "INSERT INTO `epreuve` (`nomEpreuve`, `typeEpreuve`, `difficulte`, `dateHeureEpreuve`, `dureeEpreuve`, `idCompetition`) VALUES ('"
 					+ nom
 					+ "', '"
@@ -274,11 +272,11 @@ public class Inte_Epreuve_Crea extends JFrame {
 				ResultSet res = stm.executeQuery(requeteSQL2);
 
 				while (res.next()) {
-					modif = res.getInt(1);
+					idEp = res.getInt(1);
 					System.out.println("Num Epreuve : " + res.getString(1));
 
 				}
-				System.out.println("Num Epreuve+ : " +modif);
+				System.out.println("Num Epreuve+ : " + idEp);
 
 				conn.close();
 				res.close();
@@ -286,6 +284,13 @@ public class Inte_Epreuve_Crea extends JFrame {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+
+			InterfaceBa();
+
+			if (type.equals("Course d`orientation")) {
+				Inte_Epreuve_CO co = new Inte_Epreuve_CO(idc, idEp, nom);
+			}
+
 		}
 	}
 
@@ -300,7 +305,7 @@ public class Inte_Epreuve_Crea extends JFrame {
 		public void actionPerformed(ActionEvent arg0) {
 
 			Inte_Epreuve_Balise_Crea formulaire = new Inte_Epreuve_Balise_Crea(
-					idc, modif);
+					idc, idEp);
 			formulaire.addWindowListener(this);
 		}
 
@@ -362,7 +367,7 @@ public class Inte_Epreuve_Crea extends JFrame {
 					String requeteSQL = "DELETE FROM `valoir` WHERE CONCAT(`valoir`.`idBalise`) = '"
 							+ tab.get(i)
 							+ "' && `idEpreuve` = '"
-							+ modif
+							+ idEp
 							+ "' && `idCompetition` = '" + idc + "'";
 					BDDupdate(requeteSQL);
 
@@ -415,7 +420,7 @@ public class Inte_Epreuve_Crea extends JFrame {
 		ArrayList<Object[]> ArrayData = new ArrayList<>();
 
 		String requeteSQL = "SELECT `idBalise`,`type`,`valeurBalise` FROM `valoir` WHERE `idCompetition` = '"
-				+ idc + "' && `idEpreuve` = '" + modif + "'";
+				+ idc + "' && `idEpreuve` = '" + idEp + "'";
 
 		try {
 			Class.forName("com.mysql.jdbc.Driver");

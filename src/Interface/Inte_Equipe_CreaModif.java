@@ -81,6 +81,8 @@ public class Inte_Equipe_CreaModif extends JFrame {
 		// thePanel.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		thePanel.setLayout(new BorderLayout()); // Pour les placements
 
+		updateDoigt();
+		
 		if (idModif != -1) {
 			thePanel.setTitle("Raidzultats - Modification équipe " + idModif);
 
@@ -118,28 +120,6 @@ public class Inte_Equipe_CreaModif extends JFrame {
 
 		oK.setPreferredSize(new Dimension(100, 30));
 		annuler.setPreferredSize(new Dimension(100, 30));
-
-		JPanel nomP = new JPanel();
-		nomP.add(nomL);
-		nomP.add(nomT);
-
-		JPanel doigtP = new JPanel();
-		doigtP.add(doigtL);
-		updateDoigt();
-
-		JPanel dossardP = new JPanel();
-		dossardP.add(dossardL);
-
-		JPanel diffP = new JPanel();
-		diffP.add(difficL);
-		diffP.add(difficC);
-
-		JPanel grpP = new JPanel();
-		grpP.add(grpL);
-
-		JPanel catP = new JPanel();
-		catP.add(catL);
-		catP.add(catC);
 
 		JPanel btnP = new JPanel();
 		btnP.add(oK);
