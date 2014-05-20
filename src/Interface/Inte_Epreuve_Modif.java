@@ -41,7 +41,7 @@ public class Inte_Epreuve_Modif extends JFrame {
 	/* Champs */
 	private JLabel nomL = new JLabel("Nom");
 	private JTextField nomT = new JTextField("");
-	private String nomAv ="";
+	private String nomAv = "";
 
 	private JLabel typeL = new JLabel("Type");
 	private String[] typeS = { "CHOISIR", "Course d`orientation", "Course",
@@ -125,8 +125,8 @@ public class Inte_Epreuve_Modif extends JFrame {
 					difficC.setSelectedItem(res.getString(3));
 					dateT.setText(res.getString(4));
 					dureeT.setText(res.getString(5));
-					
-					nomAv=res.getString(1);
+
+					nomAv = res.getString(1);
 				}
 
 				requeteSQLabs = "SELECT `tempsMalusBonus` FROM `malusbonus` WHERE `nomMalusBonus` = 'abs"
@@ -350,37 +350,65 @@ public class Inte_Epreuve_Modif extends JFrame {
 			String duree = (String) dureeT.getText();
 			String abs = (String) absT.getText();
 
-			try {
-				// Integer.parseInt(dossard);
+			if (nom.equals("") || type.equals("CHOISIR")
+					|| difficulte.equals("CHOISIR")
+					|| date.equals("AAAA-MM-JJ hh:mm:ss") || date.equals("")
+					|| duree.equals("hh:mm:ss") || duree.equals("")
+					|| abs.equals("hh:mm:ss") || abs.equals("")) {
+				JOptionPane.showMessageDialog(null,
+						"Veuillez remplir tous les champs",
+						"Paramètres non créés!", JOptionPane.WARNING_MESSAGE);
+			} else {
+				try {
+					String testTpsdate[] = date.split("- :");
+					String testTpsduree[] = duree.split(":");
+					String testTpsabs[] = abs.split(":");
+					for (int i = 0; i < testTpsdate.length; i++) {
+						System.out.println(testTpsdate[i]);
+						Integer.parseInt(testTpsdate[i]);
+					}
+					for (int i = 0; i < testTpsduree.length; i++) {
+						System.out.println(testTpsduree[i]);
+						Integer.parseInt(testTpsduree[i]);
+					}
+					for (int i = 0; i < testTpsabs.length; i++) {
+						System.out.println(testTpsabs[i]);
+						Integer.parseInt(testTpsabs[i]);
+					}
 
-				String requeteSQL = "UPDATE `epreuve` SET `nomEpreuve` = '"
-						+ nom + "', `typeEpreuve` = '" + type
-						+ "', `difficulte`='" + difficulte
-						+ "', `dateHeureEpreuve`='" + date
-						+ "', `dureeEpreuve`=  '" + duree
-						+ "' WHERE idEpreuve = '" + modif
-						+ "' && `idCompetition`='" + idc + "'";
+					String requeteSQL = "UPDATE `epreuve` SET `nomEpreuve` = '"
+							+ nom + "', `typeEpreuve` = '" + type
+							+ "', `difficulte`='" + difficulte
+							+ "', `dateHeureEpreuve`='" + date
+							+ "', `dureeEpreuve`=  '" + duree
+							+ "' WHERE idEpreuve = '" + modif
+							+ "' && `idCompetition`='" + idc + "'";
 
-				BDDupdate(requeteSQL);
-				String requeteSQLabs = "UPDATE `malusbonus` SET `nomMalusBonus`='abs" + nom	+ "',`tempsMalusBonus`='"
-						+ abs
-						+ "' WHERE `idCompetition`= '"
-						+ idc
-						+ "'&& `nomMalusBonus`='abs" + nomAv + "'";
+					BDDupdate(requeteSQL);
+					String requeteSQLabs = "UPDATE `malusbonus` SET `nomMalusBonus`='abs"
+							+ nom
+							+ "',`tempsMalusBonus`='"
+							+ abs
+							+ "' WHERE `idCompetition`= '"
+							+ idc
+							+ "'&& `nomMalusBonus`='abs" + nomAv + "'";
 
-				BDDupdate(requeteSQLabs);
-				
+					BDDupdate(requeteSQLabs);
 
-				theFrame.dispose();
-			}
+					theFrame.dispose();
+				}
 
 			catch (Exception e) {
 				System.out.println("Je ne suis pas un entier");
-				JOptionPane.showMessageDialog(null,
-						"Attention entrer un entier comme numéro de dossard",
-						"Equipe non modifiée!", JOptionPane.WARNING_MESSAGE);
-			}
+				JOptionPane
+						.showMessageDialog(null,
+								"Veuillez entrer une heure de type hh:mm:ss et une date de type AAAA-MM-JJ hh:mm:ss",
+								"Epreuve non modifiée!",
+								JOptionPane.WARNING_MESSAGE);
 
+			
+				}
+			}
 		}
 	}
 

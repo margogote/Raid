@@ -385,6 +385,9 @@ public class Inte_Acquisition extends JFrame {
 				e.printStackTrace();
 			}
 
+			/*
+			 * --- Si le type de l'épreuve est une Course
+			 */
 			if (typeCourse.equals("Course")) {
 
 				System.out.println(" ----- C'est une course");
@@ -422,18 +425,18 @@ public class Inte_Acquisition extends JFrame {
 						System.out.println("Connexion effective !");
 						Statement stm = conn.createStatement();
 
-						ResultSet res2 = stm.executeQuery(requeteBalDeb);
-						while (res2.next()) {
-							dateHDeb = res2.getString(1);
+						ResultSet resBalDeb = stm.executeQuery(requeteBalDeb);
+						while (resBalDeb.next()) {
+							dateHDeb = resBalDeb.getString(1);
 							System.out.println(dateHDeb);
 						}
 
-						ResultSet res3 = stm.executeQuery(requeteBalFin);
+						ResultSet resBalFin = stm.executeQuery(requeteBalFin);
 
 						/*
 						 * Verifier si requeteBalFin existe, sinon, M/B absent
 						 */
-						if (!res3.next()) {
+						if (!resBalFin.next()) {
 							System.out
 									.println("   ----- Balise de fin non pointée ! -----");
 
@@ -450,9 +453,9 @@ public class Inte_Acquisition extends JFrame {
 							BDDupdate(requeteScorer);
 
 						} else {
-							res3.beforeFirst();
-							while (res3.next()) {
-								dateHFin = res3.getString(1);
+							resBalFin.beforeFirst();
+							while (resBalFin.next()) {
+								dateHFin = resBalFin.getString(1);
 								System.out.println(dateHFin);
 							}
 
@@ -460,29 +463,55 @@ public class Inte_Acquisition extends JFrame {
 									stringToDate(dateHFin),
 									stringToDate(dateHDeb));
 
-							System.out.println(temps);
+							System.out.println("Temps course tot : "+temps);
 
-							String tempsStr = dateToString(temps);
-							System.out.println(tempsStr);
+							String attribMB = "SELECT `malusbonus`.`tempsMalusBonus`, `malusbonus`.`malus` FROM `avoir` INNER JOIN `malusbonus` ON `avoir`.`idMB`=`malusbonus`.`idMB` WHERE `avoir`.`idEquipe` =(SELECT `idEquipe` FROM `posséder` WHERE `idDoigt`='"
+									+ lisDoigt.get(i)
+									+ "' && `idCompetition`= '"
+									+ idc
+									+ "') && `avoir`.`idEpreuve` ='"
+									+ idep
+									+ "' &&`avoir`.`idCompetition`= '"
+									+ idc
+									+ "'";
+							System.out.println(attribMB);
+							ResultSet resattribMB = stm.executeQuery(attribMB);
+							while (resattribMB.next()) {
+								String tpsMBstr = resattribMB.getString(1);
+								Date tpsMB = stringToDuree(resattribMB.getString(1));
+								int mal = resattribMB.getInt(2);
+								System.out.println("tpsStr : "+tpsMBstr+" tpsMB : "+tpsMB+ " malus? : "+mal);
+								
+								if(mal==0){
+									temps=substractTwoDates(temps, tpsMB);
+								}else{
+									temps=addTwoDates(temps, tpsMB);
+								}
+							}
+							System.out.println("Tps course +- MB"+temps);
 
 							String requeteScorer = "INSERT INTO `scorer`(`idEquipe`, `idEpreuve`, `tempsRealise`, `idCompetition`) VALUES ((SELECT `idEquipe` FROM `posséder` WHERE `idDoigt`='"
 									+ lisDoigt.get(i)
 									+ "'),'"
 									+ idep
 									+ "','"
-									+ tempsStr + "','" + idc + "')";
+									+  dateToString(temps) + "','" + idc + "')";
 
 							BDDupdate(requeteScorer);
 						}
 						conn.close();
-						res2.close();
-						res3.close();
+						resBalDeb.close();
+						resBalFin.close();
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 
-			} else if (typeCourse.equals("MassStart")) {
+			}
+			/*
+			 * --- Si le type de l'épreuve est un MassStart
+			 */
+			else if (typeCourse.equals("MassStart")) {
 				System.out.println(" ----- C'est un MassStart");
 				try {
 
@@ -509,9 +538,12 @@ public class Inte_Acquisition extends JFrame {
 						System.out.println("Connexion effective !");
 						Statement stm = conn.createStatement();
 
-						ResultSet res3 = stm.executeQuery(requeteBalFin);
+						ResultSet resBalFin = stm.executeQuery(requeteBalFin);
 
-						if (!res3.next()) {
+						/*
+						 * --- Vérifier si la balise de fin est pointée
+						 */
+						if (!resBalFin.next()) {
 							System.out
 									.println("   ----- Balise de fin non pointée ! -----");
 
@@ -527,11 +559,15 @@ public class Inte_Acquisition extends JFrame {
 
 							BDDupdate(requeteScorer);
 
-						} else {
-							res3.beforeFirst();
+						}
+						/*
+						 * --- Si la balise de fin est pointée
+						 */
+						else {
+							resBalFin.beforeFirst();
 
-							while (res3.next()) {
-								dateHFin = res3.getString(1);
+							while (resBalFin.next()) {
+								dateHFin = resBalFin.getString(1);
 								System.out.println("Fin : " + dateHFin);
 							}
 							System.out.println("Début : " + dateHDeb);
@@ -541,29 +577,265 @@ public class Inte_Acquisition extends JFrame {
 									stringToDate(dateHDeb));
 
 							System.out.println(temps);
+							
+							String attribMB = "SELECT `malusbonus`.`tempsMalusBonus`, `malusbonus`.`malus` FROM `avoir` INNER JOIN `malusbonus` ON `avoir`.`idMB`=`malusbonus`.`idMB` WHERE `avoir`.`idEquipe` =(SELECT `idEquipe` FROM `posséder` WHERE `idDoigt`='"
+									+ lisDoigt.get(i)
+									+ "' && `idCompetition`= '"
+									+ idc
+									+ "') && `avoir`.`idEpreuve` ='"
+									+ idep
+									+ "' &&`avoir`.`idCompetition`= '"
+									+ idc
+									+ "'";
+							System.out.println(attribMB);
+							ResultSet resattribMB = stm.executeQuery(attribMB);
+							while (resattribMB.next()) {
+								String tpsMBstr = resattribMB.getString(1);
+								Date tpsMB = stringToDuree(resattribMB.getString(1));
+								int mal = resattribMB.getInt(2);
+								System.out.println("tpsStr : "+tpsMBstr+" tpsMB : "+tpsMB+ " malus? : "+mal);
+								
+								if(mal==0){
+									temps=substractTwoDates(temps, tpsMB);
+								}else{
+									temps=addTwoDates(temps, tpsMB);
+								}
+							}
+							System.out.println("Tps course +- MB"+temps);
 
-							String tempsStr = dateToString(temps);
-							System.out.println(tempsStr);
 
 							String requeteScorer = "INSERT INTO `scorer`(`idEquipe`, `idEpreuve`, `tempsRealise`, `idCompetition`) VALUES ((SELECT `idEquipe` FROM `posséder` WHERE `idDoigt`='"
 									+ lisDoigt.get(i)
 									+ "'),'"
 									+ idep
 									+ "','"
-									+ tempsStr + "','" + idc + "')";
+									+ dateToString(temps) + "','" + idc + "')";
 
 							BDDupdate(requeteScorer);
 
-							conn.close();
-							res3.close();
 						}
+
+						conn.close();
+						resBalFin.close();
 					}
+
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-
-			} else if (typeCourse.equals("Course d`orientation")) {
+			}
+			/*
+			 * --- Si le type de l'épreuve est une Course d'Orientation
+			 */
+			else if (typeCourse.equals("Course d`orientation")) {
 				System.out.println(" ----- C'est une CO");
+
+				try {
+					for (int i = 0; i < lisDoigt.size(); i++) {
+						System.out.println("... Doigt n°" + lisDoigt.get(i));
+						String dateHDeb = dateCourse;
+						String dateHFin = "";
+
+						String requeteBalFin = "SELECT `pointer`.`dateHeurePointage` FROM `pointer` INNER JOIN `valoir` ON `pointer`.`idBalise` = `valoir`.`idBalise` && `pointer`.`idEpreuve` = `valoir`.`idEpreuve` WHERE `valoir`.`type`= 'Arrivé' && `pointer`.`idCompetition`='"
+								+ idc
+								+ "' && `valoir`.`idCompetition`='"
+								+ idc
+								+ "' && `pointer`.`idEpreuve` = '"
+								+ idep
+								+ "' && `pointer`.`idDoigt`='"
+								+ lisDoigt.get(i) + "'";
+
+						Class.forName("com.mysql.jdbc.Driver");
+						System.out.println("Driver O.K.");
+
+						Connection conn = DataSourceProvider.getDataSource()
+								.getConnection();
+						System.out.println("Connexion effective !");
+						Statement stm = conn.createStatement();
+
+						System.out.println(requeteBalFin);
+
+						ResultSet resBalFin = stm.executeQuery(requeteBalFin);
+
+						/*
+						 * --- Vérifier si la balise de fin n'est pas pointée
+						 */
+						if (!resBalFin.next()) {
+							System.out
+									.println("   ----- Balise de fin non pointée ! -----");
+
+							String requeteScorer = "INSERT INTO `scorer`(`idEquipe`, `idEpreuve`, `tempsRealise`, `idCompetition`) VALUES ((SELECT `idEquipe` FROM `posséder` WHERE `idDoigt`='"
+									+ lisDoigt.get(i)
+									+ "'),'"
+									+ idep
+									+ "',(SELECT `tempsMalusBonus` FROM `malusbonus` WHERE `nomMalusBonus`='abs"
+									+ nomEp
+									+ "' &&`idCompetition`='"
+									+ idc
+									+ "'),'" + idc + "')";
+
+							BDDupdate(requeteScorer);
+
+						}
+						/*
+						 * --- Si la balise de fin est pointée
+						 */
+						else {
+							resBalFin.beforeFirst();
+
+							while (resBalFin.next()) {
+								dateHFin = resBalFin.getString(1);
+								System.out.println("Fin : " + dateHFin);
+							}
+							System.out.println("Début : " + dateHDeb);
+
+							Date temps = substractTwoDates(
+									stringToDate(dateHFin),
+									stringToDate(dateHDeb));
+
+							System.out.println("Tps de course : " + temps);
+
+							String tempsStr = dateToString(temps);
+							System.out.println("Tps de course : " + tempsStr);
+
+							int totBalNonP = 0;
+							String requeteBalNonP = "SELECT `valeurBalise` FROM `valoir` WHERE `idEpreuve`='"
+									+ idep
+									+ "' &&`idBalise`NOT IN (SELECT `idBalise` FROM `pointer` WHERE `idEpreuve`='"
+									+ idep
+									+ "'&& `idDoigt`='"
+									+ lisDoigt.get(i)
+									+ "' && `idCompetition`='" + idc + "')";
+							ResultSet resBalNonP = stm
+									.executeQuery(requeteBalNonP);
+							System.out.println(requeteBalNonP);
+							while (resBalNonP.next()) {
+								totBalNonP += resBalNonP.getInt(1);
+								System.out.println("Tot pts malus : "
+										+ totBalNonP);
+							}
+							System.out.println("Tot pts malus : " + totBalNonP);
+							String tpsMBBalNonPString = "00:00:00";
+
+							String requeteMBBalNonP = "SELECT `tempsMalusBonus` FROM `malusbonus` WHERE `nomMalusBonus`='nonPointageBalise"
+									+ nomEp
+									+ "' && `idCompetition`='"
+									+ idc
+									+ "'";
+							ResultSet resMBBalNonP = stm
+									.executeQuery(requeteMBBalNonP);
+							while (resMBBalNonP.next()) {
+								tpsMBBalNonPString = resMBBalNonP.getString(1);
+								System.out.println("Tps malus si non pointée: "
+										+ tpsMBBalNonPString);
+							}
+
+							Date tpsMBBalNonP = stringToDuree(tpsMBBalNonPString);
+							System.out.println("Temps total malus BnonP : "
+									+ tpsMBBalNonP);
+
+							Date tpsTotBalNonP = multiDate(tpsMBBalNonP,
+									totBalNonP);
+
+							System.out
+									.println("Tps tot pour balise non pointées : "
+											+ tpsTotBalNonP);
+							String tpsTotBalNonPStr = dateToString(tpsTotBalNonP);
+							System.out
+									.println("Tps tot pour balise non pointées en String : "
+											+ tpsTotBalNonPStr);
+
+							Date finEpreuve = addTwoDates(
+									stringToDate(dateCourse),
+									stringToDuree(dureeCourse));
+							System.out.println("Heure début : " + dateCourse
+									+ " Duree : " + dureeCourse
+									+ " Heure fin epreuve : " + finEpreuve);
+
+							Date tpsDepassement = substractTwoDates(
+									stringToDate(dateHFin), finEpreuve);
+							System.out
+									.println("Heure d'arrivée : " + dateHFin
+											+ " Tps de dépassement : "
+											+ tpsDepassement);
+
+							String requeteMBDepas = "SELECT `tempsMalusBonus` FROM `malusbonus` WHERE `nomMalusBonus`='tempsSupp"
+									+ nomEp
+									+ "' && `idCompetition`='"
+									+ idc
+									+ "'";
+							ResultSet resMBDepas = stm
+									.executeQuery(requeteMBDepas);
+							System.out.println(requeteMBDepas);
+							String tpsMBDepas = "00:00:00";
+							while (resMBDepas.next()) {
+								tpsMBDepas = resMBDepas.getString(1);
+								System.out.println("Tps malus si depassement: "
+										+ tpsMBDepas);
+							}
+
+							Date tpsMBDepasDate = stringToDuree(tpsMBDepas);
+							int coeffDepass = tpsMBDepasDate.getSeconds();
+
+							System.out.println("Coeff dépassement : "
+									+ coeffDepass);
+
+							Date tpsTotDepass = multiDate(tpsDepassement,
+									coeffDepass);
+
+							System.out.println("Temps tot de dépassement : "
+									+ tpsTotDepass);
+							
+							String attribMB = "SELECT `malusbonus`.`tempsMalusBonus`, `malusbonus`.`malus` FROM `avoir` INNER JOIN `malusbonus` ON `avoir`.`idMB`=`malusbonus`.`idMB` WHERE `avoir`.`idEquipe` =(SELECT `idEquipe` FROM `posséder` WHERE `idDoigt`='"
+									+ lisDoigt.get(i)
+									+ "' && `idCompetition`= '"
+									+ idc
+									+ "') && `avoir`.`idEpreuve` ='"
+									+ idep
+									+ "' &&`avoir`.`idCompetition`= '"
+									+ idc
+									+ "'";
+							System.out.println(attribMB);
+							ResultSet resattribMB = stm.executeQuery(attribMB);
+							while (resattribMB.next()) {
+								String tpsMBstr = resattribMB.getString(1);
+								Date tpsMB = stringToDuree(resattribMB.getString(1));
+								int mal = resattribMB.getInt(2);
+								System.out.println("tpsStr : "+tpsMBstr+" tpsMB : "+tpsMB+ " malus? : "+mal);
+								
+								if(mal==0){
+									temps=substractTwoDates(temps, tpsMB);
+								}else{
+									temps=addTwoDates(temps, tpsMB);
+								}
+							}
+							System.out.println("Tps course +- MB"+temps);
+
+							Date tpsTot = addTwoDates(temps,
+									addTwoDates(tpsTotBalNonP, tpsTotDepass));
+							System.out.println("Tps epreuve : " + temps
+									+ " tps balnnP : " + tpsTotBalNonP
+									+ " tpsTotal : " + tpsTot);
+
+							String requeteScorer = "INSERT INTO `scorer`(`idEquipe`, `idEpreuve`, `tempsRealise`, `idCompetition`) VALUES ((SELECT `idEquipe` FROM `posséder` WHERE `idDoigt`='"
+									+ lisDoigt.get(i)
+									+ "'),'"
+									+ idep
+									+ "','"
+									+ dateToString(tpsTot) + "','" + idc + "')";
+
+							BDDupdate(requeteScorer);
+
+							resBalNonP.close();
+							resMBBalNonP.close();
+
+							conn.close();
+							resBalFin.close();
+						}
+					}
+
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 
 			} else {
 				System.out.println("Problèèèèèèèèèèèèèèèèèèèèèèèème");
@@ -787,7 +1059,7 @@ public class Inte_Acquisition extends JFrame {
 		if (calTemps.get(Calendar.DAY_OF_MONTH) != 1) {
 			h += 24 * (calTemps.get(Calendar.DAY_OF_MONTH) - 1);
 		}
-		h += calTemps.get(Calendar.HOUR);
+		h += calTemps.get(Calendar.HOUR_OF_DAY);
 		m += calTemps.get(Calendar.MINUTE);
 		s += calTemps.get(Calendar.SECOND);
 
@@ -810,7 +1082,6 @@ public class Inte_Acquisition extends JFrame {
 		}
 
 		HHmmss += hh + ":" + mm + ":" + ss;
-
 		return HHmmss;
 	}
 
@@ -830,6 +1101,20 @@ public class Inte_Acquisition extends JFrame {
 		sumCalendar.add(Calendar.HOUR, 1);
 
 		return sumCalendar;
+	}
+
+	public Date multiDate(Date d1, int coef) {
+		Date multi = stringToDuree("00:00:00");
+		// Date res = addTwoDates(d1, d1);
+		if (coef != 0) {
+			for (int i = 0; i < coef; i++) {
+				multi = addTwoDates(d1, multi);
+				System.out.println("durée : " + d1 + "Total : " + multi);
+			}
+		} else {
+			multi = stringToDuree("00:00:00");
+		}
+		return multi;
 	}
 
 	public Date addTwoDates(Date d1, Date d2) {

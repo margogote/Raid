@@ -97,8 +97,8 @@ public class Inte_Acquisition_MB extends JFrame {
 
 				int idMB = mbLis.get(mbC.getSelectedIndex() - 1);
 				System.out.println("idMB : " + idMB);
-				String requeteSQL = "INSERT INTO `avoir`(`idMB`, `idEquipe`, `tempsTotalMalusBonus`, `idCompetition`) VALUES ('"
-						+ idMB + "','" + ideq + "','00:00:01','" + idc + "')";
+				String requeteSQL = "INSERT INTO `avoir`(`idMB`, `idEquipe`, `tempsTotalMalusBonus`, `idCompetition`,`idEpreuve` ) VALUES ('"
+						+ idMB + "','" + ideq + "','00:00:01','" + idc + "', '"+idep+"')";
 				System.out.println(requeteSQL);
 				BDDupdate(requeteSQL);
 

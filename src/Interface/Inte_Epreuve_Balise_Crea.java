@@ -36,7 +36,7 @@ public class Inte_Epreuve_Balise_Crea extends JFrame {
 	private JComboBox<Object> baliseC = new JComboBox<Object>();
 
 	JLabel typeL = new JLabel("Type");
-	private String[] typeS = { "CHOISIR", "Debut", "Pause Midi",
+	private String[] typeS = { "CHOISIR", "Debut", "Pause Midi","Intermediaire",
 			"Fin Pause Midi", "Arrivé" };
 	private JComboBox<Object> typeC = new JComboBox<Object>(typeS);
 

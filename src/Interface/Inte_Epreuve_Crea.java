@@ -241,68 +241,110 @@ public class Inte_Epreuve_Crea extends JFrame {
 			String date = (String) dateT.getText();
 			String duree = (String) dureeT.getText();
 			String abs = (String) absT.getText();
-
-			String requeteSQL = "INSERT INTO `epreuve` (`nomEpreuve`, `typeEpreuve`, `difficulte`, `dateHeureEpreuve`, `dureeEpreuve`, `idCompetition`) VALUES ('"
-					+ nom
-					+ "', '"
-					+ type
-					+ "', '"
-					+ difficulte
-					+ "', '"
-					+ date
-					+ "', '" + duree + "', '" + idc + "')";
-			System.out.println(requeteSQL);
-			BDDupdate(requeteSQL);
-
-			String requeteSQL2 = "SELECT `epreuve`.`idEpreuve`  FROM `epreuve` WHERE `nomEpreuve` = '"
-					+ nom
-					+ "'&& `typeEpreuve` = '"
-					+ type
-					+ "'&& `difficulte`='"
-					+ difficulte
-					+ "'&& `dateHeureEpreuve`='"
-					+ date
-					+ "'&& `dureeEpreuve`=  '"
-					+ duree
-					+ "'&& `idCompetition`='" + idc + "'";
-			System.out.println(requeteSQL2);
-
 			try {
-				Class.forName("com.mysql.jdbc.Driver");
-				System.out.println("Driver O.K.");
+				if (nom.equals("") || type.equals("CHOISIR")
+						|| difficulte.equals("CHOISIR")
+						|| date.equals("AAAA-MM-JJ hh:mm:ss")
+						|| date.equals("") || duree.equals("hh:mm:ss")
+						|| duree.equals("") || abs.equals("hh:mm:ss")
+						|| abs.equals("")) {
+					JOptionPane.showMessageDialog(null,
+							"Veuillez remplir tous les champs",
+							"Paramètres non créés!",
+							JOptionPane.WARNING_MESSAGE);
+				} else {
 
-				Connection conn = DataSourceProvider.getDataSource()
-						.getConnection();
-				System.out.println("Connexion effective !");
-				Statement stm = conn.createStatement();
-				ResultSet res = stm.executeQuery(requeteSQL2);
+					String testTpsdate[] = date.split("-| |:");
+					String testTpsduree[] = duree.split(":");
+					String testTpsabs[] = abs.split(":");
+					for (int i = 0; i < testTpsdate.length; i++) {
+						System.out.println(testTpsdate[i]);
+						Integer.parseInt(testTpsdate[i]);
+					}
+					for (int i = 0; i < testTpsduree.length; i++) {
+						System.out.println(testTpsduree[i]);
+						Integer.parseInt(testTpsduree[i]);
+					}
+					for (int i = 0; i < testTpsabs.length; i++) {
+						System.out.println(testTpsabs[i]);
+						Integer.parseInt(testTpsabs[i]);
+					}
+					
+					String requeteSQL = "INSERT INTO `epreuve` (`nomEpreuve`, `typeEpreuve`, `difficulte`, `dateHeureEpreuve`, `dureeEpreuve`, `idCompetition`) VALUES ('"
+							+ nom
+							+ "', '"
+							+ type
+							+ "', '"
+							+ difficulte
+							+ "', '"
+							+ date
+							+ "', '"
+							+ duree
+							+ "', '"
+							+ idc
+							+ "')";
+					System.out.println(requeteSQL);
+					BDDupdate(requeteSQL);
 
-				while (res.next()) {
-					idEp = res.getInt(1);
-					System.out.println("Num Epreuve : " + res.getString(1));
+					String requeteSQL2 = "SELECT `epreuve`.`idEpreuve`  FROM `epreuve` WHERE `nomEpreuve` = '"
+							+ nom
+							+ "'&& `typeEpreuve` = '"
+							+ type
+							+ "'&& `difficulte`='"
+							+ difficulte
+							+ "'&& `dateHeureEpreuve`='"
+							+ date
+							+ "'&& `dureeEpreuve`=  '"
+							+ duree
+							+ "'&& `idCompetition`='" + idc + "'";
+					System.out.println(requeteSQL2);
 
+					try {
+						Class.forName("com.mysql.jdbc.Driver");
+						System.out.println("Driver O.K.");
+
+						Connection conn = DataSourceProvider.getDataSource()
+								.getConnection();
+						System.out.println("Connexion effective !");
+						Statement stm = conn.createStatement();
+						ResultSet res = stm.executeQuery(requeteSQL2);
+
+						while (res.next()) {
+							idEp = res.getInt(1);
+							System.out.println("Num Epreuve : "
+									+ res.getString(1));
+
+						}
+						System.out.println("Num Epreuve+ : " + idEp);
+
+						conn.close();
+						res.close();
+
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+
+					String requeteSQL3 = "INSERT INTO `malusbonus` (`idMB`, `nomMalusBonus`, `malus`, `tempsMalusBonus`, `idCompetition`) VALUES (NULL, 'abs"
+							+ nom + "', '1', '" + abs + "', '" + idc + "')";
+
+					System.out.println("Création MB : " + requeteSQL);
+					BDDupdate(requeteSQL3);
+
+					InterfaceBa();
+
+					if (type.equals("Course d`orientation")) {
+						Inte_Epreuve_CO co = new Inte_Epreuve_CO(idc, idEp, nom);
+					}
 				}
-				System.out.println("Num Epreuve+ : " + idEp);
-
-				conn.close();
-				res.close();
-
 			} catch (Exception e) {
-				e.printStackTrace();
+				System.out.println("Je ne suis pas un entier");
+				JOptionPane
+						.showMessageDialog(null,
+								"Veuillez entrer une heure de type hh:mm:ss et une date de type AAAA-MM-JJ hh:mm:ss",
+								"Epreuve non créée!",
+								JOptionPane.WARNING_MESSAGE);
+
 			}
-
-			String requeteSQL3 = "INSERT INTO `malusbonus` (`idMB`, `nomMalusBonus`, `malus`, `tempsMalusBonus`, `idCompetition`) VALUES (NULL, 'abs"
-					+ nom + "', '1', '" + abs + "', '" + idc + "')";
-
-			System.out.println("Création MB : " + requeteSQL);
-			BDDupdate(requeteSQL3);
-
-			InterfaceBa();
-
-			if (type.equals("Course d`orientation")) {
-				Inte_Epreuve_CO co = new Inte_Epreuve_CO(idc, idEp, nom);
-			}
-
 		}
 	}
 

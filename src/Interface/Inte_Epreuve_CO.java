@@ -32,8 +32,8 @@ public class Inte_Epreuve_CO extends JFrame {
 	private JTextField mBT = new JTextField("hh:mm:ss");
 
 	private JLabel dureeL = new JLabel(
-			"Durée supplémentaire par minute de dépassement");
-	private JTextField dureeT = new JTextField("hh:mm:ss");
+			"Coefficient multiplicateur par minute de dépassement");
+	private JTextField dureeT = new JTextField("");
 
 	private JButton oK = new JButton("Suivant");
 	private JButton annuler = new JButton("Annuler");
@@ -96,31 +96,47 @@ public class Inte_Epreuve_CO extends JFrame {
 			String mb = mBT.getText();
 			String tps = dureeT.getText();
 
-			if (mb.equals("") || mb.equals("hh:mm:ss") || tps.equals("")
-					|| tps.equals("hh:mm:ss")) {
+			if (mb.equals("") || mb.equals("hh:mm:ss") || tps.equals("")) {
 				JOptionPane.showMessageDialog(null,
 						"Veuillez remplir tous les champs",
 						"Paramètres non créés!", JOptionPane.WARNING_MESSAGE);
 			} else {
-				String requeteSQL = "INSERT INTO `malusbonus` (`idMB`, `nomMalusBonus`, `malus`, `tempsMalusBonus`, `idCompetition`) VALUES (NULL, 'nonPointageBalise"
-						+ nomEp
-						+ "', '1', '"
-						+ mb
-						+ "', '"
-						+ idc
-						+ "'), (NULL, 'tempsSupplementaire"
-						+ nomEp
-						+ "', '1', '" + tps + "', '" + idc + "')";
+				try {
+					String testTpsduree[] = mb.split(":");
+					Integer.parseInt(tps);
+					for (int i = 0; i < testTpsduree.length; i++) {
+						System.out.println(testTpsduree[i]);
+						Integer.parseInt(testTpsduree[i]);
+					}
+					
+					String requeteSQL = "INSERT INTO `malusbonus` (`idMB`, `nomMalusBonus`, `malus`, `tempsMalusBonus`, `idCompetition`) VALUES (NULL, 'nonPointageBalise"
+							+ nomEp
+							+ "', '1', '"
+							+ mb
+							+ "', '"
+							+ idc
+							+ "'), (NULL, 'tempsSupp"
+							+ nomEp
+							+ "', '1', '00:00:" + tps + "', '" + idc + "')";
 
-				System.out.println("Création MB : " + requeteSQL);
-				BDDupdate(requeteSQL);
+					System.out.println("Création MB : " + requeteSQL);
+					BDDupdate(requeteSQL);
 
-				JOptionPane.showMessageDialog(null,
-						"Les paramètres sont rentrés dans Malus/Bonus", nomEp
-								+ " paramétrée!",
-						JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(null,
+							"Les paramètres sont rentrés dans Malus/Bonus",
+							nomEp + " paramétrée!",
+							JOptionPane.INFORMATION_MESSAGE);
 
-				theFrame.dispose();
+					theFrame.dispose();
+				} catch (Exception e) {
+					System.out.println("Je ne suis pas un entier");
+					JOptionPane
+							.showMessageDialog(
+									null,
+									"Veuillez entrer une heure de type hh:mm:ss et un coefficient entier",
+									"Paramètres non créée!",
+									JOptionPane.WARNING_MESSAGE);
+				}
 			}
 		}
 	}

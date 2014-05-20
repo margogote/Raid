@@ -305,10 +305,9 @@ public class Inte_Acquisition_Modif extends JFrame {
 						JOptionPane.YES_NO_OPTION);
 
 				if (rep == 0) {
-					String requeteSQL = "DELETE FROM `avoir` WHERE `avoir`.`idMB` = '"
-							+ tab[i]
-							+ "' && `avoir`.`idEquipe` ='"
-							+ ideq
+					String requeteSQL = "DELETE FROM `avoir` WHERE `idMB` = '"
+							+ tab[i] + "' && `idEquipe` ='" + ideq
+							+ "' && `idEpreuve` ='" + idep
 							+ "' && `idCompetition` = '" + idc + "'";
 					BDDupdate(requeteSQL);
 
@@ -395,6 +394,8 @@ public class Inte_Acquisition_Modif extends JFrame {
 				+ idc
 				+ "' && `avoir`.`idCompetition`='"
 				+ idc
+				+ "'&& `avoir`.`idEpreuve` = '"
+				+ idep
 				+ "' && `avoir`.`idEquipe`='" + ideq + "'";
 
 		try {
@@ -406,6 +407,7 @@ public class Inte_Acquisition_Modif extends JFrame {
 			System.out.println("Connexion effective !");
 			Statement stm = conn.createStatement();
 			ResultSet res = stm.executeQuery(requeteSQL);
+			System.out.println(requeteSQL);
 			while (res.next()) {
 				ArrayData.add(new Object[] { new Boolean(false), res.getInt(1),
 						res.getString(2), res.getString(3), res.getString(4) });

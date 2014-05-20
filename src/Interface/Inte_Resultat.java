@@ -94,7 +94,6 @@ public class Inte_Resultat extends JPanel {
 
 	/**
 	 * Classe principale
-	 * 
 	 * @param idC
 	 *            , l'id de la compétition étudiée
 	 */
@@ -104,8 +103,7 @@ public class Inte_Resultat extends JPanel {
 		bG.add(epreuveR);
 		bG.add(jourR);
 		bG.add(generalR);
-		bG.add(deAR);																	/* !!!!!!!!!!!!!!!!!!  */
-
+		bG.add(deAR);			
 		Interface();
 
 		EcouteurCl clas = new EcouteurCl();

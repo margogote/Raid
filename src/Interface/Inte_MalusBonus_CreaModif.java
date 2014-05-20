@@ -22,7 +22,8 @@ import javax.swing.JTextField;
 import BDD.DataSourceProvider;
 
 /**
- * Formulaire permettant de renseigner les informations pour créer/modifier un Malus/Bonus
+ * Formulaire permettant de renseigner les informations pour créer/modifier un
+ * Malus/Bonus
  * 
  * @author Margaux
  * 
@@ -86,7 +87,7 @@ public class Inte_MalusBonus_CreaModif extends JFrame {
 
 				while (res.next()) {
 					nomT.setText(res.getString(2));
-					typeC.setSelectedIndex(res.getInt(3)+1);
+					typeC.setSelectedIndex(res.getInt(3) + 1);
 					tpsT.setText(res.getString(4));
 				}
 				conn.close();
@@ -144,43 +145,59 @@ public class Inte_MalusBonus_CreaModif extends JFrame {
 
 		public void actionPerformed(ActionEvent arg0) {
 			String nom = nomT.getText();
-			
-			int type = typeC.getSelectedIndex()-1;
+
+			int type = typeC.getSelectedIndex() - 1;
 			String tps = tpsT.getText();
 
-			if (nom.equals("") || type == -1 || tps.equals("")
-					|| tps.equals("hh:mm:ss")) {
+			try {
+				if (nom.equals("") || type == -1 || tps.equals("")
+						|| tps.equals("hh:mm:ss")) {
+					JOptionPane.showMessageDialog(null,
+							"Veuillez remplir tous les champs",
+							"Malus/Bonus non créée!",
+							JOptionPane.WARNING_MESSAGE);
+
+				} else {
+					String testTps[]=tps.split(":");
+					for(int i=0;i<testTps.length;i++){
+						System.out.println(testTps[i]);
+						Integer.parseInt(testTps[i]);
+					}
+					if (modif == -1) {
+					String requeteSQL = "INSERT INTO `malusbonus` (`nomMalusBonus`, `malus`, `tempsMalusBonus`, `idCompetition`) VALUES ('"
+							+ nom
+							+ "', '"
+							+ type
+							+ "', '"
+							+ tps
+							+ "', '"
+							+ idc
+							+ "')";
+					BDDupdate(requeteSQL);
+
+					thePanel.dispose();
+				} else {
+					
+					}
+					String requeteSQL = "UPDATE `malusbonus` SET `nomMalusBonus` = '"
+							+ nom
+							+ "',`malus` = '"
+							+ type
+							+ "', `tempsMalusBonus`='"
+							+ tps
+							+ "' WHERE idMB = '"
+							+ modif
+							+ "' && `idCompetition`='" + idc + "'";
+
+					BDDupdate(requeteSQL);
+
+					thePanel.dispose();
+				}
+			} catch (Exception e) {
+				System.out.println("Je ne suis pas un entier");
 				JOptionPane.showMessageDialog(null,
-						"Veuillez remplir tous les champs",
-						"Malus/Bonus non créée!", JOptionPane.WARNING_MESSAGE);
-
-			} else if (modif == -1) {
-				String requeteSQL = "INSERT INTO `malusbonus` (`nomMalusBonus`, `malus`, `tempsMalusBonus`, `idCompetition`) VALUES ('"
-						+ nom
-						+ "', '"
-						+ type
-						+ "', '"
-						+ tps
-						+ "', '"
-						+ idc
-						+ "')";
-				BDDupdate(requeteSQL);
-
-				thePanel.dispose();
-			} else {
-				String requeteSQL = "UPDATE `malusbonus` SET `nomMalusBonus` = '"
-						+ nom
-						+ "',`malus` = '"
-						+ type
-						+ "', `tempsMalusBonus`='"
-						+ tps
-						+ "' WHERE idMB = '"
-						+ modif
-						+ "' && `idCompetition`='" + idc + "'";
-
-				BDDupdate(requeteSQL);
-
-				thePanel.dispose();
+						"Veuillez entrer une heure de type hh:mm:ss",
+						"Malus/Bonus non modifié!", JOptionPane.WARNING_MESSAGE);
 			}
 		}
 	}
@@ -197,11 +214,11 @@ public class Inte_MalusBonus_CreaModif extends JFrame {
 	}
 
 	/**
-     * Effectue une requête de mise à jour et de gestion dans la BDD.
-     * 
-     * @param requeteSQL
-     * 			La requête SQL à saisir dans la BDD
-     */
+	 * Effectue une requête de mise à jour et de gestion dans la BDD.
+	 * 
+	 * @param requeteSQL
+	 *            La requête SQL à saisir dans la BDD
+	 */
 	public void BDDupdate(String requeteSQL) {
 		try {
 
