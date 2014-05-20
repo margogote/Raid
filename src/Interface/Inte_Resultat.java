@@ -8,6 +8,13 @@ import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -23,12 +30,14 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 
 import BDD.DataSourceProvider;
-import Interface.Inte_Epreuve_Modif.EcouteurPlus;
+import Classements.Classement;
+import Classements.Filtre;
+import Models.Equipe;
 import Models.TabModel;
 
 /**
- * Onglet Resultat : Permet de générer un classement en fonction de différents
- * filtres, permet(ra) de générer un PDF résumant ce classement et de l'imprimer
+ * Onglet Resultat : Permet de generer un classement en fonction de differents
+ * filtres, permet(ra) de generer un PDF resumant ce classement et de l'imprimer
  * 
  * @author Margaux
  * 
@@ -40,28 +49,26 @@ public class Inte_Resultat extends JPanel {
 	private JRadioButton epreuveR = new JRadioButton("Epreuve");
 	private JRadioButton jourR = new JRadioButton("Journée");
 	private JRadioButton generalR = new JRadioButton("Général");
-	
-	private JRadioButton deAR = new JRadioButton("De ");									/* !!!!!!!!!!!!!!!!!!  */
+	private JRadioButton deAR = new JRadioButton("De ");
 
 	/* Combo */
-	private String[] grpS = { "CHOISIR", "Etudiant", "Salarié" };
-	private String[] diffS = { "CHOISIR", "Aventure", "Expert" };
-	private String[] catS = { "CHOISIR", "Masculin", "Feminin", "Mixte" };
+	private String[] init = { "CHOISIR" };
+	// private String[] diffS = { "CHOISIR", "Aventure", "Expert" };
+	// private String[] catS = { "CHOISIR", "Masculin", "Feminin", "Mixte" };
 
-	private JComboBox<String> epreuveC = new JComboBox<String>();
-	private JComboBox<String> diffC = new JComboBox<String>(diffS);
-	private JComboBox<String> grpC = new JComboBox<String>(grpS);
-	private JComboBox<String> catC = new JComboBox<String>(catS);
+	private JComboBox<String> epreuveC = new JComboBox<String>(init);
+	private JComboBox<String> diffC = new JComboBox<String>(init);
+	private JComboBox<String> grpC = new JComboBox<String>(init);
+	private JComboBox<String> catC = new JComboBox<String>(init);
 
 	/* Labels */
 	private JLabel diffL = new JLabel("Difficulté");
 	private JLabel grpL = new JLabel("Groupe");
 	private JLabel catL = new JLabel("Catégorie");
-	private JTextField jourL= new JTextField("AAAA-MM-JJ hh:mm:ss");
-
-	private JLabel aL = new JLabel(" à ");													/* !!!!!!!!!!!!!!!!!!  */
-	private JTextField deT= new JTextField("AAAA-MM-JJ");							/* !!!!!!!!!!!!!!!!!!  */
-	private JTextField aT= new JTextField("AAAA-MM-JJ");							/* !!!!!!!!!!!!!!!!!!  */
+	private JTextField jourL = new JTextField("AAAA-MM-JJ");
+	private JLabel aL = new JLabel(" à ");
+	private JTextField deT = new JTextField("AAAA-MM-JJ");
+	private JTextField aT = new JTextField("AAAA-MM-JJ");
 
 	/* Boutons */
 	private JButton print = new JButton("Imprimer");
@@ -72,10 +79,12 @@ public class Inte_Resultat extends JPanel {
 	private TabModel tabModel;
 	private JTable tableau;
 	private Object[][] data = {};
-	private String title[] = { "", "Rang", "Dossard", "Catégorie",
-			"Nom équipe", "Temps", "Point", "Tps Total" };
+	private String title[] = { "Rang", "Dossard", "Catégorie", "Nom équipe",
+			"Temps" };
 
 	/* JPanel */
+	private JPanel deP = new JPanel();
+	private JPanel aP = new JPanel(); 
 
 	private JPanel generalP = new JPanel();
 	private JPanel checkPanel = new JPanel();
@@ -96,17 +105,19 @@ public class Inte_Resultat extends JPanel {
 
 	/**
 	 * Classe principale
+	 * 
 	 * @param idC
-	 *            , l'id de la compétition étudiée
+	 *            , l'id de la competition etudiee
 	 */
 	public Inte_Resultat(int idC) {
 		idc = idC;
 
+		generalR.setSelected(true);
 		bG.add(epreuveR);
 		bG.add(jourR);
 		bG.add(generalR);
-		bG.add(deAR);			
-		Interface();
+
+		updateTable();
 
 		EcouteurCl clas = new EcouteurCl();
 		classement.addActionListener(clas);
@@ -119,22 +130,25 @@ public class Inte_Resultat extends JPanel {
 	}
 
 	/**
-	 * Fonction gérant l'interface du panel
+	 * Fonction gerant l'interface du panel
 	 */
 	public void Interface() {
+		panTitre.removeAll();
+		checkPanel.removeAll();
 		generalP.add(generalR);
-		
-		JPanel deP = new JPanel();																/* !!!!!!!!!!!!!!!!!!  */
-		deP.setLayout(new BorderLayout());												/* !!!!!!!!!!!!!!!!!!  */
-		deP.add(deAR, BorderLayout.WEST);
-		deP.add(deT, BorderLayout.CENTER);																/* !!!!!!!!!!!!!!!!!!  */
 
 		
-		JPanel aP = new JPanel();																/* !!!!!!!!!!!!!!!!!!  */
-		aP.setLayout(new BorderLayout());																/* !!!!!!!!!!!!!!!!!!  */
-		aP.add(aL, BorderLayout.WEST);																/* !!!!!!!!!!!!!!!!!!  */
-		aP.add(aT, BorderLayout.CENTER);																/* !!!!!!!!!!!!!!!!!!  */
+		deP.setLayout(new BorderLayout());
+		deP.add(deAR, BorderLayout.WEST);
+		deP.add(deT, BorderLayout.CENTER);
+
 		
+		aP.setLayout(new BorderLayout()); 
+		aP.add(aL, BorderLayout.WEST); 
+		aP.add(aT, BorderLayout.CENTER);
+
+		checkPanel.setBorder(BorderFactory
+				.createTitledBorder("Type de classement"));
 		checkPanel.setPreferredSize(new Dimension(350, 100));
 		checkPanel.setLayout(new GridLayout(4, 2));
 		checkPanel.add(epreuveR);
@@ -142,14 +156,18 @@ public class Inte_Resultat extends JPanel {
 		checkPanel.add(jourR);
 		checkPanel.add(jourL);
 		checkPanel.add(generalR);
-		checkPanel.add(new JPanel());																/* !!!!!!!!!!!!!!!!!!  */
-		checkPanel.add(deP);																/* !!!!!!!!!!!!!!!!!!  */
-		checkPanel.add(aP);																/* !!!!!!!!!!!!!!!!!!  */
-		
-		updateCombo(epreuveC);
+		checkPanel.add(new JPanel());
+		checkPanel.add(deP); 
+		checkPanel.add(aP);
+
+		updateComboEpreuve(epreuveC);
+		updateComboEquipe(catC, "typeEquipe");
+		updateComboEquipe(grpC, "nomGroupe");
+		updateComboEquipe(diffC, "typeDifficulte");
 
 		filtreP.setBorder(BorderFactory.createTitledBorder("Filtres"));
-		filtreP.setPreferredSize(new Dimension(260, 110));
+		// filtreP.setLayout(new BoxLayout(filtreP, BoxLayout.PAGE_AXIS));
+		filtreP.setPreferredSize(new Dimension(250, 100));
 		filtreP.setLayout(new GridLayout(3, 2));
 		filtreP.add(diffL);
 		filtreP.add(diffC);
@@ -163,8 +181,8 @@ public class Inte_Resultat extends JPanel {
 
 		choixP.setBorder(BorderFactory
 				.createTitledBorder("Ici vous pouvez générer les classements"));
-		choixP.setPreferredSize(new Dimension(750, 140));
-		choixP.add(checkPanel);												
+		choixP.setPreferredSize(new Dimension(750, 135));
+		choixP.add(checkPanel);
 		choixP.add(filtreP);
 		choixP.add(classementPB);
 
@@ -178,7 +196,7 @@ public class Inte_Resultat extends JPanel {
 		panBoutonsListe.add(imprePB);
 		panBoutonsListe.add(telechPB);
 
-		// Nous ajoutons notre tableau à notre contentPane dans un scroll
+		// Nous ajoutons notre tableau a notre contentPane dans un scroll
 		// Sinon les titres des colonnes ne s'afficheront pas !
 		tabModel = new TabModel(data, title);
 		tableau = new JTable(tabModel);
@@ -200,18 +218,18 @@ public class Inte_Resultat extends JPanel {
 	}
 
 	/**
-     * Permet de gérer les clics du type "Classement".
-     */
+	 * Permet de gerer les clics du type "Classement".
+	 */
 	public class EcouteurCl implements ActionListener { // Action du quitter
 
 		public void actionPerformed(ActionEvent arg0) {
-
+			updateTable();
 		}
 	}
 
 	/**
-     * Permet de gérer les clics du type "Telecharger PDF".
-     */
+	 * Permet de gerer les clics du type "Telecharger PDF".
+	 */
 	public class EcouteurPDF implements ActionListener { // Action du quitter
 
 		public void actionPerformed(ActionEvent arg0) {
@@ -221,8 +239,8 @@ public class Inte_Resultat extends JPanel {
 	}
 
 	/**
-     * Permet de gérer les clics du type "Imprimer".
-     */
+	 * Permet de gerer les clics du type "Imprimer".
+	 */
 	public class EcouteurPrint implements ActionListener { // Action du quitter
 
 		public void actionPerformed(ActionEvent arg0) {
@@ -232,12 +250,14 @@ public class Inte_Resultat extends JPanel {
 	}
 
 	/**
-     * Met à jour la comboBox pour la remplir avec les épeuves présentes dans la BDD.
-     * 
-     * @param combo
-     * 			La comboBox à mettre à jour
-     */
-	public void updateCombo(JComboBox<String> combo) {
+	 * Met a jour la comboBox pour la remplir avec les epeuves presentes dans la
+	 * BDD.
+	 * 
+	 * @param combo
+	 *            La comboBox a mettre a jour
+	 */
+	public void updateComboEpreuve(JComboBox<String> combo) {
+		Object itemSelectione = combo.getSelectedItem();
 		combo.removeAllItems();
 		String requeteSQL = "SELECT nomEpreuve FROM epreuve WHERE idCompetition = '"
 				+ idc + "'";
@@ -269,6 +289,183 @@ public class Inte_Resultat extends JPanel {
 			epreuveR.setEnabled(true);
 		}
 		System.out.println("MAJ Combo");
+		combo.setSelectedItem(itemSelectione);
+	}
+
+	/**
+	 * Met a jour la comboBox pour la remplir avec les elements presents dans la
+	 * BDD en fonction du champ demande
+	 * 
+	 * @param combo
+	 *            , la combo a mettre a jour
+	 * @param nomChampBDD
+	 *            , le champ qui dont les items doivent remplir la combo
+	 */
+	public void updateComboEquipe(JComboBox<String> combo, String nomChampBDD) {
+		int indexSelectione = combo.getSelectedIndex();
+		combo.removeAllItems();
+		combo.addItem("CHOISIR");
+		String requeteSQL = "SELECT DISTINCT " + nomChampBDD
+				+ " FROM equipe WHERE idCompetition = '" + idc + "' ORDER BY "
+				+ nomChampBDD + " ASC";
+
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			System.out.println("Driver O.K.");
+
+			Connection conn = DataSourceProvider.getDataSource()
+					.getConnection();
+			System.out.println("Connexion effective !");
+			Statement stm = conn.createStatement();
+			ResultSet res = stm.executeQuery(requeteSQL);
+
+			while (res.next()) {
+				combo.addItem(res.getString(1));
+			}
+
+			conn.close();
+			res.close();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("MAJ Combo");
+		combo.setSelectedIndex(indexSelectione);
+	}
+
+	/**
+	 * Mise a jour du tableau avec le bon classement
+	 * 
+	 * @return, le tableau pas mis en forme
+	 */
+	public Object[][] updateTable() {
+
+		// Declarations de variables
+		Filtre filtre;
+		ArrayList<Object[]> ArrayData = new ArrayList<>();
+		String difficulteEq, groupeEq, typeEq;
+
+		// ----Creation de la liste de dates----
+		ArrayList<Date> dates = new ArrayList<>();
+		Date date = new Date();
+		// -------------------------------
+
+		// ----Creation de la liste de noms d'epreuve----
+		ArrayList<String> nomsEpreuves = new ArrayList<>();
+		// -------------------------------
+
+		// -------------- DEBUT - Selection des conditions----------------
+		// Si classement par date
+		if (jourR.isSelected()) {
+			DateFormat dfm = new SimpleDateFormat("yyyy-MM-dd");
+			dfm.setTimeZone(TimeZone.getTimeZone("Europe/Paris"));
+			try {
+				date = dfm.parse(jourL.getText());
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+
+			dates.add(date);
+		}// Si classement par épreuve
+		else if (epreuveR.isSelected()) {
+			nomsEpreuves.add(epreuveC.getSelectedItem().toString());
+		}// Sinon classement général
+
+		// selon la difficultee
+		if (diffC.getSelectedIndex() > 0) {
+			difficulteEq = diffC.getSelectedItem().toString();
+		} else
+			difficulteEq = "";
+
+		// selon le groupe
+		if (grpC.getSelectedIndex() > 0) {
+			groupeEq = grpC.getSelectedItem().toString();
+		} else
+			groupeEq = "";
+
+		// selon le type d'equipe
+		if (catC.getSelectedIndex() > 0) {
+			typeEq = catC.getSelectedItem().toString();
+		} else
+			typeEq = "";
+
+		// Création du filtre selon les conditions determinees ci-avant
+		filtre = new Filtre(difficulteEq, groupeEq, typeEq, nomsEpreuves, idc);
+		// ---------------------- FIN -------------------------
+
+		// On genere le classement
+		Classement testClassement = new Classement(dates, filtre, idc);
+
+		// On extrait le classement
+		ArrayList<Equipe> equipesClassees = testClassement.getClassement();
+
+		// On affiche le classement dans le tableau
+		int i;
+		for (i = 0; i < equipesClassees.size(); i++) {
+			Equipe eq = equipesClassees.get(i);
+			ArrayData.add(new Object[] { i + 1, eq.getDossard(),
+					eq.getTypeEquipe(), eq.getNomEquipe(),
+					dateToString(eq.getScore()) });
+			System.out.println("Rang : " + i + 1 + " Dossard : "
+					+ eq.getDossard() + " Type d'equipe : "
+					+ eq.getTypeEquipe() + " Nom equipe : " + eq.getNomEquipe()
+					+ " Score : " + dateToString(eq.getScore()));
+		}
+
+		data = ArrayToTab(ArrayData);
+
+		Interface();
+
+		System.out.println(data);
+		System.out.println("MAJ Table");
+		return data;
+	}
+
+	/**
+	 * Met en forme un tableau
+	 * 
+	 * @param array
+	 *            , tableau a mettre en forme
+	 * @return, tableau mise en forme
+	 */
+	public Object[][] ArrayToTab(ArrayList<Object[]> array) {
+
+		int lengthLig = array.size();
+		int lengthCol;
+		if (lengthLig > 0) {
+			lengthCol = array.get(0).length;
+		} else {
+			lengthCol = 0;
+		}
+		Object[][] tab = new Object[lengthLig][lengthCol];
+		for (int i = 0; i < lengthLig; i++) {
+			tab[i] = array.get(i);
+		}
+		return tab;
+	}
+
+	public static String dateToString(Date temps) {
+		String HHmmss = "";
+
+		Calendar calTemps = Calendar.getInstance();
+		calTemps.setTime(temps);
+
+		int h, m, s;
+		h = m = s = 0;
+		if (calTemps.get(Calendar.DAY_OF_MONTH) != 1) {
+			h += 24 * (calTemps.get(Calendar.DAY_OF_MONTH) - 1);
+		}
+		h += calTemps.get(Calendar.HOUR);
+		// System.out.println("h = "+h);
+		m += calTemps.get(Calendar.MINUTE);
+		// System.out.println("m = "+m);
+		s += calTemps.get(Calendar.SECOND);
+		// System.out.println("s = "+s);
+
+		HHmmss += h + ":" + m + ":" + s;
+
+		// System.out.println("HHmmss = "+HHmmss);
+		return HHmmss;
 	}
 
 }

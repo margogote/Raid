@@ -12,742 +12,359 @@ import java.util.Date;
 
 import BDD.DataSourceProvider;
 import Models.Equipe;
-
 /**
- * Permet de calculer et produire le classement voulu √† l'instant t
+ * Permet de calculer et produire le classement voulu ‡ l'instant t
  * 
  * @author philippesmessaert
- * 
+ *
  */
 public class Classement {
+
+	
+	private ArrayList<Equipe> classement;
+	
 	/**
-	 * Permet de generer le classement des √©quipes filtrees selon le contenu du
-	 * parametre filtre et uniquement pour les journees appartenant √† la liste
-	 * des journ√©es en parametre
-	 * 
-	 * @param journees
-	 *            ,la liste des journees a prendre en compte
-	 * @param filtre
-	 *            ,objet de type filtre permetant la selection des uniques
-	 *            identifiants d'equipe √† traiter
-	 * @param idc
-	 *            , identifiant de la competition concernee
+	 * setter qui permet de stocker le classement realise 	
+	 * @param classement sous fourme de liste d'equipes
 	 */
-	public Classement(ArrayList<Date> journees, Filtre filtre, int idc) {
-		ArrayList<Equipe> equipes = new ArrayList<>();
-		ArrayList<Integer> idEpreuvesOk = new ArrayList<>();
-		ArrayList<Integer> idEquipesOk = new ArrayList<>();
-
-		idEquipesOk = filtre.getListeIdsFiltres();
-
-		idEpreuvesOk = epreuvesDeCesJournees(journees, idc);
-		// int jj;
-		// for(jj=0;jj<idEpreuvesOk.size();jj++)System.out.println("PPPPPPPPPPPPPPPPPPPPPPP idEpreuve OK => "+idEpreuvesOk.get(jj));
-
-		// "' AND `idEquipe` = '"+idEq+"' AND `idEpreuve` = '"+idEp+
-		String requeteSQL = "SELECT idEquipe,idEpreuve,tempsRealise FROM scorer WHERE `idCompetition` = '"
-				+ idc
-				+ "' AND (("
-				+ listeIdsEnReqSQL("idEpreuve", idEpreuvesOk)
-				+ ") AND ("
-				+ listeIdsEnReqSQL("idEquipe", idEquipesOk) + "))";
-		// SELECT idEquipe,idEpreuve,tempsRealise FROM scorer WHERE
-		// `idCompetition` = 1 AND (idEpreuve= OR idEpreuve = OR idEpreuve =)
-
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			// System.out.println("Driver O.K.");
-
-			Connection conn = DataSourceProvider.getDataSource()
-					.getConnection();
-			// System.out.println("Connexion effective !");
-			Statement stm = conn.createStatement();
-			ResultSet res = stm.executeQuery(requeteSQL);
-
-			while (res.next()) {
-				if (equipeExisteDeja(equipes, res.getInt(1))) {
-					int i;
-					for (i = 0; i < equipes.size(); i++) {
-						if (equipes.get(i).getIdEquipe() == res.getInt(1)) {
-							equipes.get(i).addToScore(
-									stringToDate(res.getString(3)));
-
-							// System.out.println("Ajout de : "+stringToDate(res.getString(3)).toString()+" a l'equipe "+res.getInt(1));
-						}
-						// else
-						// System.out.println("NON PAS PU ETRE AJOUTES : "+stringToDate(res.getString(3)).toString()+" a l'equipe "+res.getInt(1));
-					}
-				} else {
-					equipes.add(new Equipe(res.getInt(1), stringToDate(res
-							.getString(3))));
-					// System.out.println("Ajout Equipe "+res.getInt(1)+" avec un score de : "+stringToDate(res.getString(3)).toString());
-				}
-			}
-			conn.close();
-			res.close();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		requeteSQL = "SELECT idEquipe,avoir.idMB,tempsMalusBonus,malusbonus.malus FROM avoir INNER JOIN malusbonus ON avoir.idMB = malusbonus.idMB WHERE avoir.idCompetition = "
-				+ idc + " ORDER BY malusbonus.malus DESC";
-		// SELECT idEquipe,avoir.idMB,tempsMalusBonus FROM avoir INNER JOIN
-		// malusbonus ON avoir.idMB = malusbonus.idMB WHERE
-		// avoir.idCompetition=1 ORDER BY malusbonus.malus DESC
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			// System.out.println("Driver O.K.");
-
-			Connection conn = DataSourceProvider.getDataSource()
-					.getConnection();
-			// System.out.println("Connexion effective !");
-			Statement stm = conn.createStatement();
-			ResultSet res = stm.executeQuery(requeteSQL);
-
-			while (res.next()) {
-				if (equipeExisteDeja(equipes, res.getInt(1))) {
-					int i;
-					for (i = 0; i < equipes.size(); i++) {
-						if (equipes.get(i).getIdEquipe() == res.getInt(1)) {
-							if (res.getBoolean(4)) {
-								equipes.get(i).addToScore(
-										stringToDate(res.getString(3)));
-							} else
-								equipes.get(i).getFromScore(
-										stringToDate(res.getString(3)));
-
-							// System.out.println("Ajout de : "+stringToDate(res.getString(3)).toString()+" a l'equipe "+res.getInt(1));
-						}
-						// else
-						// System.out.println("NON PAS PU ETRE AJOUTES : "+stringToDate(res.getString(3)).toString()+" a l'equipe "+res.getInt(1));
-					}
-				} else {
-					if (res.getBoolean(4)) {
-						equipes.add(new Equipe(res.getInt(1), stringToDate(res
-								.getString(3))));
-					} else
-						equipes.add(new Equipe(res.getInt(1),
-								stringToDate("00:00:00")));
-					// System.out.println("Ajout Equipe "+res.getInt(1)+" avec un score de : "+stringToDate(res.getString(3)).toString());
-				}
-			}
-			conn.close();
-			res.close();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		equipes = classeLesEquipes(equipes, idc);
-		int j;
-		for (j = 0; j < equipes.size(); j++) {
-			System.out.println("Id equipe " + j + " au classement => "
-					+ equipes.get(j).getIdEquipe() + " score = "
-					+ equipes.get(j).getScore().toString());
-		}
+	public void setClassement (ArrayList<Equipe> classement){
+		this.classement=classement;
 	}
-
 	/**
-	 * /** Permet de generer le classement des equipes filtrees selon le contenu
-	 * du parametre filtre
-	 * 
-	 * @param filtre
-	 *            , objet de type filtre permetant la selection des uniques
-	 *            identifiants d'√©quipe √† traiter
-	 * @param idc
-	 *            , identifiant de la comp√©tition concernee
+	 * getter qui permet de recuperer le classement
+	 * @return sous fourme de liste d'equipes
 	 */
-	public Classement(Filtre filtre, int idc) {
-		ArrayList<Equipe> equipes = new ArrayList<>();
-		ArrayList<Integer> idEquipesOk = new ArrayList<>();
-		idEquipesOk = filtre.getListeIdsFiltres();
-		int ii;
-		for (ii = 0; ii < idEquipesOk.size(); ii++)
-			System.out.println("PPPPPPPPPPPPPPPPPPPPPPP idEquipes OK => "
-					+ idEquipesOk.get(ii));
-		// "' AND `idEquipe` = '"+idEq+"' AND `idEpreuve` = '"+idEp+
-		String requeteSQL = "SELECT idEquipe,idEpreuve,tempsRealise FROM scorer WHERE `idCompetition` = '"
-				+ idc
-				+ "' AND ("
-				+ listeIdsEnReqSQL("idEquipe", idEquipesOk)
-				+ ")";
-		// SELECT idEquipe,idEpreuve,tempsRealise FROM scorer WHERE
-		// `idCompetition` = 1 AND (idEpreuve= OR idEpreuve = OR idEpreuve =)
-
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			// System.out.println("Driver O.K.");
-
-			Connection conn = DataSourceProvider.getDataSource()
-					.getConnection();
-			// System.out.println("Connexion effective !");
-			Statement stm = conn.createStatement();
-			ResultSet res = stm.executeQuery(requeteSQL);
-
-			while (res.next()) {
-				if (equipeExisteDeja(equipes, res.getInt(1))) {
-					int i;
-					for (i = 0; i < equipes.size(); i++) {
-						if (equipes.get(i).getIdEquipe() == res.getInt(1)) {
-							equipes.get(i).addToScore(
-									stringToDate(res.getString(3)));
-
-							// System.out.println("Ajout de : "+stringToDate(res.getString(3)).toString()+" a l'equipe "+res.getInt(1));
-						}
-						// else
-						// System.out.println("NON PAS PU ETRE AJOUTES : "+stringToDate(res.getString(3)).toString()+" a l'equipe "+res.getInt(1));
-					}
-				} else {
-					equipes.add(new Equipe(res.getInt(1), stringToDate(res
-							.getString(3))));
-					// System.out.println("Ajout Equipe "+res.getInt(1)+" avec un score de : "+stringToDate(res.getString(3)).toString());
-				}
-			}
-			conn.close();
-			res.close();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		requeteSQL = "SELECT idEquipe,avoir.idMB,tempsMalusBonus,malusbonus.malus FROM avoir INNER JOIN malusbonus ON avoir.idMB = malusbonus.idMB WHERE avoir.idCompetition = "
-				+ idc
-				+ " /*AND ("
-				+ listeIdsEnReqSQL("avoir.idEquipe", idEquipesOk)
-				+ ")*/ ORDER BY malusbonus.malus DESC";
-		// SELECT idEquipe,avoir.idMB,tempsMalusBonus FROM avoir INNER JOIN
-		// malusbonus ON avoir.idMB = malusbonus.idMB WHERE
-		// avoir.idCompetition=1 ORDER BY malusbonus.malus DESC
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			// System.out.println("Driver O.K.");
-
-			Connection conn = DataSourceProvider.getDataSource()
-					.getConnection();
-			// System.out.println("Connexion effective !");
-			Statement stm = conn.createStatement();
-			ResultSet res = stm.executeQuery(requeteSQL);
-
-			while (res.next()) {
-				if (equipeExisteDeja(equipes, res.getInt(1))) {
-					int i;
-					for (i = 0; i < equipes.size(); i++) {
-						if (equipes.get(i).getIdEquipe() == res.getInt(1)) {
-							if (res.getBoolean(4)) {
-								equipes.get(i).addToScore(
-										stringToDate(res.getString(3)));
-							} else
-								equipes.get(i).getFromScore(
-										stringToDate(res.getString(3)));
-
-							// System.out.println("Ajout de : "+stringToDate(res.getString(3)).toString()+" a l'equipe "+res.getInt(1));
-						}
-						// else
-						// System.out.println("NON PAS PU ETRE AJOUTES : "+stringToDate(res.getString(3)).toString()+" a l'equipe "+res.getInt(1));
-					}
-				} else {
-					if (res.getBoolean(4)) {
-						equipes.add(new Equipe(res.getInt(1), stringToDate(res
-								.getString(3))));
-					} else
-						equipes.add(new Equipe(res.getInt(1),
-								stringToDate("00:00:00")));
-					// System.out.println("Ajout Equipe "+res.getInt(1)+" avec un score de : "+stringToDate(res.getString(3)).toString());
-				}
-			}
-			conn.close();
-			res.close();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		equipes = classeLesEquipes(equipes, idc);
-		int j;
-		for (j = 0; j < equipes.size(); j++) {
-			System.out.println("Id equipe POMPOM " + j + " au classement => "
-					+ equipes.get(j).getIdEquipe() + " score = "
-					+ equipes.get(j).getScore().toString());
-		}
+	public ArrayList<Equipe> getClassement (){
+		return this.classement;
 	}
-
+	
 	/**
-	 * Classement uniquement pour les journ√©es appartenant a la liste des
-	 * journees en parametre
+	 * Constructeur de la classe Classement
 	 * 
-	 * @param journees
-	 *            , liste des journees dont il faut compatbiliser les points
-	 * @param idc
-	 *            , l'id de la competition
+	 * On l'appelle avec les parametres ci-dessous qui permettent de definir 
+	 * les conditions a prendre en compte pour la realisation du classement
+	 * 
+	 * Les conditions sont exprimees par :
+	 * 		- la liste des dates sur lesquelles il faut faire le classement (peut Ítre vide
+	 * 		et dans ce cas ignoree)
+	 * 		- un filtre (voir comment est structure un filtre dans la classe eponyme)
+	 * 		- et toujours la compet
+	 * 
+	 * Il realise ensuite le classement (selon ces conditions)
+	 * 
+	 * Puis l'affecte au parametre de la classe (classement) sous forme de liste d'equipe
+	 * 
+	 * @param journees, liste des journees en format dates sur lesquelles on rÈalise les classement
+	 * @param filtre, donne les autres conditions pour realiser les classements
+	 * @param idc, l'identifiant de la competition
 	 */
-	public Classement(ArrayList<Date> journees, int idc) {
-		ArrayList<Equipe> equipes = new ArrayList<>();
-		ArrayList<Integer> idEpreuvesOk = new ArrayList<>();
-
-		idEpreuvesOk = epreuvesDeCesJournees(journees, idc);
-		// "' AND `idEquipe` = '"+idEq+"' AND `idEpreuve` = '"+idEp+
-		String requeteSQL = "SELECT idEquipe,idEpreuve,tempsRealise FROM scorer WHERE `idCompetition` = '"
-				+ idc
-				+ "' AND ("
-				+ listeIdsEnReqSQL("idEpreuve", idEpreuvesOk)
-				+ ")";
-		// SELECT idEquipe,idEpreuve,tempsRealise FROM scorer WHERE
-		// `idCompetition` = 1 AND (idEpreuve= OR idEpreuve = OR idEpreuve =)
-
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			// System.out.println("Driver O.K.");
-
-			Connection conn = DataSourceProvider.getDataSource()
-					.getConnection();
-			// System.out.println("Connexion effective !");
-			Statement stm = conn.createStatement();
-			ResultSet res = stm.executeQuery(requeteSQL);
-
-			while (res.next()) {
-				if (equipeExisteDeja(equipes, res.getInt(1))) {
-					int i;
-					for (i = 0; i < equipes.size(); i++) {
-						if (equipes.get(i).getIdEquipe() == res.getInt(1)) {
-							equipes.get(i).addToScore(
-									stringToDate(res.getString(3)));
-
-							// System.out.println("Ajout de : "+stringToDate(res.getString(3)).toString()+" a l'equipe "+res.getInt(1));
-						}
-						// else
-						// System.out.println("NON PAS PU ETRE AJOUTES : "+stringToDate(res.getString(3)).toString()+" a l'equipe "+res.getInt(1));
-					}
-				} else {
-					equipes.add(new Equipe(res.getInt(1), stringToDate(res
-							.getString(3))));
-					// System.out.println("Ajout Equipe "+res.getInt(1)+" avec un score de : "+stringToDate(res.getString(3)).toString());
-				}
-			}
-			conn.close();
-			res.close();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		requeteSQL = "SELECT idEquipe,avoir.idMB,tempsMalusBonus,malusbonus.malus FROM avoir INNER JOIN malusbonus ON avoir.idMB = malusbonus.idMB WHERE avoir.idCompetition = "
-				+ idc + " ORDER BY malusbonus.malus DESC";
-		// SELECT idEquipe,avoir.idMB,tempsMalusBonus FROM avoir INNER JOIN
-		// malusbonus ON avoir.idMB = malusbonus.idMB WHERE
-		// avoir.idCompetition=1 ORDER BY malusbonus.malus DESC
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			// System.out.println("Driver O.K.");
-
-			Connection conn = DataSourceProvider.getDataSource()
-					.getConnection();
-			// System.out.println("Connexion effective !");
-			Statement stm = conn.createStatement();
-			ResultSet res = stm.executeQuery(requeteSQL);
-
-			while (res.next()) {
-				if (equipeExisteDeja(equipes, res.getInt(1))) {
-					int i;
-					for (i = 0; i < equipes.size(); i++) {
-						if (equipes.get(i).getIdEquipe() == res.getInt(1)) {
-							if (res.getBoolean(4)) {
-								equipes.get(i).addToScore(
-										stringToDate(res.getString(3)));
-							} else
-								equipes.get(i).getFromScore(
-										stringToDate(res.getString(3)));
-
-							// System.out.println("Ajout de : "+stringToDate(res.getString(3)).toString()+" a l'equipe "+res.getInt(1));
-						}
-						// else
-						// System.out.println("NON PAS PU ETRE AJOUTES : "+stringToDate(res.getString(3)).toString()+" a l'equipe "+res.getInt(1));
-					}
-				} else {
-					if (res.getBoolean(4)) {
-						equipes.add(new Equipe(res.getInt(1), stringToDate(res
-								.getString(3))));
-					} else
-						equipes.add(new Equipe(res.getInt(1),
-								stringToDate("00:00:00")));
-					// System.out.println("Ajout Equipe "+res.getInt(1)+" avec un score de : "+stringToDate(res.getString(3)).toString());
-				}
-			}
-			conn.close();
-			res.close();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		equipes = classeLesEquipes(equipes, idc);
-		int j;
-		for (j = 0; j < equipes.size(); j++) {
-			System.out.println("Id equipe " + j + " au classement => "
-					+ equipes.get(j).getIdEquipe() + " score = "
-					+ equipes.get(j).getScore().toString());
-		}
+	public Classement(ArrayList<Date> journees,Filtre filtre,int idc){
+		
+	ArrayList<Equipe> equipes=new ArrayList<>();
+	ArrayList<Integer> idEpreuvesOk = new ArrayList<>();
+	ArrayList<Integer> idEquipesOk = new ArrayList<>();
+	
+	//Selection des equipes ‡ prendre en compte
+	idEquipesOk=filtre.getListeIdsEquipeFiltres();
+	
+	//Selection des epreuves ‡ prendre en compte
+	if(filtre.getListeIdsEpreuveFiltres().size()!=0){
+		idEpreuvesOk=filtre.getListeIdsEpreuveFiltres();
 	}
-
-	/**
-	 * Classement g√©n√©ral de la comp√©tition idc en param√®tre sans aucun
-	 * filtres
-	 * 
-	 * @param idc
-	 *            , identifiant de la comp√©tition concernee
-	 */
-	public Classement(int idc) {
-		ArrayList<Equipe> equipes = new ArrayList<>();
-
-		// "' AND `idEquipe` = '"+idEq+"' AND `idEpreuve` = '"+idEp+
-		String requeteSQL = "SELECT idEquipe,idEpreuve,tempsRealise FROM scorer WHERE `idCompetition` = '"
-				+ idc + "'";
-
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			// System.out.println("Driver O.K.");
-
-			Connection conn = DataSourceProvider.getDataSource()
-					.getConnection();
-			// System.out.println("Connexion effective !");
-			Statement stm = conn.createStatement();
-			ResultSet res = stm.executeQuery(requeteSQL);
-
-			while (res.next()) {
-				if (equipeExisteDeja(equipes, res.getInt(1))) {
-					int i;
-					for (i = 0; i < equipes.size(); i++) {
-						if (equipes.get(i).getIdEquipe() == res.getInt(1)) {
-							equipes.get(i).addToScore(
-									stringToDate(res.getString(3)));
-
-							// System.out.println("Ajout de : "+stringToDate(res.getString(3)).toString()+" a l'equipe "+res.getInt(1));
-						}
-						// else
-						// System.out.println("NON PAS PU ETRE AJOUTES : "+stringToDate(res.getString(3)).toString()+" a l'equipe "+res.getInt(1));
-					}
-				} else {
-					equipes.add(new Equipe(res.getInt(1), stringToDate(res
-							.getString(3))));
-					// System.out.println("Ajout Equipe "+res.getInt(1)+" avec un score de : "+stringToDate(res.getString(3)).toString());
-				}
-			}
-			conn.close();
-			res.close();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		requeteSQL = "SELECT idEquipe,avoir.idMB,tempsMalusBonus,malusbonus.malus FROM avoir INNER JOIN malusbonus ON avoir.idMB = malusbonus.idMB WHERE avoir.idCompetition = "
-				+ idc + " ORDER BY malusbonus.malus DESC";
-		// SELECT idEquipe,avoir.idMB,tempsMalusBonus FROM avoir INNER JOIN
-		// malusbonus ON avoir.idMB = malusbonus.idMB WHERE
-		// avoir.idCompetition=1 ORDER BY malusbonus.malus DESC
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			// System.out.println("Driver O.K.");
-
-			Connection conn = DataSourceProvider.getDataSource()
-					.getConnection();
-			// System.out.println("Connexion effective !");
-			Statement stm = conn.createStatement();
-			ResultSet res = stm.executeQuery(requeteSQL);
-
-			while (res.next()) {
-				if (equipeExisteDeja(equipes, res.getInt(1))) {
-					int i;
-					for (i = 0; i < equipes.size(); i++) {
-						if (equipes.get(i).getIdEquipe() == res.getInt(1)) {
-							if (res.getBoolean(4)) {
-								equipes.get(i).addToScore(
-										stringToDate(res.getString(3)));
-							} else
-								equipes.get(i).getFromScore(
-										stringToDate(res.getString(3)));
-
-							// System.out.println("Ajout de : "+stringToDate(res.getString(3)).toString()+" a l'equipe "+res.getInt(1));
-						}
-						// else
-						// System.out.println("NON PAS PU ETRE AJOUTES : "+stringToDate(res.getString(3)).toString()+" a l'equipe "+res.getInt(1));
-					}
-				} else {
-					if (res.getBoolean(4)) {
-						equipes.add(new Equipe(res.getInt(1), stringToDate(res
-								.getString(3))));
-					} else
-						equipes.add(new Equipe(res.getInt(1),
-								stringToDate("00:00:00")));
-					// System.out.println("Ajout Equipe "+res.getInt(1)+" avec un score de : "+stringToDate(res.getString(3)).toString());
-				}
-			}
-			conn.close();
-			res.close();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		/**
-		 * Test de la fonction classeLesEquipes
+	else idEpreuvesOk = epreuvesDeCesJournees(journees, idc);
+	
+	
+	//Traduction en requÍte SQL
+	String reqSQLequipesOk=listeIdsEnReqSQL("scorer.idEquipe", idEquipesOk);
+	String reqSQLepreuvesOk=listeIdsEnReqSQL("scorer.idEpreuve", idEpreuvesOk);
+	
+	if(reqSQLepreuvesOk!="" &&reqSQLequipesOk!=""){
+		/*
+		 * SI il y a bien 2 listes non vides de conditions (equipes et epreuves)
+		 * On les integrent dans la clause WHERE de la requete et on fait le classement
+		 * SINON PAS LA PEINE DE FAIRE LE CLASSEMENT car il n'y aura de toutes manieres pas de resultats
 		 */
-		ArrayList<Equipe> equipes2 = classeLesEquipes(equipes, idc);
-		int j;
-		for (j = 0; j < equipes2.size(); j++) {
-			System.out.println("L'√©quipe : " + equipes2.get(j).getNomEquipe()
-					+ " dossard " + equipes2.get(j).getDossard() + " termine "
-					+ (j + 1)
-					+ "√®me au classement GENERAL avec un temps de => "
-					+ equipes2.get(j).getScore().toString());
+		
+		String requeteSQL = "SELECT scorer.idEquipe,scorer.idEpreuve,scorer.tempsRealise,equipe.dossard,equipe.nomEquipe,equipe.typeEquipe FROM scorer INNER JOIN equipe ON scorer.idEquipe=equipe.idEquipe WHERE scorer.idCompetition = '";
+		requeteSQL+= idc;
+		requeteSQL+= "' AND ((";
+		requeteSQL+= reqSQLepreuvesOk;
+		requeteSQL+= ") AND (";
+		requeteSQL+= reqSQLequipesOk;
+		requeteSQL+= "))";
+		
+		System.out.println(requeteSQL);
+	
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+	
+			Connection conn = DataSourceProvider.getDataSource().getConnection();
+			Statement stm = conn.createStatement();
+			ResultSet res = stm.executeQuery(requeteSQL);
+			
+			System.out.println("----------------Temps REALISES----------------");
+			
+			while (res.next()) {
+				//SI l'equipe existe deja dans le classement on additionne son temps a son score
+				if(equipeExisteDeja(equipes, res.getInt(1))){
+				System.out.println("L'Èquipe existe DEJA !");
+				int i;
+					for(i=0;i<equipes.size();i++){
+						if(equipes.get(i).getIdEquipe()==res.getInt(1)){
+							equipes.get(i).addToScore(stringToDate(res.getString(3)));
+							System.out.println("Score "+res.getString(3)+" ajoute a l'equipe : "+equipes.get(i).getIdEquipe());
+						}
+					}
+				}
+				else{
+					//SINON on cree une nouvelle equipe qu'on ajoute a la liste avec ce score
+					equipes.add(new Equipe(res.getInt(1),stringToDate(res.getString(3)),res.getInt(4),res.getString(5),res.getString(6)));
+					System.out.println("Nouvelle equipe (id="+res.getInt(1)+") ajoutee avec un premier score de "+res.getString(3));
+				}
+			}
+			conn.close();
+			res.close();
+	
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-
-		// Test de la fonc listeIdsEnReqSQL
-		ArrayList<Integer> listeDentiers = new ArrayList<>();
-		listeDentiers.add(1);
-		listeDentiers.add(3);
-		System.out.println(listeIdsEnReqSQL("idEpreuve", listeDentiers));
+		/*
+		// On recupere ensuite les malus et bonus
+		requeteSQL = "SELECT avoir.idEquipe,avoir.idMB,malusbonus.tempsMalusBonus,malusbonus.malus,equipe.dossard,equipe.nomEquipe,equipe.typeEquipe FROM avoir INNER JOIN malusbonus ON avoir.idMB = malusbonus.idMB INNER JOIN equipe ON avoir.idEquipe=equipe.idEquipe WHERE avoir.idCompetition = "+idc+" ORDER BY malusbonus.malus DESC";
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+	
+			Connection conn = DataSourceProvider.getDataSource().getConnection();
+			Statement stm = conn.createStatement();
+			ResultSet res = stm.executeQuery(requeteSQL);
+	
+			System.out.println("----------------Malus bonus----------------");
+			
+			while (res.next()) {
+				if(equipeExisteDeja(equipes, res.getInt(1))){
+				//SI l'equipe est deja dans la liste c'est qu'elle doit etre prise en compte
+				System.out.println("L'Èquipe (id="+res.getInt(1)+") existe DEJA !");
+				
+				//On recherche ensuite l'equipe dans la liste et on modifie son score
+				int i;
+				for(i=0;i<equipes.size();i++){
+					if(equipes.get(i).getIdEquipe()==res.getInt(1)){
+						//SI c'est un malus on ajoute le malus au score
+						if(res.getBoolean(4)){
+							System.out.println("Boolean True => C'est un MALUS");
+							equipes.get(i).addToScore(stringToDate(res.getString(3)));
+						}
+						else{
+							//SINON c'est un bonus et on l'enleve au score
+							System.out.println("Boolean False => C'est un BONUS");
+							equipes.get(i).getFromScore(stringToDate(res.getString(3)));
+						}
+					}
+				}
+				}// SINON on ne prend pas l'equipe en compte => on ne fait rien de plus
+			}
+			conn.close();
+			res.close();
+	
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	*/	
 	}
-
-	/**
-	 * Test de la fonction classeLesEquipes
+	/*
+	 * Derniere etape
+	 * On trie la liste des equipes du meilleur score au plus mauvais
+	 * Puis on le stock grace au setter dans la variable de ce classement
 	 */
-	ArrayList<Equipe> classeLesEquipes(ArrayList<Equipe> equipes, int idc) {
+	setClassement(classeLesEquipes(equipes,idc));
+	
+	}
+	
+	
+	/**
+	 * Cette fonction reordonne les equipes d'une liste du meilleur au plus mauvais score
+	 * @param equipes, la liste des equipes a reordonner
+	 * @param idc, toujours l'identifiant de la competition
+	 * @return, la liste d'equipe reordonnee
+	 */
+	ArrayList<Equipe> classeLesEquipes(ArrayList<Equipe> equipes,int idc){
 		ArrayList<Equipe> equipesClassees = new ArrayList<>();
-		Equipe eqTemp;
-		int i, j;
-		equipesClassees = equipes;
-
-		if (equipes.size() > 1) {
-			// System.out.println("Taille ok");
-			for (i = 0; i < equipesClassees.size() - 1; i++) {
-				// System.out.println("Passsage "+i);
-				for (j = 0; j < equipesClassees.size() - 1; j++) {
-					// System.out.println("Element "+j);
-					if (equipesClassees.get(j).getScore()
-							.after(equipesClassees.get(j + 1).getScore())) {
-						// System.out.println("Echange");
-						eqTemp = equipesClassees.get(j);
-						equipesClassees.set(j, equipesClassees.get(j + 1));
-						equipesClassees.set(j + 1, eqTemp);
+		Equipe eqTemp; // variable tempon qui permet d'interchanger deux elements de la liste
+		int i,j;
+		equipesClassees=equipes;
+		
+		/*
+		 * Il y a de meilleurs algorythme de tri.
+		 * Ici on parcours la liste de taille n factorielle n fois
+		 * Cependant pas de problemes de ralentissements
+		 */
+		if(equipes.size()>1){
+			for(i=0;i<equipesClassees.size()-1;i++){
+				for(j=0;j<equipesClassees.size()-1;j++){
+					if(equipesClassees.get(j).getScore().after(equipesClassees.get(j+1).getScore())){
+						/*
+						 * SI le temps (score) de l'equipe situee aprËs dans la liste est plus petit (meilleur)
+						 * On inverse les deux equipes
+						 */
+						eqTemp=equipesClassees.get(j);
+						equipesClassees.set(j, equipesClassees.get(j+1));
+						equipesClassees.set(j+1,eqTemp);
 					}
-					if (equipesClassees.get(j).getScore()
-							.before(equipesClassees.get(j + 1).getScore())) {
-						// System.out.println("Before ?");
-					}
+					
 				}
 			}
-
-		} else {
-			System.out
-					.println("On tri pas une liste avec une seule √©quipe :)");
-		}/*
-		 * ArrayList<Equipe> equipesClasseesEtRemplies = new ArrayList<>();
-		 * equipesClasseesEtRemplies = rempliPlusCesEquipes(equipesClassees,
-		 * idc);
-		 * 
-		 * return equipesClasseesEtRemplies;
-		 */
+			
+		}
+		else{
+			System.out.println("Fonction classeLesEquipes => ca sert a rien, on tri pas une liste avec une seule equipe :P");
+		}
 		return equipesClassees;
 	}
-
+	
+	
 	/**
-	 * Permet d'extraire de la base de donees un temps au format de chaine de
-	 * caractere pour pouvoir en simplifier le traitement et l'interpretation
+	 * Converti une date en chaine de charactËre format HH:mm:ss en objet type Date
+	 * Permet de lire dans la base de donnees des durrees en format texte
 	 * 
-	 * @param HHmmss
-	 *            chaine de characteres extraites au format HH:mm:ss
-	 * @return temps
+	 * @param HHmmss chaine de characteres extraites au format HH:mm:ss
+	 * @return, la date correspondante
 	 */
-	public static Date stringToDate(String HHmmss) {
+	public static Date stringToDate(String HHmmss){
 		Date temps = new Date();
 		DateFormat dateformat = new SimpleDateFormat("HH:mm:ss");
 		try {
+			//L'utilisation de HH permet les heures jusqu'a 24 au lieu de 12 (hh)
 			temps = dateformat.parse(HHmmss);
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		// System.out.println(temps.toString());
 		return temps;
 	}
-
 	/**
-	 * Permet d'inserer dans la base de donees un temps au format de cha√Æne de
-	 * caractere en renseignant un temps au format Date de Java pour pouvoir en
-	 * simplifier le traitement et l'insertion.
+	 * Converti un objet de type Date en chaine de charactËre format HH:mm:ss
+	 * Permet d'ecrire dans la base de donnees des durrees en format texte
 	 * 
-	 * @param temps
-	 *            date a convertir au format `hh:mm:ss pour insertion plus
-	 *            simple dans BDD
-	 * @return HHmmss
+	 * @param temps, Date a convertir au format HH:mm:ss pour insertion plus simple dans BDD
+	 * @return, chaine de charactere format HH:mm:ss
 	 */
-	public static String dateToString(Date temps) {
-		String HHmmss = "";
-
+	public static String dateToString(Date temps){
+		String HHmmss="";
+		
+		//On met la date dans un calendrier
 		Calendar calTemps = Calendar.getInstance();
 		calTemps.setTime(temps);
-
-		int h, m, s;
-		h = m = s = 0;
-		if (calTemps.get(Calendar.DAY_OF_MONTH) != 1) {
-			h += 24 * (calTemps.get(Calendar.DAY_OF_MONTH) - 1);
+		
+		//On rÈcupËre le nombre d'heure de minute et de seconde necessaire
+		int h,m,s;
+		h=m=s=0;
+		if(calTemps.get(Calendar.DAY_OF_MONTH)!=1){
+			h+=24*(calTemps.get(Calendar.DAY_OF_MONTH)-1);
 		}
-		h += calTemps.get(Calendar.HOUR);
-		// System.out.println("h = "+h);
-		m += calTemps.get(Calendar.MINUTE);
-		// System.out.println("m = "+m);
-		s += calTemps.get(Calendar.SECOND);
-		// System.out.println("s = "+s);
+		h+=calTemps.get(Calendar.HOUR_OF_DAY);
+		m+=calTemps.get(Calendar.MINUTE);
+		s+=calTemps.get(Calendar.SECOND);
 
-		HHmmss += h + ":" + m + ":" + s;
-
-		// System.out.println("HHmmss = "+HHmmss);
+		//Si on a des valeur < 10 on ajoute un 0 devant pour toujours avoir 2 chiffres
+		String hh, mm, ss="";
+		
+		if(h<10){
+			hh = "0"+h;
+		}
+		else{hh=""+h;}
+		
+		if(m<10){
+			mm = "0"+m;
+		}else{mm=""+m;}
+		
+		if(s<10){
+			ss = "0"+s;
+		}else{ss=""+s;}
+		
+		//On les prÈsentent dans une chaÓne de charactËre selon le format voulu
+		HHmmss += hh + ":" + mm + ":" + ss;
+		
 		return HHmmss;
 	}
-
+	
 	/**
 	 * Manipulation (addittion) de Calendrier
-	 * 
-	 * @param c1
-	 *            , un calandrier √† ajouter
-	 * @param c2
-	 *            , un autre calandrier √† ajouter
-	 * @return
+	 * @param c1 un calandrier a ajouter
+	 * @param c2 un autre calandrier a ajouter
+	 * @return, le calendrier additionne
 	 */
-	public static Calendar addTwoCal(Calendar c1, Calendar c2) {
-		// System.out.println(""+c1.getTimeInMillis());
-		// System.out.println(""+c2.getTimeInMillis());
+	public static Calendar addTwoCal(Calendar c1,Calendar c2){
 		long sum = c1.getTimeInMillis() + c2.getTimeInMillis();
-		Calendar sumCalendar = (Calendar) c1.clone();
+		Calendar sumCalendar = (Calendar)c1.clone();
 		sumCalendar.setTimeInMillis(sum);
-		sumCalendar.add(Calendar.HOUR, 1);
-
-		/*
-		 * Pb heure d'√©t√©
-		 * http://www.geeketfier.fr/index.php/bien-utiliser-la-date
-		 * -et-lheure-en-java/
-		 * http://www.developpez.net/forums/d1161597/java/general
-		 * -java/probleme-decalage-horaire-calendar/
-		 */
+		sumCalendar.add(Calendar.HOUR,1);//Pb heure d'ete/hiver pour le 1/01/1970
 
 		return sumCalendar;
 	}
-
 	/**
 	 * Manipulation (soustraction) de Calendrier
-	 * 
-	 * @param c1
-	 *            , un calendrier
-	 * @param c2
-	 *            , un autre calandrier a soustraire
+	 * @param c1 un calendrier
+	 * @param c2 un autre calandrier a soustraire
 	 * @return
 	 */
-	public static Calendar substractTwoCal(Calendar c1, Calendar c2) {
+	public static Calendar substractTwoCal(Calendar c1,Calendar c2){
 
 		Calendar subCalendar = Calendar.getInstance();
 		subCalendar.setTimeZone(c1.getTimeZone());
-
-		// System.out.println(""+c1.getTimeInMillis());
-		// System.out.println(""+c2.getTimeInMillis());
+		
 		long sub = c1.getTimeInMillis() - c2.getTimeInMillis();
-		if (sub < 0)
-			subCalendar.setTimeInMillis(0);
-		else
-			subCalendar.setTimeInMillis(sub);
-		subCalendar.add(Calendar.HOUR, -1);
-
-		/*
-		 * Pb heure d'√©t√©
-		 * http://www.geeketfier.fr/index.php/bien-utiliser-la-date
-		 * -et-lheure-en-java/
-		 * http://www.developpez.net/forums/d1161597/java/general
-		 * -java/probleme-decalage-horaire-calendar/
-		 */
+		if(sub<0)subCalendar.setTimeInMillis(0);
+		else subCalendar.setTimeInMillis(sub);
+		subCalendar.add(Calendar.HOUR,-1);//Pb heure d'ete/hiver pour le 1/01/1970
+		
 		return subCalendar;
 	}
-
 	/**
-	 * Permet la verification facile de la presence d'une equipe dans une liste
-	 * d'equipes
-	 * 
-	 * @param listeEquipe
-	 *            , liste d'equipe dans laquelle on veut savoir si equipe existe
-	 * @param idEquipe
-	 *            , l'equipe dont veut connapitre l'existance
+	 * Permet la verification facile de la presence d'une equipe dans une liste d'equipes
+	 * @param listeEquipe liste d'equipe dans laquelle on veut savoir si equipe existe
+	 * @param idEquipe l'equipe dont veut connapitre l'existance
 	 * @return
 	 */
-	Boolean equipeExisteDeja(ArrayList<Equipe> listeEquipe, int idEquipe) {
-		int i = 0;
-		Boolean existe = false;
-		while (i < listeEquipe.size() && !existe) {
-
-			if (listeEquipe.get(i).getIdEquipe() == idEquipe)
-				existe = true;
+	Boolean equipeExisteDeja(ArrayList<Equipe> listeEquipe,int idEquipe){
+		int i=0;
+		Boolean existe=false;
+		//TANT qu'on a pas parcouru toute la liste ou trouve ce qu'on veut on cherche
+		while(i<listeEquipe.size() && !existe){
+			
+			//SI on trouve on dit qu'on a trouve et du coup tout est fini
+			if(listeEquipe.get(i).getIdEquipe()==idEquipe)existe=true;
 			i++;
 		}
 		return existe;
 	}
-
-	/*
-	 * public Object[][] updateTable() {
-	 * 
-	 * ArrayList<Object[]> ArrayData = new ArrayList<>();
-	 * 
-	 * String idc; String requeteSQL =
-	 * "SELECT * FROM balise WHERE `idCompetition` = '"+idc+"'";
-	 * 
-	 * try { Class.forName("com.mysql.jdbc.Driver");
-	 * System.out.println("Driver O.K.");
-	 * 
-	 * Connection conn = DataSourceProvider.getDataSource().getConnection();
-	 * System.out.println("Connexion effective !"); Statement stm =
-	 * conn.createStatement(); ResultSet res = stm.executeQuery(requeteSQL);
-	 * 
-	 * while (res.next()) { ArrayData.add(new Object[] { new Boolean(false),
-	 * res.getString(1) }); System.out.println("Nom : " + res.getString(1));
-	 * 
-	 * }
-	 * 
-	 * conn.close(); res.close();
-	 * 
-	 * } catch (Exception e) { e.printStackTrace(); }
-	 * 
-	 * Object[][] data = ArrayToTab(ArrayData);
-	 * 
-	 * Inte_Resultat inteResultat = new Inte_Resultat(1); inteResultat.;
-	 * 
-	 * System.out.println("MAJ Table"); return data; } public Object[][]
-	 * ArrayToTab(ArrayList<Object[]> array) {
-	 * 
-	 * int lengthLig = array.size(); int lengthCol; if(lengthLig>0){ lengthCol =
-	 * array.get(0).length; }else{lengthCol=0;} Object[][] tab = new
-	 * Object[lengthLig][lengthCol]; for (int i = 0; i < lengthLig; i++) {
-	 * tab[i] = array.get(i); // System.out.println(tab[i]); } return tab; }
-	 */
+	
+	
 	/**
-	 * Permet de r√©cup√©rer la liste des Ids d'√©preuves ayant lieu pendant une
-	 * de ces journ√©es en param√®tre
+	 * Permet de recuperer la liste des Ids d'epreuves ayant lieu pendant une de ces journees en parametre
+	 * Ou tous les ids is on ne specifie pas de date
 	 * 
-	 * @param journees
-	 *            , listes des journees pendant lesquelles on cherche quelles
-	 *            epreuves ont eu lieu
-	 * @param idc
-	 *            , identifiant de la comp√©tition concernee
-	 * @return
+	 * @param journees, listes des journees pendant lesquelles on cherche quelles epreuves ont eu lieu
+	 * @param idc , identifiant de la competition concernee
+	 * @return,
+	 * 			liste des identifiants des epreuves qui ont lieu pendant les journees demandees
+	 * 			liste les identifiants de TOUTES les epreuves si la liste de Date(s) est vide
 	 */
-	public static ArrayList<Integer> epreuvesDeCesJournees(
-			ArrayList<Date> journees, int idc) {
+	public static ArrayList<Integer> epreuvesDeCesJournees(ArrayList<Date> journees,int idc){
 		ArrayList<Integer> epreuves = new ArrayList<>();
 		int i;
-		for (i = 0; i < journees.size(); i++) {
-
-			String requeteSQL = "SELECT dateHeureEpreuve,idEpreuve FROM epreuve WHERE `idCompetition` = '"
-					+ idc + "'";
+		//Si on ne specifie pas de dates on renvoi toute les epreuves
+		if(journees.size()==0){
+			String requeteSQL = "SELECT dateHeureEpreuve,idEpreuve FROM epreuve WHERE `idCompetition` = '"+idc+"'";
 
 			try {
 				Class.forName("com.mysql.jdbc.Driver");
-				// System.out.println("Driver O.K.");
 
-				Connection conn = DataSourceProvider.getDataSource()
-						.getConnection();
-				// System.out.println("Connexion effective !");
+				Connection conn = DataSourceProvider.getDataSource().getConnection();
+				//System.out.println("Connexion effective !");
 				Statement stm = conn.createStatement();
 				ResultSet res = stm.executeQuery(requeteSQL);
-
+				
 				while (res.next()) {
-					if (res.getDate(1).compareTo(journees.get(i)) == 0)
-						epreuves.add(res.getInt(2));
+					epreuves.add(res.getInt(2));
 				}
 				conn.close();
 				res.close();
@@ -755,65 +372,56 @@ public class Classement {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-
 		}
-
+		else{
+			//SINON que celles qui correspondent
+			for(i=0;i<journees.size();i++){
+				
+				String requeteSQL = "SELECT dateHeureEpreuve,idEpreuve FROM epreuve WHERE `idCompetition` = '"+idc+"'";
+	
+				try {
+					Class.forName("com.mysql.jdbc.Driver");
+	
+					Connection conn = DataSourceProvider.getDataSource().getConnection();
+					Statement stm = conn.createStatement();
+					ResultSet res = stm.executeQuery(requeteSQL);
+					
+					while (res.next()) {
+						//Si cette epreuve est a la date demandee on la sauvegarde
+						if(res.getDate(1).compareTo(journees.get(i))==0)epreuves.add(res.getInt(2));
+					}
+					conn.close();
+					res.close();
+	
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+	
+			}
+		}
+		
 		return epreuves;
 	}
-
 	/**
-	 * Permet de compl√©ter une clause WHERE pour faire correspondre la liste
-	 * d'identifiants avec l'extraction de deonnees d'une base.
-	 * 
-	 * @param nomChamp
-	 *            , le nom du champ de la table de la bdd dans lequel on veut
-	 *            effectuer la clause
-	 * @param listeIds
-	 *            , la listes des identifiants a recuperer dans la requetes donc
-	 *            dans la clause WHERE
+	 * Permet de complÈter une clause WHERE
+	 * pour faire correspondre la liste d'identifiants avec l'extraction de donnees d'une base.
+	 * @param nomChamp, le nom du champ de la table de la bdd dans lequel on veut effectuer la clause
+	 * @param listeIds, la listes des identifiants a recuperer dans la requetes donc dans la clause WHERE
 	 * @return
 	 */
-	public String listeIdsEnReqSQL(String nomChamp, ArrayList<Integer> listeIds) {
-		String boutDeRequete = "";
+	public String listeIdsEnReqSQL(String nomChamp,ArrayList<Integer> listeIds){
+		String boutDeRequete="";
 		int i;
-		for (i = 0; i < listeIds.size(); i++) {
-			boutDeRequete += nomChamp;
-			boutDeRequete += "=";
-			boutDeRequete += listeIds.get(i);
-			if (i + 1 < listeIds.size())
-				boutDeRequete += " OR ";
-
+		for(i=0;i<listeIds.size();i++){
+			boutDeRequete+=nomChamp;
+			boutDeRequete+="=";
+			boutDeRequete+="'";
+			boutDeRequete+=listeIds.get(i);
+			boutDeRequete+="'";
+			if(i+1<listeIds.size())boutDeRequete+=" OR ";
+			
 		}
+		System.out.println("LE BOUT DE REQUETTE EST : "+boutDeRequete);
 		return boutDeRequete;
 	}
-	/*
-	 * public ArrayList<Equipe> rempliPlusCesEquipes(ArrayList<Equipe>
-	 * equipes,int idc){ ArrayList<Equipe> newEquipes = equipes;`idCompetition`
-	 * = '"+idc+"' AND /*Equipe newEquipe=new Equipe(0,new Date());
-	 * //System.out.println("equipe.getIdEquipe() => "+equipe.getIdEquipe())
-	 * String requeteSQL =
-	 * "SELECT * FROM equipe WHERE  "+listeIdsEnReqSQL("idEquipe"
-	 * ,listerLesIds(equipes));
-	 * 
-	 * try { Class.forName("com.mysql.jdbc.Driver");
-	 * //System.out.println("Driver O.K.");
-	 * 
-	 * Connection conn = DataSourceProvider.getDataSource().getConnection();
-	 * //System.out.println("Connexion effective !"); Statement stm =
-	 * conn.createStatement(); ResultSet res = stm.executeQuery(requeteSQL);
-	 * System.out.println("ICI CA MARCHE"); while (res.next()) {
-	 * newEquipe.setNomEquipe(res.getString(2));
-	 * System.out.println("Nom Equipe : "+res.getString(2));
-	 * newEquipe.setTypeEquipe(res.getString(5));
-	 * System.out.println("Type Equipe : "+res.getString(5));
-	 * newEquipe.setDossard(res.getInt(6));
-	 * System.out.println("Num dossard : "+res.getInt(6));
-	 * newEquipes.add(newEquipe); } conn.close(); res.close();
-	 * 
-	 * } catch (Exception e) { e.printStackTrace(); } return newEquipes; }
-	 * ArrayList<Integer> listerLesIds(ArrayList<Equipe> equipes){ int i;
-	 * ArrayList<Integer> listesDesIds = new ArrayList<>();
-	 * for(i=0;i<equipes.size();i++){
-	 * listesDesIds.add(equipes.get(i).getIdEquipe()); } return listesDesIds; }
-	 */
 }

@@ -28,8 +28,11 @@ public class Main {
 
 	static int idc =1;
 	public static void main(String[] args) {
-		String requeteSQL = "SELECT tempsRealise FROM scorer ORDER BY tempsRealise ASC";
+		
 		Inte_Accueil inte_Accueil = new Inte_Accueil();
+		
+		/*
+		String requeteSQL = "SELECT tempsRealise FROM scorer ORDER BY tempsRealise ASC";
 		Calendar tempsTotal = Calendar.getInstance();
 		try {
 			Connection conn = DataSourceProvider.getDataSource().getConnection();
@@ -41,6 +44,7 @@ public class Main {
 				/*String temps;
 				temps=res.getTime(1).toString();
 				System.out.println("Temps : " + temps);*/
+		/*
 				Date temps=new Date();
 				Date temps2=new Date();
 				Date duree1et2 = new Date();
@@ -182,6 +186,7 @@ public class Main {
 				System.out.println("c = "+c);
 			      c = "abc".substring(3,3);
 					System.out.println("c = "+c);*/
+		/*
 			}
 
 			conn.close();
@@ -217,7 +222,11 @@ public class Main {
 		//Classement testClassementAvecFiltre = new Classement(new Filtre("Aventure","Etudiant","Masculin",idc),idc);
 		
 		//Classement testClassementAvecFiltreEtDate = new Classement(dateTest,new Filtre("Aventure","Etudiant","Masculin",idc),idc);
+	*/
+	
 	}
+	
+	/*
 	public static Date stringToDate(String HHmmss){
 		Date temps = new Date();
 		DateFormat dateformat = new SimpleDateFormat("HH:mm:ss");
@@ -264,7 +273,7 @@ public class Main {
 		http://www.geeketfier.fr/index.php/bien-utiliser-la-date-et-lheure-en-java/
 		http://www.developpez.net/forums/d1161597/java/general-java/probleme-decalage-horaire-calendar/
 		*/
-		
+		/*
 		return sumCalendar;
 	}
 	public static Calendar substractTwoCal(Calendar c1,Calendar c2){
@@ -283,11 +292,11 @@ public class Main {
 		http://www.geeketfier.fr/index.php/bien-utiliser-la-date-et-lheure-en-java/
 		http://www.developpez.net/forums/d1161597/java/general-java/probleme-decalage-horaire-calendar/
 		*/
-		return subCalendar;
+	/*	return subCalendar;
 	}/*public Object[][] updateTable() {
 
 		ArrayList<Object[]> ArrayData = new ArrayList<>();*/
-
+/*
 	public static ArrayList<Integer> epreuvesDeCesJournees(ArrayList<Date> journees){
 		ArrayList<Integer> epreuves = new ArrayList<>();
 		int i;
@@ -418,7 +427,7 @@ public class Main {
 						System.out.println("P5 k = "+k);
 						if(listesIds.get(i).get(j)==listesIds.get(i+1).get(k))bonsIds.add(listesIds.get(i).get(j));
 					}*/
-					
+		/*			
 					System.out.println("P4 j = "+j);
 					k=0;
 					nonTrouve=true;
@@ -454,4 +463,5 @@ public class Main {
 		return existe;
 	}
 	//TriEquipes ArrayList<Integer>
+	 * */
 }
