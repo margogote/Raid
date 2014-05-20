@@ -52,7 +52,7 @@ public class Inte_Equipe_CreaModif extends JFrame {
 	private JComboBox<Object> grpC = new JComboBox<Object>(grpS);
 
 	JLabel catL = new JLabel("Catégorie");
-	private String[] categorie = { "CHOISIR", "Masculin", "Feminin", "Mixte" };
+	private String[] categorie = { "CHOISIR", "Masculin", "Feminin", "Mixte", "HC" };
 	private JComboBox<Object> catC = new JComboBox<Object>(categorie);
 
 	private JButton oK = new JButton("Valider");

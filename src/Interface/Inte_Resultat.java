@@ -1,5 +1,6 @@
 package Interface;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -58,8 +59,9 @@ public class Inte_Resultat extends JPanel {
 	private JLabel catL = new JLabel("Catégorie");
 	private JTextField jourL= new JTextField("AAAA-MM-JJ hh:mm:ss");
 
-	private JTextField deL= new JTextField("AAAA-MM-JJ hh:mm:ss");							/* !!!!!!!!!!!!!!!!!!  */
-	private JTextField aL= new JTextField("AAAA-MM-JJ hh:mm:ss");							/* !!!!!!!!!!!!!!!!!!  */
+	private JLabel aL = new JLabel(" à ");													/* !!!!!!!!!!!!!!!!!!  */
+	private JTextField deT= new JTextField("AAAA-MM-JJ");							/* !!!!!!!!!!!!!!!!!!  */
+	private JTextField aT= new JTextField("AAAA-MM-JJ");							/* !!!!!!!!!!!!!!!!!!  */
 
 	/* Boutons */
 	private JButton print = new JButton("Imprimer");
@@ -121,23 +123,33 @@ public class Inte_Resultat extends JPanel {
 	 */
 	public void Interface() {
 		generalP.add(generalR);
+		
+		JPanel deP = new JPanel();																/* !!!!!!!!!!!!!!!!!!  */
+		deP.setLayout(new BorderLayout());												/* !!!!!!!!!!!!!!!!!!  */
+		deP.add(deAR, BorderLayout.WEST);
+		deP.add(deT, BorderLayout.CENTER);																/* !!!!!!!!!!!!!!!!!!  */
 
-		checkPanel.setBorder(BorderFactory
-				.createTitledBorder("Type de classement"));
-		checkPanel.setPreferredSize(new Dimension(300, 100));
+		
+		JPanel aP = new JPanel();																/* !!!!!!!!!!!!!!!!!!  */
+		aP.setLayout(new BorderLayout());																/* !!!!!!!!!!!!!!!!!!  */
+		aP.add(aL, BorderLayout.WEST);																/* !!!!!!!!!!!!!!!!!!  */
+		aP.add(aT, BorderLayout.CENTER);																/* !!!!!!!!!!!!!!!!!!  */
+		
+		checkPanel.setPreferredSize(new Dimension(350, 100));
 		checkPanel.setLayout(new GridLayout(4, 2));
 		checkPanel.add(epreuveR);
 		checkPanel.add(epreuveC);
 		checkPanel.add(jourR);
 		checkPanel.add(jourL);
 		checkPanel.add(generalR);
-		checkPanel.add(deAR);
-
+		checkPanel.add(new JPanel());																/* !!!!!!!!!!!!!!!!!!  */
+		checkPanel.add(deP);																/* !!!!!!!!!!!!!!!!!!  */
+		checkPanel.add(aP);																/* !!!!!!!!!!!!!!!!!!  */
+		
 		updateCombo(epreuveC);
 
 		filtreP.setBorder(BorderFactory.createTitledBorder("Filtres"));
-		// filtreP.setLayout(new BoxLayout(filtreP, BoxLayout.PAGE_AXIS));
-		filtreP.setPreferredSize(new Dimension(300, 100));
+		filtreP.setPreferredSize(new Dimension(260, 110));
 		filtreP.setLayout(new GridLayout(3, 2));
 		filtreP.add(diffL);
 		filtreP.add(diffC);
@@ -151,8 +163,8 @@ public class Inte_Resultat extends JPanel {
 
 		choixP.setBorder(BorderFactory
 				.createTitledBorder("Ici vous pouvez générer les classements"));
-		choixP.setPreferredSize(new Dimension(750, 135));
-		choixP.add(checkPanel);
+		choixP.setPreferredSize(new Dimension(750, 140));
+		choixP.add(checkPanel);												
 		choixP.add(filtreP);
 		choixP.add(classementPB);
 

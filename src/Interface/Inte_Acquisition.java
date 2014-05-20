@@ -326,13 +326,11 @@ public class Inte_Acquisition extends JFrame {
 	public class EcouteurFin implements ActionListener { // Action du quitter
 
 		public void actionPerformed(ActionEvent arg0) {
-
-			// Calcul des MB supplémentaires par balises non pointées
 			String typeCourse = "", dateCourse = "", dureeCourse = "";
 
 			BDDupdate("DELETE FROM `scorer` WHERE `idEpreuve` = '" + idep
 					+ "' && `idCompetition` = '" + idc + "'");
-
+//Pour connaitre le type d'épreuve, sa date de départ et sa durée
 			try {
 				String requeteSQL = "SELECT `typeEpreuve`, `dateHeureEpreuve`, `dureeEpreuve` FROM `epreuve` WHERE `idEpreuve` = '"
 						+ idep + "' && `idCompetition` = '" + idc + "'";
@@ -361,7 +359,7 @@ public class Inte_Acquisition extends JFrame {
 			}
 
 			ArrayList<Integer> lisDoigt = new ArrayList<>();
-
+//Pour savoir quelles équipes ont participées
 			try {
 				String requeteDoigt = "SELECT DISTINCT `idDoigt` FROM `pointer` WHERE `pointer`.`idCompetition`='"
 						+ idc + "' && `pointer`.`idEpreuve` = '" + idep + "'";
