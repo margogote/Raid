@@ -255,12 +255,10 @@ public class Inte_Balise extends JPanel {
 								}
 							} catch (Exception e) {
 								System.out.println("Je ne suis pas un entier");
-								JOptionPane
-										.showMessageDialog(
-												null,
-												"Attention entrer un entier positif",
-												"Balise non modifiée!",
-												JOptionPane.WARNING_MESSAGE);
+								JOptionPane.showMessageDialog(null,
+										"Attention entrer un entier positif",
+										"Balise non modifiée!",
+										JOptionPane.WARNING_MESSAGE);
 							}
 						}
 					}

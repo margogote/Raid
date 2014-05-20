@@ -24,10 +24,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 
-import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
-
 import BDD.DataSourceProvider;
 import Models.TabModel;
+
+import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
 
 /**
  * Formulaire permettant de renseigner les informations pour créer une épreuve
@@ -232,7 +232,6 @@ public class Inte_Acquisition_Crea extends JFrame {
 			String date = (String) dateT.getText();
 			String balise = (String) baliseC.getSelectedItem();
 
-
 			if (nom.equals("CHOISIR") || date.equals("")
 					|| balise.equals("CHOISIR")
 					|| date.equals("AAAA-MM-JJ hh:mm:ss")) {
@@ -241,11 +240,11 @@ public class Inte_Acquisition_Crea extends JFrame {
 						"Acquisition non créée!", JOptionPane.WARNING_MESSAGE);
 
 			} else {
-				
+
 				ideq = nomLis.get(nomC.getSelectedIndex() - 1);
 				System.out.println("Equipe choisie : " + ideq);
 				int doigt = 0;
-				
+
 				updateTable();
 				String requeteSQL = "SELECT `idDoigt` FROM `posséder` WHERE `idEquipe`='"
 						+ ideq + "'";

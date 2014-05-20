@@ -18,13 +18,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
-import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
-
 import BDD.DataSourceProvider;
-import Interface.Inte_Equipe.EcouteurCreer;
-import Interface.Inte_Equipe.EcouteurModif;
-import Interface.Inte_Equipe.EcouteurSupp;
 import Models.TabModel;
+
+import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
 
 /**
  * Onglet de gestion des Malus et des Bonus : permet d'en créer, d'en modifier
@@ -79,6 +76,7 @@ public class Inte_MalusBonus extends JPanel {
 
 		EcouteurCreer ecoutCreer = new EcouteurCreer();
 		creer.addActionListener(ecoutCreer);
+
 	}
 
 	/**
@@ -264,8 +262,8 @@ public class Inte_MalusBonus extends JPanel {
 	}
 
 	/**
-	 * Met à jour du tableau pour le remplir avec les Malus/bonus de la compétition
-	 * à partir de la BDD.
+	 * Met à jour du tableau pour le remplir avec les Malus/bonus de la
+	 * compétition à partir de la BDD.
 	 */
 	public void updateTable() {
 
@@ -308,7 +306,7 @@ public class Inte_MalusBonus extends JPanel {
 		data = ArrayToTab(ArrayData);
 
 		Interface();
-		
+
 		if (data.length == 0) {
 			modif.setEnabled(false);
 			supp.setEnabled(false);

@@ -47,8 +47,8 @@ public class Inte_Resultat extends JPanel {
 	/* Boutons Radio */
 	private ButtonGroup bG = new ButtonGroup();
 	private JRadioButton epreuveR = new JRadioButton("Epreuve");
-	private JRadioButton jourR = new JRadioButton("Journée");
-	private JRadioButton generalR = new JRadioButton("Général");
+	private JRadioButton jourR = new JRadioButton("Journee");
+	private JRadioButton generalR = new JRadioButton("General");
 	private JRadioButton deAR = new JRadioButton("De ");
 
 	/* Combo */
@@ -62,29 +62,29 @@ public class Inte_Resultat extends JPanel {
 	private JComboBox<String> catC = new JComboBox<String>(init);
 
 	/* Labels */
-	private JLabel diffL = new JLabel("Difficulté");
+	private JLabel diffL = new JLabel("Difficulte");
 	private JLabel grpL = new JLabel("Groupe");
-	private JLabel catL = new JLabel("Catégorie");
+	private JLabel catL = new JLabel("Categorie");
 	private JTextField jourL = new JTextField("AAAA-MM-JJ");
-	private JLabel aL = new JLabel(" à ");
+	private JLabel aL = new JLabel(" a ");
 	private JTextField deT = new JTextField("AAAA-MM-JJ");
 	private JTextField aT = new JTextField("AAAA-MM-JJ");
 
 	/* Boutons */
 	private JButton print = new JButton("Imprimer");
-	private JButton telec = new JButton("Télécharger PDF");
+	private JButton telec = new JButton("Telecharger PDF");
 	private JButton classement = new JButton("Classement");
 
 	/* Tableau */
 	private TabModel tabModel;
 	private JTable tableau;
 	private Object[][] data = {};
-	private String title[] = { "Rang", "Dossard", "Catégorie", "Nom équipe",
+	private String title[] = { "Rang", "Dossard", "Categorie", "Nom equipe",
 			"Temps" };
 
 	/* JPanel */
 	private JPanel deP = new JPanel();
-	private JPanel aP = new JPanel(); 
+	private JPanel aP = new JPanel();
 
 	private JPanel generalP = new JPanel();
 	private JPanel checkPanel = new JPanel();
@@ -116,6 +116,7 @@ public class Inte_Resultat extends JPanel {
 		bG.add(epreuveR);
 		bG.add(jourR);
 		bG.add(generalR);
+		bG.add(deAR);
 
 		updateTable();
 
@@ -137,14 +138,12 @@ public class Inte_Resultat extends JPanel {
 		checkPanel.removeAll();
 		generalP.add(generalR);
 
-		
 		deP.setLayout(new BorderLayout());
 		deP.add(deAR, BorderLayout.WEST);
 		deP.add(deT, BorderLayout.CENTER);
 
-		
-		aP.setLayout(new BorderLayout()); 
-		aP.add(aL, BorderLayout.WEST); 
+		aP.setLayout(new BorderLayout());
+		aP.add(aL, BorderLayout.WEST);
 		aP.add(aT, BorderLayout.CENTER);
 
 		checkPanel.setBorder(BorderFactory
@@ -157,7 +156,7 @@ public class Inte_Resultat extends JPanel {
 		checkPanel.add(jourL);
 		checkPanel.add(generalR);
 		checkPanel.add(new JPanel());
-		checkPanel.add(deP); 
+		checkPanel.add(deP);
 		checkPanel.add(aP);
 
 		updateComboEpreuve(epreuveC);
@@ -180,7 +179,7 @@ public class Inte_Resultat extends JPanel {
 		classementPB.add(classement);
 
 		choixP.setBorder(BorderFactory
-				.createTitledBorder("Ici vous pouvez générer les classements"));
+				.createTitledBorder("Ici vous pouvez generer les classements"));
 		choixP.setPreferredSize(new Dimension(750, 135));
 		choixP.add(checkPanel);
 		choixP.add(filtreP);
@@ -363,13 +362,47 @@ public class Inte_Resultat extends JPanel {
 				date = dfm.parse(jourL.getText());
 			} catch (ParseException e) {
 				e.printStackTrace();
+				JOptionPane.showMessageDialog(null,
+						"Veuillez entrer une date de type AAAA-MM-JJ ",
+						"Classement non genere!", JOptionPane.WARNING_MESSAGE);
 			}
 
 			dates.add(date);
-		}// Si classement par épreuve
+		}
+		// Si classement par epreuve
 		else if (epreuveR.isSelected()) {
 			nomsEpreuves.add(epreuveC.getSelectedItem().toString());
-		}// Sinon classement général
+		}
+		// Si classement de tel date a tel date
+		else if (deAR.isSelected()) {
+			Date dateDebut = new Date();
+			Date dateFin = new Date();
+
+			DateFormat dfm = new SimpleDateFormat("yyyy-MM-dd");
+			dfm.setTimeZone(TimeZone.getTimeZone("Europe/Paris"));
+
+			try {
+				dateDebut = dfm.parse(deT.getText());
+				dateFin = dfm.parse(aT.getText());
+			} catch (ParseException e) {
+				e.printStackTrace();
+				JOptionPane.showMessageDialog(null,
+						"Veuillez entrer une date de type AAAA-MM-JJ ",
+						"Classement non genere!", JOptionPane.WARNING_MESSAGE);
+			}
+
+			if (!dateDebut.before(dateFin)) {
+				JOptionPane
+						.showMessageDialog(
+								null,
+								"Veuillez renseigner une date de fin qui est apres la date de debut \n\n(Pour un classement a une date utilisez l'option journee)",
+								"La date de fin doit etre plus tard que la date de debut",
+								JOptionPane.INFORMATION_MESSAGE);
+			} else {
+				dates = datesEntreDeuxDates(dateDebut, dateFin);
+			}
+
+		}// Sinon classement general
 
 		// selon la difficultee
 		if (diffC.getSelectedIndex() > 0) {
@@ -389,7 +422,7 @@ public class Inte_Resultat extends JPanel {
 		} else
 			typeEq = "";
 
-		// Création du filtre selon les conditions determinees ci-avant
+		// Creation du filtre selon les conditions determinees ci-avant
 		filtre = new Filtre(difficulteEq, groupeEq, typeEq, nomsEpreuves, idc);
 		// ---------------------- FIN -------------------------
 
@@ -444,6 +477,16 @@ public class Inte_Resultat extends JPanel {
 		return tab;
 	}
 
+	/**
+	 * Permet d'inserer dans la base de donees un temps au format de chaÃ®ne de
+	 * caractere en renseignant un temps au format Date de Java pour pouvoir en
+	 * simplifier le traitement et l'insertion.
+	 * 
+	 * @param temps
+	 *            date a convertir au format `hh:mm:ss pour insertion plus
+	 *            simple dans BDD
+	 * @return HHmmss
+	 */
 	public static String dateToString(Date temps) {
 		String HHmmss = "";
 
@@ -455,17 +498,75 @@ public class Inte_Resultat extends JPanel {
 		if (calTemps.get(Calendar.DAY_OF_MONTH) != 1) {
 			h += 24 * (calTemps.get(Calendar.DAY_OF_MONTH) - 1);
 		}
-		h += calTemps.get(Calendar.HOUR);
-		// System.out.println("h = "+h);
+		h += calTemps.get(Calendar.HOUR_OF_DAY);
 		m += calTemps.get(Calendar.MINUTE);
-		// System.out.println("m = "+m);
 		s += calTemps.get(Calendar.SECOND);
-		// System.out.println("s = "+s);
 
-		HHmmss += h + ":" + m + ":" + s;
+		String hh, mm, ss = "";
 
-		// System.out.println("HHmmss = "+HHmmss);
+		if (h < 10) {
+			hh = "0" + h;
+		} else {
+			hh = "" + h;
+		}
+		if (m < 10) {
+			mm = "0" + m;
+		} else {
+			mm = "" + m;
+		}
+		if (s < 10) {
+			ss = "0" + s;
+		} else {
+			ss = "" + s;
+		}
+
+		HHmmss += hh + ":" + mm + ":" + ss;
 		return HHmmss;
+	}
+
+	public static ArrayList<Date> datesEntreDeuxDates(Date jourDeb, Date jourFin) {
+		ArrayList<Date> dates = new ArrayList<>();
+
+		Calendar c1 = Calendar.getInstance();
+		Calendar c2 = Calendar.getInstance();
+
+		c1.setTime(jourDeb);
+		c2.setTime(jourFin);
+
+		int nbDates = (int) (2 + (substractTwoCal(c2, c1).getTimeInMillis() / 86400000));
+		int i;
+
+		dates.add(c1.getTime());
+		for (i = 0; i < nbDates - 1; i++) {
+			c1.setTimeInMillis(c1.getTimeInMillis() + 86400000);
+			dates.add(c1.getTime());
+		}
+		return dates;
+	}
+
+	/**
+	 * Manipulation (soustraction) de Calendrier
+	 * 
+	 * @param c1
+	 *            un calendrier
+	 * @param c2
+	 *            un autre calandrier a soustraire
+	 * @return
+	 */
+	public static Calendar substractTwoCal(Calendar c1, Calendar c2) {
+
+		Calendar subCalendar = Calendar.getInstance();
+		subCalendar.setTimeZone(c1.getTimeZone());
+
+		long sub = c1.getTimeInMillis() - c2.getTimeInMillis();
+		if (sub < 0)
+			subCalendar.setTimeInMillis(0);
+		else
+			subCalendar.setTimeInMillis(sub);
+		subCalendar.add(Calendar.HOUR, -1);// Pb heure d'ete/hiver pour le
+											// 1/01/1970
+
+		return subCalendar;
 	}
 
 }

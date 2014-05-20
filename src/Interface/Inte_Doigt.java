@@ -4,7 +4,6 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -17,10 +16,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
-import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
-
 import BDD.DataSourceProvider;
 import Models.TabModel;
+
+import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
 
 /**
  * Onglet de gestion des doigts : permet le permet de créer, modifier et
@@ -216,8 +215,8 @@ public class Inte_Doigt extends JPanel {
 				if (nb != null) {
 					while (nb.equals("")) {
 						JOptionPane.showMessageDialog(null,
-								"Veuillez entrer un numéro positif",
-								"Doigt " + tab.get(i) + " non modifié!",
+								"Veuillez entrer un numéro positif", "Doigt "
+										+ tab.get(i) + " non modifié!",
 								JOptionPane.INFORMATION_MESSAGE);
 						System.out.println("chaîne vide");
 						nb = JOptionPane

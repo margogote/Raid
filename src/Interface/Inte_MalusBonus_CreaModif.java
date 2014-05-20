@@ -158,26 +158,25 @@ public class Inte_MalusBonus_CreaModif extends JFrame {
 							JOptionPane.WARNING_MESSAGE);
 
 				} else {
-					String testTps[]=tps.split(":");
-					for(int i=0;i<testTps.length;i++){
+					String testTps[] = tps.split(":");
+					for (int i = 0; i < testTps.length; i++) {
 						System.out.println(testTps[i]);
 						Integer.parseInt(testTps[i]);
 					}
 					if (modif == -1) {
-					String requeteSQL = "INSERT INTO `malusbonus` (`nomMalusBonus`, `malus`, `tempsMalusBonus`, `idCompetition`) VALUES ('"
-							+ nom
-							+ "', '"
-							+ type
-							+ "', '"
-							+ tps
-							+ "', '"
-							+ idc
-							+ "')";
-					BDDupdate(requeteSQL);
+						String requeteSQL = "INSERT INTO `malusbonus` (`nomMalusBonus`, `malus`, `tempsMalusBonus`, `idCompetition`) VALUES ('"
+								+ nom
+								+ "', '"
+								+ type
+								+ "', '"
+								+ tps
+								+ "', '"
+								+ idc + "')";
+						BDDupdate(requeteSQL);
 
-					thePanel.dispose();
-				} else {
-					
+						thePanel.dispose();
+					} else {
+
 					}
 					String requeteSQL = "UPDATE `malusbonus` SET `nomMalusBonus` = '"
 							+ nom
@@ -195,9 +194,11 @@ public class Inte_MalusBonus_CreaModif extends JFrame {
 				}
 			} catch (Exception e) {
 				System.out.println("Je ne suis pas un entier");
-				JOptionPane.showMessageDialog(null,
-						"Veuillez entrer une heure de type hh:mm:ss",
-						"Malus/Bonus non modifié!", JOptionPane.WARNING_MESSAGE);
+				JOptionPane
+						.showMessageDialog(null,
+								"Veuillez entrer une heure de type hh:mm:ss",
+								"Malus/Bonus non modifié!",
+								JOptionPane.WARNING_MESSAGE);
 			}
 		}
 	}

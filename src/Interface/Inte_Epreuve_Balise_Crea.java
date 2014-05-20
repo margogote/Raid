@@ -36,8 +36,8 @@ public class Inte_Epreuve_Balise_Crea extends JFrame {
 	private JComboBox<Object> baliseC = new JComboBox<Object>();
 
 	JLabel typeL = new JLabel("Type");
-	private String[] typeS = { "CHOISIR", "Debut", "Pause Midi","Intermediaire",
-			"Fin Pause Midi", "Arrivé" };
+	private String[] typeS = { "CHOISIR", "Debut", "Pause Midi",
+			"Intermediaire", "Fin Pause Midi", "Arrivé" };
 	private JComboBox<Object> typeC = new JComboBox<Object>(typeS);
 
 	JLabel valL = new JLabel("Valeur");
@@ -47,7 +47,7 @@ public class Inte_Epreuve_Balise_Crea extends JFrame {
 	private JButton annuler = new JButton("Annuler");
 
 	private int idc;
-	private int modif=-1;
+	private int modif = -1;
 
 	/**
 	 * Classe principale
@@ -111,9 +111,8 @@ public class Inte_Epreuve_Balise_Crea extends JFrame {
 	}
 
 	/**
-	 * Permet de gérer les clics du type "Ok"
-	 * Récupération des valeurs
-	 * Insertion dans la BDD
+	 * Permet de gérer les clics du type "Ok" Récupération des valeurs Insertion
+	 * dans la BDD
 	 */
 	public class EcouteurOK implements ActionListener { // Action du quitter
 
@@ -147,8 +146,7 @@ public class Inte_Epreuve_Balise_Crea extends JFrame {
 	}
 
 	/**
-	 * Permet de gérer les clics du type "Quitter"
-	 * Ferme la fenêtre
+	 * Permet de gérer les clics du type "Quitter" Ferme la fenêtre
 	 */
 	public class EcouteurQ implements ActionListener { // Action du quitter
 
@@ -168,7 +166,10 @@ public class Inte_Epreuve_Balise_Crea extends JFrame {
 	public void updateCombo(JComboBox<Object> combo) {
 		combo.removeAllItems();
 		String requeteSQL = "SELECT idBalise FROM balise WHERE `idBalise` NOT IN ( SELECT `idBalise` FROM `valoir` WHERE `idCompetition` = '"
-				+ idc + "' && `idEpreuve`='"+modif+"') && idCompetition = '" + idc + "'";
+				+ idc
+				+ "' && `idEpreuve`='"
+				+ modif
+				+ "') && idCompetition = '" + idc + "'";
 
 		combo.addItem("CHOISIR");
 

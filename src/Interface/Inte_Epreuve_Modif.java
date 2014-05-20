@@ -360,7 +360,7 @@ public class Inte_Epreuve_Modif extends JFrame {
 						"Paramètres non créés!", JOptionPane.WARNING_MESSAGE);
 			} else {
 				try {
-					String testTpsdate[] = date.split("- :");
+					String testTpsdate[] = date.split("-| |:|.");
 					String testTpsduree[] = duree.split(":");
 					String testTpsabs[] = abs.split(":");
 					for (int i = 0; i < testTpsdate.length; i++) {
@@ -395,18 +395,40 @@ public class Inte_Epreuve_Modif extends JFrame {
 
 					BDDupdate(requeteSQLabs);
 
+					String requeteSQLPB = "UPDATE `malusbonus` SET `nomMalusBonus`='nonPointageBalise"
+							+ nom
+							+ "',`tempsMalusBonus`='"
+							+ abs
+							+ "' WHERE `idCompetition`= '"
+							+ idc
+							+ "'&& `nomMalusBonus`='nonPointageBalise"
+							+ nomAv
+							+ "'";
+
+					BDDupdate(requeteSQLPB);
+
+					String requeteSQLtps = "UPDATE `malusbonus` SET `nomMalusBonus`='tempsSupp"
+							+ nom
+							+ "',`tempsMalusBonus`='"
+							+ abs
+							+ "' WHERE `idCompetition`= '"
+							+ idc
+							+ "'&& `nomMalusBonus`='tempsSupp" + nomAv + "'";
+
+					BDDupdate(requeteSQLtps);
+
 					theFrame.dispose();
 				}
 
-			catch (Exception e) {
-				System.out.println("Je ne suis pas un entier");
-				JOptionPane
-						.showMessageDialog(null,
-								"Veuillez entrer une heure de type hh:mm:ss et une date de type AAAA-MM-JJ hh:mm:ss",
-								"Epreuve non modifiée!",
-								JOptionPane.WARNING_MESSAGE);
+				catch (Exception e) {
+					System.out.println("Je ne suis pas un entier");
+					JOptionPane
+							.showMessageDialog(
+									null,
+									"Veuillez entrer une heure de type hh:mm:ss et une date de type AAAA-MM-JJ hh:mm:ss",
+									"Epreuve non modifiée!",
+									JOptionPane.WARNING_MESSAGE);
 
-			
 				}
 			}
 		}

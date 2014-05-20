@@ -25,10 +25,6 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 
 import BDD.DataSourceProvider;
-import Interface.Inte_Epreuve_Modif.EcouteurMoins;
-import Interface.Inte_Epreuve_Modif.EcouteurOK;
-import Interface.Inte_Epreuve_Modif.EcouteurPlus;
-import Interface.Inte_Epreuve_Modif.EcouteurQ;
 import Models.TabModel;
 
 /**
@@ -269,7 +265,7 @@ public class Inte_Epreuve_Crea extends JFrame {
 						System.out.println(testTpsabs[i]);
 						Integer.parseInt(testTpsabs[i]);
 					}
-					
+
 					String requeteSQL = "INSERT INTO `epreuve` (`nomEpreuve`, `typeEpreuve`, `difficulte`, `dateHeureEpreuve`, `dureeEpreuve`, `idCompetition`) VALUES ('"
 							+ nom
 							+ "', '"
@@ -339,7 +335,8 @@ public class Inte_Epreuve_Crea extends JFrame {
 			} catch (Exception e) {
 				System.out.println("Je ne suis pas un entier");
 				JOptionPane
-						.showMessageDialog(null,
+						.showMessageDialog(
+								null,
 								"Veuillez entrer une heure de type hh:mm:ss et une date de type AAAA-MM-JJ hh:mm:ss",
 								"Epreuve non créée!",
 								JOptionPane.WARNING_MESSAGE);

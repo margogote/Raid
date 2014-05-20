@@ -1,21 +1,18 @@
 package Interface;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import Interface.Inte_Accueil.EcouteurQ;
-
 /**
- * Onglet menu : Permet de changer de competition, de quitter l'application et d'avoir des informations supplémentaires
+ * Onglet menu : Permet de changer de competition, de quitter l'application et
+ * d'avoir des informations supplémentaires
  * 
  * @author Margaux
  * 
@@ -35,9 +32,8 @@ public class Inte_Menu extends JPanel {
 	private JButton aPropos = new JButton("A propos");
 
 	/**
-     * Classe principale
-     * permet de gérer l'interface du panel
-     */
+	 * Classe principale permet de gérer l'interface du panel
+	 */
 	public Inte_Menu(JFrame jFrameContenantLOnglet) {
 
 		this.jFrameContenantLOnglet = jFrameContenantLOnglet;
@@ -56,39 +52,38 @@ public class Inte_Menu extends JPanel {
 
 		panBoutonsListe.setLayout(new BoxLayout(panBoutonsListe,
 				BoxLayout.PAGE_AXIS));
-		//panBoutonsListe.setPreferredSize(new Dimension(200,150));
+		// panBoutonsListe.setPreferredSize(new Dimension(200,150));
 		panBoutonsListe.add(panBoutRetour);
 		panBoutonsListe.add(panBoutQuit);
 		panBoutonsListe.add(panBoutAP);
 
-		//panBalise.setLayout(new BoxLayout(panBalise, BoxLayout.PAGE_AXIS));
+		// panBalise.setLayout(new BoxLayout(panBalise, BoxLayout.PAGE_AXIS));
 
-		//panMega.setLayout(new BorderLayout());
-		//panBalise.add(panBoutonsListe , BorderLayout.CENTER );
+		// panMega.setLayout(new BorderLayout());
+		// panBalise.add(panBoutonsListe , BorderLayout.CENTER );
 
-		//panBalise.setLayout(new BoxLayout(panBalise, BoxLayout.Y_AXIS));
-		
-		//this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-		//this.setLayout(new BorderLayout());
-		//this.add(Box.createVerticalGlue(), BorderLayout.NORTH);
-		this.add(panBoutonsListe /*, BorderLayout.CENTER */);
-		//this.add(Box.createVerticalGlue(), BorderLayout.SOUTH);
+		// panBalise.setLayout(new BoxLayout(panBalise, BoxLayout.Y_AXIS));
+
+		// this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+		// this.setLayout(new BorderLayout());
+		// this.add(Box.createVerticalGlue(), BorderLayout.NORTH);
+		this.add(panBoutonsListe /* , BorderLayout.CENTER */);
+		// this.add(Box.createVerticalGlue(), BorderLayout.SOUTH);
 
 		EcouteurQ ecoutQ = new EcouteurQ();
 		quitter.addActionListener(ecoutQ);
 
 		EcouteurRet ecoutRet = new EcouteurRet();
 		retour.addActionListener(ecoutRet);
-		
+
 		EcouteurAP ecoutAP = new EcouteurAP();
 		aPropos.addActionListener(ecoutAP);
 
 	}
 
 	/**
-     * Permet de gérer les clics du type "Quitter"
-     * Ferme la fenêtre
-     */
+	 * Permet de gérer les clics du type "Quitter" Ferme la fenêtre
+	 */
 	public class EcouteurQ implements ActionListener { // Action du quitter
 
 		public void actionPerformed(ActionEvent arg0) {
@@ -109,8 +104,8 @@ public class Inte_Menu extends JPanel {
 	}
 
 	/**
-     * Permet de gérer les clics du type "Changer de competition".
-     */
+	 * Permet de gérer les clics du type "Changer de competition".
+	 */
 	public class EcouteurRet implements ActionListener { // Action du retour
 
 		public void actionPerformed(ActionEvent arg0) {
@@ -129,8 +124,8 @@ public class Inte_Menu extends JPanel {
 	}
 
 	/**
-     * Permet de gérer les clics du type "A Propos".
-     */
+	 * Permet de gérer les clics du type "A Propos".
+	 */
 	public class EcouteurAP implements ActionListener { // Action du Apropos
 
 		public void actionPerformed(ActionEvent arg0) {

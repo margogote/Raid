@@ -1,21 +1,5 @@
 package Interface;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
-
-import BDD.DataSourceProvider;
-import Classements.Classement;
-import Classements.Filtre;
-import Models.Equipe;
 
 /**
  * Classe Main qui lance l'application

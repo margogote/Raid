@@ -25,11 +25,6 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 
 import BDD.DataSourceProvider;
-import Interface.Inte_Acquisition_Crea.EcouteurMoins;
-import Interface.Inte_Acquisition_Crea.EcouteurOKAcq;
-import Interface.Inte_Acquisition_Crea.EcouteurOKMB;
-import Interface.Inte_Acquisition_Crea.EcouteurPlus;
-import Interface.Inte_Acquisition_Crea.EcouteurQ;
 import Models.TabModel;
 
 import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;

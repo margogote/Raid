@@ -26,7 +26,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
 import BDD.DataSourceProvider;
-import Interface.Inte_Acquisition_Crea.EcouteurQ;
 import Models.TabModel;
 
 import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
@@ -330,7 +329,7 @@ public class Inte_Acquisition extends JFrame {
 
 			BDDupdate("DELETE FROM `scorer` WHERE `idEpreuve` = '" + idep
 					+ "' && `idCompetition` = '" + idc + "'");
-//Pour connaitre le type d'épreuve, sa date de départ et sa durée
+			// Pour connaitre le type d'épreuve, sa date de départ et sa durée
 			try {
 				String requeteSQL = "SELECT `typeEpreuve`, `dateHeureEpreuve`, `dureeEpreuve` FROM `epreuve` WHERE `idEpreuve` = '"
 						+ idep + "' && `idCompetition` = '" + idc + "'";
@@ -359,7 +358,7 @@ public class Inte_Acquisition extends JFrame {
 			}
 
 			ArrayList<Integer> lisDoigt = new ArrayList<>();
-//Pour savoir quelles équipes ont participées
+			// Pour savoir quelles équipes ont participées
 			try {
 				String requeteDoigt = "SELECT DISTINCT `idDoigt` FROM `pointer` WHERE `pointer`.`idCompetition`='"
 						+ idc + "' && `pointer`.`idEpreuve` = '" + idep + "'";
@@ -461,7 +460,7 @@ public class Inte_Acquisition extends JFrame {
 									stringToDate(dateHFin),
 									stringToDate(dateHDeb));
 
-							System.out.println("Temps course tot : "+temps);
+							System.out.println("Temps course tot : " + temps);
 
 							String attribMB = "SELECT `malusbonus`.`tempsMalusBonus`, `malusbonus`.`malus` FROM `avoir` INNER JOIN `malusbonus` ON `avoir`.`idMB`=`malusbonus`.`idMB` WHERE `avoir`.`idEquipe` =(SELECT `idEquipe` FROM `posséder` WHERE `idDoigt`='"
 									+ lisDoigt.get(i)
@@ -476,24 +475,27 @@ public class Inte_Acquisition extends JFrame {
 							ResultSet resattribMB = stm.executeQuery(attribMB);
 							while (resattribMB.next()) {
 								String tpsMBstr = resattribMB.getString(1);
-								Date tpsMB = stringToDuree(resattribMB.getString(1));
+								Date tpsMB = stringToDuree(resattribMB
+										.getString(1));
 								int mal = resattribMB.getInt(2);
-								System.out.println("tpsStr : "+tpsMBstr+" tpsMB : "+tpsMB+ " malus? : "+mal);
-								
-								if(mal==0){
-									temps=substractTwoDates(temps, tpsMB);
-								}else{
-									temps=addTwoDates(temps, tpsMB);
+								System.out.println("tpsStr : " + tpsMBstr
+										+ " tpsMB : " + tpsMB + " malus? : "
+										+ mal);
+
+								if (mal == 0) {
+									temps = substractTwoDates(temps, tpsMB);
+								} else {
+									temps = addTwoDates(temps, tpsMB);
 								}
 							}
-							System.out.println("Tps course +- MB"+temps);
+							System.out.println("Tps course +- MB" + temps);
 
 							String requeteScorer = "INSERT INTO `scorer`(`idEquipe`, `idEpreuve`, `tempsRealise`, `idCompetition`) VALUES ((SELECT `idEquipe` FROM `posséder` WHERE `idDoigt`='"
 									+ lisDoigt.get(i)
 									+ "'),'"
 									+ idep
 									+ "','"
-									+  dateToString(temps) + "','" + idc + "')";
+									+ dateToString(temps) + "','" + idc + "')";
 
 							BDDupdate(requeteScorer);
 						}
@@ -575,7 +577,7 @@ public class Inte_Acquisition extends JFrame {
 									stringToDate(dateHDeb));
 
 							System.out.println(temps);
-							
+
 							String attribMB = "SELECT `malusbonus`.`tempsMalusBonus`, `malusbonus`.`malus` FROM `avoir` INNER JOIN `malusbonus` ON `avoir`.`idMB`=`malusbonus`.`idMB` WHERE `avoir`.`idEquipe` =(SELECT `idEquipe` FROM `posséder` WHERE `idDoigt`='"
 									+ lisDoigt.get(i)
 									+ "' && `idCompetition`= '"
@@ -589,18 +591,20 @@ public class Inte_Acquisition extends JFrame {
 							ResultSet resattribMB = stm.executeQuery(attribMB);
 							while (resattribMB.next()) {
 								String tpsMBstr = resattribMB.getString(1);
-								Date tpsMB = stringToDuree(resattribMB.getString(1));
+								Date tpsMB = stringToDuree(resattribMB
+										.getString(1));
 								int mal = resattribMB.getInt(2);
-								System.out.println("tpsStr : "+tpsMBstr+" tpsMB : "+tpsMB+ " malus? : "+mal);
-								
-								if(mal==0){
-									temps=substractTwoDates(temps, tpsMB);
-								}else{
-									temps=addTwoDates(temps, tpsMB);
+								System.out.println("tpsStr : " + tpsMBstr
+										+ " tpsMB : " + tpsMB + " malus? : "
+										+ mal);
+
+								if (mal == 0) {
+									temps = substractTwoDates(temps, tpsMB);
+								} else {
+									temps = addTwoDates(temps, tpsMB);
 								}
 							}
-							System.out.println("Tps course +- MB"+temps);
-
+							System.out.println("Tps course +- MB" + temps);
 
 							String requeteScorer = "INSERT INTO `scorer`(`idEquipe`, `idEpreuve`, `tempsRealise`, `idCompetition`) VALUES ((SELECT `idEquipe` FROM `posséder` WHERE `idDoigt`='"
 									+ lisDoigt.get(i)
@@ -782,7 +786,7 @@ public class Inte_Acquisition extends JFrame {
 
 							System.out.println("Temps tot de dépassement : "
 									+ tpsTotDepass);
-							
+
 							String attribMB = "SELECT `malusbonus`.`tempsMalusBonus`, `malusbonus`.`malus` FROM `avoir` INNER JOIN `malusbonus` ON `avoir`.`idMB`=`malusbonus`.`idMB` WHERE `avoir`.`idEquipe` =(SELECT `idEquipe` FROM `posséder` WHERE `idDoigt`='"
 									+ lisDoigt.get(i)
 									+ "' && `idCompetition`= '"
@@ -796,17 +800,20 @@ public class Inte_Acquisition extends JFrame {
 							ResultSet resattribMB = stm.executeQuery(attribMB);
 							while (resattribMB.next()) {
 								String tpsMBstr = resattribMB.getString(1);
-								Date tpsMB = stringToDuree(resattribMB.getString(1));
+								Date tpsMB = stringToDuree(resattribMB
+										.getString(1));
 								int mal = resattribMB.getInt(2);
-								System.out.println("tpsStr : "+tpsMBstr+" tpsMB : "+tpsMB+ " malus? : "+mal);
-								
-								if(mal==0){
-									temps=substractTwoDates(temps, tpsMB);
-								}else{
-									temps=addTwoDates(temps, tpsMB);
+								System.out.println("tpsStr : " + tpsMBstr
+										+ " tpsMB : " + tpsMB + " malus? : "
+										+ mal);
+
+								if (mal == 0) {
+									temps = substractTwoDates(temps, tpsMB);
+								} else {
+									temps = addTwoDates(temps, tpsMB);
 								}
 							}
-							System.out.println("Tps course +- MB"+temps);
+							System.out.println("Tps course +- MB" + temps);
 
 							Date tpsTot = addTwoDates(temps,
 									addTwoDates(tpsTotBalNonP, tpsTotDepass));

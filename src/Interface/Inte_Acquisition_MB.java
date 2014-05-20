@@ -18,7 +18,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import BDD.DataSourceProvider;
-import Interface.Inte_Acquisition_Crea.EcouteurQ;
 
 public class Inte_Acquisition_MB extends JFrame {
 
@@ -98,7 +97,13 @@ public class Inte_Acquisition_MB extends JFrame {
 				int idMB = mbLis.get(mbC.getSelectedIndex() - 1);
 				System.out.println("idMB : " + idMB);
 				String requeteSQL = "INSERT INTO `avoir`(`idMB`, `idEquipe`, `tempsTotalMalusBonus`, `idCompetition`,`idEpreuve` ) VALUES ('"
-						+ idMB + "','" + ideq + "','00:00:01','" + idc + "', '"+idep+"')";
+						+ idMB
+						+ "','"
+						+ ideq
+						+ "','00:00:01','"
+						+ idc
+						+ "', '"
+						+ idep + "')";
 				System.out.println(requeteSQL);
 				BDDupdate(requeteSQL);
 

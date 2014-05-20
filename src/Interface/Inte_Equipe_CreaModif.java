@@ -52,7 +52,8 @@ public class Inte_Equipe_CreaModif extends JFrame {
 	private JComboBox<Object> grpC = new JComboBox<Object>(grpS);
 
 	JLabel catL = new JLabel("Catégorie");
-	private String[] categorie = { "CHOISIR", "Masculin", "Feminin", "Mixte", "HC" };
+	private String[] categorie = { "CHOISIR", "Masculin", "Feminin", "Mixte",
+			"HC" };
 	private JComboBox<Object> catC = new JComboBox<Object>(categorie);
 
 	private JButton oK = new JButton("Valider");
@@ -60,6 +61,7 @@ public class Inte_Equipe_CreaModif extends JFrame {
 
 	private int idc;
 	private int modif;
+	private int dossardAv = 0;
 
 	/**
 	 * Classe principale
@@ -82,7 +84,7 @@ public class Inte_Equipe_CreaModif extends JFrame {
 		thePanel.setLayout(new BorderLayout()); // Pour les placements
 
 		updateDoigt();
-		
+
 		if (idModif != -1) {
 			thePanel.setTitle("Raidzultats - Modification équipe " + idModif);
 
@@ -109,6 +111,9 @@ public class Inte_Equipe_CreaModif extends JFrame {
 					catC.setSelectedItem(res.getString(4));
 					dossardT.setText(res.getString(5));
 					doigtC.addItem(res.getString(6));
+					doigtC.setSelectedItem(res.getString(6));
+
+					dossardAv = res.getInt(5);
 				}
 				conn.close();
 				res.close();
@@ -306,7 +311,7 @@ public class Inte_Equipe_CreaModif extends JFrame {
 			} else {
 				try {
 					String requeteSQL0 = "SELECT `dossard` FROM `equipe` WHERE `idCompetition`='"
-							+ idc + "'";
+							+ idc + "' && `dossard`!='" + dossardAv + "'";
 					Class.forName("com.mysql.jdbc.Driver");
 					System.out.println("Driver O.K.");
 
