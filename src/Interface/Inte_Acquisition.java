@@ -321,6 +321,259 @@ public class Inte_Acquisition extends JFrame {
 	}
 
 	/**
+	 * Permet de gérer les clics du type "Quitter" Ferme la fenêtre
+	 */
+	public class EcouteurFin implements ActionListener { // Action du quitter
+
+		public void actionPerformed(ActionEvent arg0) {
+
+			// Calcul des MB supplémentaires par balises non pointées
+			String typeCourse = "", dateCourse = "", dureeCourse = "";
+
+			BDDupdate("DELETE FROM `scorer` WHERE `idEpreuve` = '" + idep
+					+ "' && `idCompetition` = '" + idc + "'");
+
+			try {
+				String requeteSQL = "SELECT `typeEpreuve`, `dateHeureEpreuve`, `dureeEpreuve` FROM `epreuve` WHERE `idEpreuve` = '"
+						+ idep + "' && `idCompetition` = '" + idc + "'";
+				Class.forName("com.mysql.jdbc.Driver");
+				System.out.println("Driver O.K.");
+
+				Connection conn = DataSourceProvider.getDataSource()
+						.getConnection();
+				System.out.println("Connexion effective !");
+				Statement stm = conn.createStatement();
+				ResultSet res = stm.executeQuery(requeteSQL);
+
+				while (res.next()) {
+					typeCourse = res.getString(1);
+					dateCourse = res.getString(2);
+					dureeCourse = res.getString(3);
+					System.out.println("type: " + typeCourse + " date : "
+							+ dateCourse + " durée : " + dureeCourse);
+				}
+
+				conn.close();
+				res.close();
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			ArrayList<Integer> lisDoigt = new ArrayList<>();
+
+			try {
+				String requeteDoigt = "SELECT DISTINCT `idDoigt` FROM `pointer` WHERE `pointer`.`idCompetition`='"
+						+ idc + "' && `pointer`.`idEpreuve` = '" + idep + "'";
+
+				Class.forName("com.mysql.jdbc.Driver");
+				System.out.println("Driver O.K.");
+
+				Connection connType = DataSourceProvider.getDataSource()
+						.getConnection();
+				System.out.println("Connexion effective !");
+				Statement stmType = connType.createStatement();
+				ResultSet resType = stmType.executeQuery(requeteDoigt);
+
+				while (resType.next()) {
+					lisDoigt.add(resType.getInt(1));
+				}
+				connType.close();
+				resType.close();
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			if (typeCourse.equals("Course")) {
+
+				System.out.println(" ----- C'est une course");
+				try {
+
+					for (int i = 0; i < lisDoigt.size(); i++) {
+						String dateHDeb = "";
+						String dateHFin = "";
+
+						String requeteBalDeb = "SELECT `pointer`.`dateHeurePointage` FROM `pointer` INNER JOIN `valoir` ON `pointer`.`idBalise` = `valoir`.`idBalise` && `pointer`.`idEpreuve` = `valoir`.`idEpreuve` WHERE `valoir`.`type`= 'Debut' && `pointer`.`idCompetition`='"
+								+ idc
+								+ "' && `valoir`.`idCompetition`='"
+								+ idc
+								+ "' && `pointer`.`idEpreuve` = '"
+								+ idep
+								+ "' && `pointer`.`idDoigt`='"
+								+ lisDoigt.get(i) + "'";
+
+						String requeteBalFin = "SELECT `pointer`.`dateHeurePointage` FROM `pointer` INNER JOIN `valoir` ON `pointer`.`idBalise` = `valoir`.`idBalise` && `pointer`.`idEpreuve` = `valoir`.`idEpreuve` WHERE `valoir`.`type`= 'Arrivé' && `pointer`.`idCompetition`='"
+								+ idc
+								+ "' && `valoir`.`idCompetition`='"
+								+ idc
+								+ "' && `pointer`.`idEpreuve` = '"
+								+ idep
+								+ "' && `pointer`.`idDoigt`='"
+								+ lisDoigt.get(i) + "'";
+						System.out.println(requeteBalDeb);
+						System.out.println(requeteBalFin);
+
+						Class.forName("com.mysql.jdbc.Driver");
+						System.out.println("Driver O.K.");
+
+						Connection conn = DataSourceProvider.getDataSource()
+								.getConnection();
+						System.out.println("Connexion effective !");
+						Statement stm = conn.createStatement();
+
+						ResultSet res2 = stm.executeQuery(requeteBalDeb);
+						while (res2.next()) {
+							dateHDeb = res2.getString(1);
+							System.out.println(dateHDeb);
+						}
+
+						ResultSet res3 = stm.executeQuery(requeteBalFin);
+
+						/*
+						 * Verifier si requeteBalFin existe, sinon, M/B absent
+						 */
+						if (!res3.next()) {
+							System.out
+									.println("   ----- Balise de fin non pointée ! -----");
+
+							String requeteScorer = "INSERT INTO `scorer`(`idEquipe`, `idEpreuve`, `tempsRealise`, `idCompetition`) VALUES ((SELECT `idEquipe` FROM `posséder` WHERE `idDoigt`='"
+									+ lisDoigt.get(i)
+									+ "'),'"
+									+ idep
+									+ "',(SELECT `tempsMalusBonus` FROM `malusbonus` WHERE `nomMalusBonus`='abs"
+									+ nomEp
+									+ "' &&`idCompetition`='"
+									+ idc
+									+ "'),'" + idc + "')";
+
+							BDDupdate(requeteScorer);
+
+						} else {
+							res3.beforeFirst();
+							while (res3.next()) {
+								dateHFin = res3.getString(1);
+								System.out.println(dateHFin);
+							}
+
+							Date temps = substractTwoDates(
+									stringToDate(dateHFin),
+									stringToDate(dateHDeb));
+
+							System.out.println(temps);
+
+							String tempsStr = dateToString(temps);
+							System.out.println(tempsStr);
+
+							String requeteScorer = "INSERT INTO `scorer`(`idEquipe`, `idEpreuve`, `tempsRealise`, `idCompetition`) VALUES ((SELECT `idEquipe` FROM `posséder` WHERE `idDoigt`='"
+									+ lisDoigt.get(i)
+									+ "'),'"
+									+ idep
+									+ "','"
+									+ tempsStr + "','" + idc + "')";
+
+							BDDupdate(requeteScorer);
+						}
+						conn.close();
+						res2.close();
+						res3.close();
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+			} else if (typeCourse.equals("MassStart")) {
+				System.out.println(" ----- C'est un MassStart");
+				try {
+
+					for (int i = 0; i < lisDoigt.size(); i++) {
+						String dateHDeb = dateCourse;
+						String dateHFin = "";
+
+						String requeteBalFin = "SELECT `pointer`.`dateHeurePointage` FROM `pointer` INNER JOIN `valoir` ON `pointer`.`idBalise` = `valoir`.`idBalise` && `pointer`.`idEpreuve` = `valoir`.`idEpreuve` WHERE `valoir`.`type`= 'Arrivé' && `pointer`.`idCompetition`='"
+								+ idc
+								+ "' && `valoir`.`idCompetition`='"
+								+ idc
+								+ "' && `pointer`.`idEpreuve` = '"
+								+ idep
+								+ "' && `pointer`.`idDoigt`='"
+								+ lisDoigt.get(i) + "'";
+
+						System.out.println(requeteBalFin);
+
+						Class.forName("com.mysql.jdbc.Driver");
+						System.out.println("Driver O.K.");
+
+						Connection conn = DataSourceProvider.getDataSource()
+								.getConnection();
+						System.out.println("Connexion effective !");
+						Statement stm = conn.createStatement();
+
+						ResultSet res3 = stm.executeQuery(requeteBalFin);
+
+						if (!res3.next()) {
+							System.out
+									.println("   ----- Balise de fin non pointée ! -----");
+
+							String requeteScorer = "INSERT INTO `scorer`(`idEquipe`, `idEpreuve`, `tempsRealise`, `idCompetition`) VALUES ((SELECT `idEquipe` FROM `posséder` WHERE `idDoigt`='"
+									+ lisDoigt.get(i)
+									+ "'),'"
+									+ idep
+									+ "',(SELECT `tempsMalusBonus` FROM `malusbonus` WHERE `nomMalusBonus`='abs"
+									+ nomEp
+									+ "' &&`idCompetition`='"
+									+ idc
+									+ "'),'" + idc + "')";
+
+							BDDupdate(requeteScorer);
+
+						} else {
+							res3.beforeFirst();
+
+							while (res3.next()) {
+								dateHFin = res3.getString(1);
+								System.out.println("Fin : " + dateHFin);
+							}
+							System.out.println("Début : " + dateHDeb);
+
+							Date temps = substractTwoDates(
+									stringToDate(dateHFin),
+									stringToDate(dateHDeb));
+
+							System.out.println(temps);
+
+							String tempsStr = dateToString(temps);
+							System.out.println(tempsStr);
+
+							String requeteScorer = "INSERT INTO `scorer`(`idEquipe`, `idEpreuve`, `tempsRealise`, `idCompetition`) VALUES ((SELECT `idEquipe` FROM `posséder` WHERE `idDoigt`='"
+									+ lisDoigt.get(i)
+									+ "'),'"
+									+ idep
+									+ "','"
+									+ tempsStr + "','" + idc + "')";
+
+							BDDupdate(requeteScorer);
+
+							conn.close();
+							res3.close();
+						}
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+			} else if (typeCourse.equals("Course d`orientation")) {
+				System.out.println(" ----- C'est une CO");
+
+			} else {
+				System.out.println("Problèèèèèèèèèèèèèèèèèèèèèèèème");
+			}
+
+			theFrame.dispose();
+		}
+	}
+
+	/**
 	 * Met à jour du tableau pour le remplir avec les équipes de la compétition
 	 * à partir de la BDD.
 	 */
@@ -373,130 +626,6 @@ public class Inte_Acquisition extends JFrame {
 		Interface();
 
 		System.out.println("MAJ Table equipe");
-	}
-
-	/**
-	 * Permet de gérer les clics du type "Quitter" Ferme la fenêtre
-	 */
-	public class EcouteurFin implements ActionListener { // Action du quitter
-
-		public void actionPerformed(ActionEvent arg0) {
-
-			// Calcul des MB supplémentaires par balises non pointées
-			String type = "", date = "", duree = "";
-
-			try {
-				String requeteSQL = "SELECT `typeEpreuve`, `dateHeureEpreuve`, `dureeEpreuve` FROM `epreuve` WHERE `idEpreuve` = '"
-						+ idep + "' && `idCompetition` = '" + idc + "'";
-				Class.forName("com.mysql.jdbc.Driver");
-				System.out.println("Driver O.K.");
-
-				Connection conn = DataSourceProvider.getDataSource()
-						.getConnection();
-				System.out.println("Connexion effective !");
-				Statement stm = conn.createStatement();
-				ResultSet res = stm.executeQuery(requeteSQL);
-
-				while (res.next()) {
-					type = res.getString(1);
-					date = res.getString(2);
-					duree = res.getString(3);
-					System.out.println("type: " + type + " date : " + date
-							+ " durée : " + duree);
-				}
-
-				conn.close();
-				res.close();
-
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-			try {
-				String requeteDoigt = "SELECT DISTINCT `idDoigt` FROM `pointer` WHERE `pointer`.`idCompetition`='"
-						+ idc + "' && `pointer`.`idEpreuve` = '" + idep + "'";
-
-				Class.forName("com.mysql.jdbc.Driver");
-				System.out.println("Driver O.K.");
-
-				Connection connType = DataSourceProvider.getDataSource()
-						.getConnection();
-				System.out.println("Connexion effective !");
-				Statement stmType = connType.createStatement();
-				ResultSet resType = stmType.executeQuery(requeteDoigt);
-
-				while (resType.next()) {
-					if (type.equals("Course")) {
-						String dateHDeb = "";
-						String dateHFin = "";
-
-						String requeteBalDeb = "SELECT `pointer`.`dateHeurePointage` FROM `pointer` INNER JOIN `valoir` ON `pointer`.`idBalise` = `valoir`.`idBalise` && `pointer`.`idEpreuve` = `valoir`.`idEpreuve` WHERE `valoir`.`type`= 'Debut' && `pointer`.`idCompetition`='"
-								+ idc
-								+ "' && `valoir`.`idCompetition`='"
-								+ idc
-								+ "' && `pointer`.`idEpreuve` = '"
-								+ idep
-								+ "' && `pointer`.`idDoigt`='"
-								+ resType.getInt(1) + "'";
-						// `pointer`.`idBalise`, `pointer`.`idEpreuve`,
-						// `pointer`.`idDoigt`,
-
-						String requeteBalFin = "SELECT `pointer`.`dateHeurePointage` FROM `pointer` INNER JOIN `valoir` ON `pointer`.`idBalise` = `valoir`.`idBalise` && `pointer`.`idEpreuve` = `valoir`.`idEpreuve` WHERE `valoir`.`type`= 'Arrivé' && `pointer`.`idCompetition`='"
-								+ idc
-								+ "' && `valoir`.`idCompetition`='"
-								+ idc
-								+ "' && `pointer`.`idEpreuve` = '"
-								+ idep
-								+ "' && `pointer`.`idDoigt`='"
-								+ resType.getInt(1) + "'";
-						System.out.println(requeteBalDeb);
-						System.out.println(requeteBalFin);
-
-						ResultSet res2 = stmType.executeQuery(requeteBalDeb);
-						while (res2.next()) {
-							dateHDeb = res2.getString(1);
-							System.out.println(dateHDeb);
-						}
-
-						ResultSet res3 = stmType.executeQuery(requeteBalFin);
-						while (res3.next()) {
-							dateHFin = res3.getString(1);
-							System.out.println(dateHFin);
-						}
-
-						Date temps = substractTwoDates(stringToDate(dateHFin),
-								stringToDate(dateHDeb));
-
-						System.out.println(temps);
-
-						String tempsStr = dateToString(temps);
-						System.out.println(tempsStr);
-						
-						String requeteScorer = "INSERT INTO `scorer`(`idEquipe`, `idEpreuve`, `tempsRealise`, `idCompetition`) VALUES ((SELECT `idEquipe` FROM `posséder` WHERE `idDoigt`='"+resType.getInt(1)+"'),'"+idep+"','"+tempsStr+"','"+idc+"')";
-						
-
-						res2.close();
-						res3.close();
-
-					} else if (type.equals("MassStart")) {
-
-					} else if (type.equals("Course d`orientation")) {
-
-					} else {
-						System.out.println("Problèèèèèèèèèèèèèèèèèèèèèèèème");
-					}
-
-				}
-
-				connType.close();
-				resType.close();
-
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-			theFrame.dispose();
-		}
 	}
 
 	/**
@@ -579,6 +708,7 @@ public class Inte_Acquisition extends JFrame {
 	 */
 	public void BDDupdate(String requeteSQL) {
 		try {
+			System.out.println(requeteSQL);
 			Class.forName("com.mysql.jdbc.Driver");
 			System.out.println("Driver O.K.");
 
@@ -609,6 +739,25 @@ public class Inte_Acquisition extends JFrame {
 	public static Date stringToDate(String HHmmss) {
 		Date temps = new Date();
 		DateFormat dateformat = new SimpleDateFormat("YYYY-MM-DD HH:mm:ss");
+		try {
+			temps = dateformat.parse(HHmmss);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return temps;
+	}
+
+	/**
+	 * Permet d'extraire de la base de donees un temps au format de chaine de
+	 * caractere pour pouvoir en simplifier le traitement et l'interpretation
+	 * 
+	 * @param HHmmss
+	 *            chaine de characteres extraites au format HH:mm:ss
+	 * @return temps
+	 */
+	public static Date stringToDuree(String HHmmss) {
+		Date temps = new Date();
+		DateFormat dateformat = new SimpleDateFormat("HH:mm:ss");
 		try {
 			temps = dateformat.parse(HHmmss);
 		} catch (ParseException e) {

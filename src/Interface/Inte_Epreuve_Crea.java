@@ -60,6 +60,9 @@ public class Inte_Epreuve_Crea extends JFrame {
 	private String[] difficulte = { "CHOISIR", "Aventure", "Expert" };
 	private JComboBox<Object> difficC = new JComboBox<Object>(difficulte);
 
+	private JLabel absL = new JLabel("Temps si absent");
+	private JTextField absT = new JTextField("hh:mm:ss");
+
 	/* Boutons */
 	private JButton supp = new JButton(" - ");
 	private JButton creer = new JButton(" + ");
@@ -122,7 +125,7 @@ public class Inte_Epreuve_Crea extends JFrame {
 		btnP.add(annuler);
 
 		JPanel labelP = new JPanel();
-		labelP.setLayout(new GridLayout(6, 2));
+		labelP.setLayout(new GridLayout(7, 2));
 		labelP.setPreferredSize(new Dimension(300, 170));
 		labelP.add(nomL);
 		labelP.add(nomT);
@@ -134,6 +137,8 @@ public class Inte_Epreuve_Crea extends JFrame {
 		labelP.add(dureeT);
 		labelP.add(difficL);
 		labelP.add(difficC);
+		labelP.add(absL);
+		labelP.add(absT);
 
 		JPanel megaP = new JPanel();
 		megaP.setBorder(BorderFactory
@@ -235,6 +240,7 @@ public class Inte_Epreuve_Crea extends JFrame {
 			String difficulte = (String) difficC.getSelectedItem();
 			String date = (String) dateT.getText();
 			String duree = (String) dureeT.getText();
+			String abs = (String) absT.getText();
 
 			String requeteSQL = "INSERT INTO `epreuve` (`nomEpreuve`, `typeEpreuve`, `difficulte`, `dateHeureEpreuve`, `dureeEpreuve`, `idCompetition`) VALUES ('"
 					+ nom
@@ -284,6 +290,12 @@ public class Inte_Epreuve_Crea extends JFrame {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+
+			String requeteSQL3 = "INSERT INTO `malusbonus` (`idMB`, `nomMalusBonus`, `malus`, `tempsMalusBonus`, `idCompetition`) VALUES (NULL, 'abs"
+					+ nom + "', '1', '" + abs + "', '" + idc + "')";
+
+			System.out.println("Création MB : " + requeteSQL);
+			BDDupdate(requeteSQL3);
 
 			InterfaceBa();
 

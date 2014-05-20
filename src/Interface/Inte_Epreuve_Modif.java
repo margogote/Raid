@@ -41,10 +41,11 @@ public class Inte_Epreuve_Modif extends JFrame {
 	/* Champs */
 	private JLabel nomL = new JLabel("Nom");
 	private JTextField nomT = new JTextField("");
+	private String nomAv ="";
 
 	private JLabel typeL = new JLabel("Type");
 	private String[] typeS = { "CHOISIR", "Course d`orientation", "Course",
-			"Orientshow" };
+			"MassStart" };
 	private JComboBox<Object> typeC = new JComboBox<Object>(typeS);
 
 	private JLabel dateL = new JLabel("Date de début");
@@ -56,6 +57,9 @@ public class Inte_Epreuve_Modif extends JFrame {
 	private JLabel difficL = new JLabel("Difficulté");
 	private String[] difficulte = { "CHOISIR", "Aventure", "Expert" };
 	private JComboBox<Object> difficC = new JComboBox<Object>(difficulte);
+
+	private JLabel absL = new JLabel("Temps si absent");
+	private JTextField absT = new JTextField("hh:mm:ss");
 
 	/* Boutons */
 	private JButton supp = new JButton(" - ");
@@ -99,10 +103,13 @@ public class Inte_Epreuve_Modif extends JFrame {
 		if (idModif != -1) {
 			theFrame.setTitle("Raidzultats - Modification épreuve " + idModif);
 
-			String requeteSQL = "SELECT epreuve.`nomEpreuve`, epreuve.`typeEpreuve`, epreuve.`difficulte`, epreuve.`dateHeureEpreuve`, epreuve.`dureeEpreuve` FROM epreuve WHERE epreuve.`idCompetition` = '"
-					+ idc + "' && epreuve.`idEpreuve` = '" + idModif + "'";
-
 			try {
+
+				String requeteSQL = "SELECT epreuve.`nomEpreuve`, epreuve.`typeEpreuve`, epreuve.`difficulte`, epreuve.`dateHeureEpreuve`, epreuve.`dureeEpreuve` FROM epreuve WHERE epreuve.`idCompetition` = '"
+						+ idc + "' && epreuve.`idEpreuve` = '" + idModif + "'";
+
+				String requeteSQLabs = "";
+
 				Class.forName("com.mysql.jdbc.Driver");
 				System.out.println("Driver O.K.");
 
@@ -118,9 +125,23 @@ public class Inte_Epreuve_Modif extends JFrame {
 					difficC.setSelectedItem(res.getString(3));
 					dateT.setText(res.getString(4));
 					dureeT.setText(res.getString(5));
+					
+					nomAv=res.getString(1);
 				}
+
+				requeteSQLabs = "SELECT `tempsMalusBonus` FROM `malusbonus` WHERE `nomMalusBonus` = 'abs"
+						+ nomAv + "'";
+				System.out.println(requeteSQLabs);
+				ResultSet res2 = stm.executeQuery(requeteSQLabs);
+				while (res2.next()) {
+					absT.setText(res2.getString(1));
+					System.out.println(res2.getString(1));
+
+				}
+
 				conn.close();
 				res.close();
+				res2.close();
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -172,6 +193,8 @@ public class Inte_Epreuve_Modif extends JFrame {
 		labelP.add(dureeT);
 		labelP.add(difficL);
 		labelP.add(difficC);
+		labelP.add(absL);
+		labelP.add(absT);
 
 		JPanel megaP = new JPanel();
 		megaP.setBorder(BorderFactory
@@ -325,27 +348,28 @@ public class Inte_Epreuve_Modif extends JFrame {
 			String difficulte = (String) difficC.getSelectedItem();
 			String date = (String) dateT.getText();
 			String duree = (String) dureeT.getText();
+			String abs = (String) absT.getText();
 
 			try {
 				// Integer.parseInt(dossard);
 
 				String requeteSQL = "UPDATE `epreuve` SET `nomEpreuve` = '"
-						+ nom
-						+ "', `typeEpreuve` = '"
-						+ type
-						+ "', `difficulte`='"
-						+ difficulte
-						+ "', `dateHeureEpreuve`='"
-						+ date
-						+ "', `dureeEpreuve`=  '"
-						+ duree
-						+ "' WHERE idEpreuve = '"
-						+ modif
+						+ nom + "', `typeEpreuve` = '" + type
+						+ "', `difficulte`='" + difficulte
+						+ "', `dateHeureEpreuve`='" + date
+						+ "', `dureeEpreuve`=  '" + duree
+						+ "' WHERE idEpreuve = '" + modif
 						+ "' && `idCompetition`='" + idc + "'";
 
-				System.out.println(requeteSQL);
-
 				BDDupdate(requeteSQL);
+				String requeteSQLabs = "UPDATE `malusbonus` SET `nomMalusBonus`='abs" + nom	+ "',`tempsMalusBonus`='"
+						+ abs
+						+ "' WHERE `idCompetition`= '"
+						+ idc
+						+ "'&& `nomMalusBonus`='abs" + nomAv + "'";
+
+				BDDupdate(requeteSQLabs);
+				
 
 				theFrame.dispose();
 			}
@@ -376,7 +400,7 @@ public class Inte_Epreuve_Modif extends JFrame {
 	 * compétition à partir de la BDD.
 	 * 
 	 * @param combo
-	 *           , La comboBox à mettre à jour
+	 *            , La comboBox à mettre à jour
 	 */
 	public void updateTable() {
 
@@ -488,7 +512,7 @@ public class Inte_Epreuve_Modif extends JFrame {
 	 */
 	public void BDDupdate(String requeteSQL) {
 		try {
-
+			System.out.println(requeteSQL);
 			Class.forName("com.mysql.jdbc.Driver");
 			System.out.println("Driver O.K.");
 

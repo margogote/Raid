@@ -46,7 +46,7 @@ public class Inte_Epreuve_CO extends JFrame {
 		theFrame = this;
 		idc = idC;
 		ide = idEpreuve;
-		nomEp= nomEpreuve;
+		nomEp = nomEpreuve;
 
 		theFrame.setTitle("Raidzultats - Parametrage Course d'Orientation");
 		theFrame.setSize(350, 250);
@@ -102,22 +102,24 @@ public class Inte_Epreuve_CO extends JFrame {
 						"Veuillez remplir tous les champs",
 						"Paramètres non créés!", JOptionPane.WARNING_MESSAGE);
 			} else {
-				String requeteSQL = "INSERT INTO `malusbonus` (`idMB`, `nomMalusBonus`, `malus`, `tempsMalusBonus`, `idCompetition`) VALUES (NULL, 'nonPointageBalise"+nomEp+"', '1', '"
+				String requeteSQL = "INSERT INTO `malusbonus` (`idMB`, `nomMalusBonus`, `malus`, `tempsMalusBonus`, `idCompetition`) VALUES (NULL, 'nonPointageBalise"
+						+ nomEp
+						+ "', '1', '"
 						+ mb
 						+ "', '"
 						+ idc
-						+ "'), (NULL, 'tempsSupplementaire"+nomEp+"', '1', '"
-						+ tps
-						+ "', '" + idc + "')";
-				
-				System.out.println("Création MB : "+requeteSQL);
+						+ "'), (NULL, 'tempsSupplementaire"
+						+ nomEp
+						+ "', '1', '" + tps + "', '" + idc + "')";
+
+				System.out.println("Création MB : " + requeteSQL);
 				BDDupdate(requeteSQL);
-				
+
 				JOptionPane.showMessageDialog(null,
-						"Les paramètres sont rentrés dans Malus/Bonus",
-						nomEp + " paramétrée!",
+						"Les paramètres sont rentrés dans Malus/Bonus", nomEp
+								+ " paramétrée!",
 						JOptionPane.INFORMATION_MESSAGE);
-				
+
 				theFrame.dispose();
 			}
 		}

@@ -39,6 +39,8 @@ public class Inte_Resultat extends JPanel {
 	private JRadioButton epreuveR = new JRadioButton("Epreuve");
 	private JRadioButton jourR = new JRadioButton("Journée");
 	private JRadioButton generalR = new JRadioButton("Général");
+	
+	private JRadioButton deAR = new JRadioButton("De ");									/* !!!!!!!!!!!!!!!!!!  */
 
 	/* Combo */
 	private String[] grpS = { "CHOISIR", "Etudiant", "Salarié" };
@@ -55,6 +57,9 @@ public class Inte_Resultat extends JPanel {
 	private JLabel grpL = new JLabel("Groupe");
 	private JLabel catL = new JLabel("Catégorie");
 	private JTextField jourL= new JTextField("AAAA-MM-JJ hh:mm:ss");
+
+	private JTextField deL= new JTextField("AAAA-MM-JJ hh:mm:ss");							/* !!!!!!!!!!!!!!!!!!  */
+	private JTextField aL= new JTextField("AAAA-MM-JJ hh:mm:ss");							/* !!!!!!!!!!!!!!!!!!  */
 
 	/* Boutons */
 	private JButton print = new JButton("Imprimer");
@@ -99,6 +104,7 @@ public class Inte_Resultat extends JPanel {
 		bG.add(epreuveR);
 		bG.add(jourR);
 		bG.add(generalR);
+		bG.add(deAR);																	/* !!!!!!!!!!!!!!!!!!  */
 
 		Interface();
 
@@ -120,14 +126,14 @@ public class Inte_Resultat extends JPanel {
 
 		checkPanel.setBorder(BorderFactory
 				.createTitledBorder("Type de classement"));
-		// checkPanel.setLayout(new BoxLayout(checkPanel, BoxLayout.PAGE_AXIS));
 		checkPanel.setPreferredSize(new Dimension(300, 100));
-		checkPanel.setLayout(new GridLayout(3, 2));
+		checkPanel.setLayout(new GridLayout(4, 2));
 		checkPanel.add(epreuveR);
 		checkPanel.add(epreuveC);
 		checkPanel.add(jourR);
 		checkPanel.add(jourL);
 		checkPanel.add(generalR);
+		checkPanel.add(deAR);
 
 		updateCombo(epreuveC);
 
